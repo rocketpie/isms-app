@@ -1,0 +1,59 @@
+
+services:
+  db:
+    image: postgres:15-alpine
+    env_file: [.env.secrets]
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports: ["5432:5432"]
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./supabase/init:/docker-entrypoint-initdb.d:ro
+
+  auth:
+    image: supabase/gotrue:v2.146.1
+    depends_on: [db]
+    env_file: [.env.secrets]
+    environment:
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: ${GOTRUE_DB_URL}
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: ${GOTRUE_API_PORT}
+      GOTRUE_JWT_SECRET: ${JWT_SECRET}
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_JWT_ADMIN_ROLES: service_role
+      GOTRUE_JWT_AUD: authenticated
+      GOTRUE_SITE_URL: ${GOTRUE_SITE_URL}
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: ${GOTRUE_EXTERNAL_EMAIL_ENABLED}
+      GOTRUE_MAILER_AUTOCONFIRM: ${GOTRUE_MAILER_AUTOCONFIRM}
+    ports: ["9999:9999"]
+
+  postgrest:
+    image: postgrest/postgrest:v12.2.3
+    depends_on: [db]
+    env_file: [.env.secrets]
+    environment:
+      PGRST_DB_URI: ${PGRST_DB_URI}
+      PGRST_DB_SCHEMA: ${PGRST_DB_SCHEMA}
+      PGRST_DB_ANON_ROLE: ${PGRST_DB_ANON_ROLE}
+      PGRST_DB_ROLE: ${PGRST_DB_ROLE}
+      PGRST_JWT_SECRET: ${JWT_SECRET}
+      PGRST_OPENAPI_SERVER_PROXY_URI: http://localhost:3001
+    ports: ["3001:3000"]
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    depends_on: [postgrest, auth]
+    env_file: [.env.secrets]
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+      NEXT_PUBLIC_AUTH_URL: ${NEXT_PUBLIC_AUTH_URL}
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+    ports: ["3000:3000"]
+
+volumes:
+  db_data:

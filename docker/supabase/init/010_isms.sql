@@ -104,21 +104,6 @@ BEGIN
   END IF;
 END $$;
 
-CREATE TABLE IF NOT EXISTS isms.audit_log (
-  change_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  table_name text NOT NULL,
-  row_pk jsonb NOT NULL,
-  change_kind isms.change_kind NOT NULL,
-  changed_at timestamptz NOT NULL DEFAULT now(),
-  changed_by_user_id uuid NULL REFERENCES app.users(id),
-  changed_by_role text,
-  changed_by_email text,
-  txid bigint NOT NULL DEFAULT txid_current(),
-  old_data jsonb,
-  new_data jsonb
-);
-CREATE INDEX IF NOT EXISTS audit_log_table_time_idx ON isms.audit_log (table_name, changed_at);
-CREATE INDEX IF NOT EXISTS audit_log_rowpk_gin     ON isms.audit_log USING gin (row_pk);
 
 -- Generic audit trigger (calls app.jwt_* defined in 005_app.sql)
 CREATE OR REPLACE FUNCTION isms.fn_audit() RETURNS trigger
@@ -151,7 +136,7 @@ BEGIN
     END IF;
   END IF;
 
-  INSERT INTO isms.audit_log(
+  INSERT INTO audit.audit_log(
     table_name, row_pk, change_kind, changed_at,
     changed_by_user_id, changed_by_role, changed_by_email,
     txid, old_data, new_data
@@ -169,7 +154,7 @@ BEGIN
   RETURN CASE WHEN tg_op IN ('INSERT','UPDATE') THEN NEW ELSE OLD END;
 END $$;
 
--- Attach audit triggers
+-- Attach audit triggers (call audit.fn_audit)
 DO $$
 DECLARE r record;
 BEGIN
@@ -191,7 +176,7 @@ BEGIN
     IF r.pkcols LIKE '%,%' THEN
       EXECUTE format(
         'CREATE TRIGGER trg_audit AFTER INSERT OR UPDATE OR DELETE ON %s
-         FOR EACH ROW EXECUTE FUNCTION isms.fn_audit(%s);',
+         FOR EACH ROW EXECUTE FUNCTION audit.fn_audit(%s);',
         r.fq,
         (SELECT string_agg(quote_literal(trim(x)), ',')
          FROM regexp_split_to_table(r.pkcols, ',') x)
@@ -199,7 +184,7 @@ BEGIN
     ELSE
       EXECUTE format(
         'CREATE TRIGGER trg_audit AFTER INSERT OR UPDATE OR DELETE ON %s
-         FOR EACH ROW EXECUTE FUNCTION isms.fn_audit(''id'');',
+         FOR EACH ROW EXECUTE FUNCTION audit.fn_audit(''id'');',
         r.fq
       );
     END IF;

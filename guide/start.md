@@ -14,6 +14,14 @@ tree
         └── 020_policies.sql
 
 
+# Update npm lockfile
+~/isms-app$
+docker run --rm -v "$PWD/web:/app" -w /app node:20-alpine \
+  sh -lc "npm install --package-lock-only --no-audit --no-fund"
+
+then update package-lock.json in the repo
+
+
 docker compose up -d --build
 docker compose exec db /docker-entrypoint-initdb.d/000_reset.sh
 # apply bootstrap + SQL (run once per fresh reset)

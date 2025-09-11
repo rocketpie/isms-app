@@ -1,8 +1,8 @@
 {
   "version": "2.0.0",
   "tasks": [
-    {
-      "label": "Sync to Docker host",
+     {
+      "label": "Dry-Sync to docker host",
       "type": "shell",
       "command": "bash",
       "args": [
@@ -15,7 +15,28 @@
         },
         "env": {
           "REMOTE": "mydocker",
-          "REMOTE_DIR": "/srv/myapp",
+          "REMOTE_DIR": "/home/user/isms-app",
+          "RUN_DRY": "1",
+          "WSLENV": "REMOTE:REMOTE_DIR:RUN_DRY"
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Sync to docker host",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-lc",
+        "./scripts/rsync.sh"
+      ],
+      "options": {
+        "shell": {
+          "executable": "C:\\Windows\\System32\\wsl.exe"
+        },
+        "env": {
+          "REMOTE": "mydocker",
+          "REMOTE_DIR": "/home/user/isms-app",
           "WSLENV": "REMOTE:REMOTE_DIR"
         }
       },

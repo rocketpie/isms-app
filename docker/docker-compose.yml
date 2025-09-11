@@ -16,7 +16,7 @@ services:
     depends_on: [db]
     environment:
       GOTRUE_DB_DRIVER: postgres
-      GOTRUE_DB_DATABASE_URL: ${GOTRUE_DB_URL}
+      GOTRUE_DB_DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?sslmode=disable
       GOTRUE_API_HOST: 0.0.0.0
       GOTRUE_API_PORT: ${API_PORT}
       GOTRUE_JWT_SECRET: ${JWT_SECRET}
@@ -33,7 +33,7 @@ services:
     image: postgrest/postgrest:v12.2.12
     depends_on: [db]
     environment:
-      PGRST_DB_URI: ${PGRST_DB_URI}
+      PGRST_DB_URI: postgres://authenticator:${AUTHENTICATOR_PASSWORD}@db:5432/${POSTGRES_DB}
       PGRST_DB_SCHEMA: ${PGRST_DB_SCHEMA}
       PGRST_DB_ANON_ROLE: ${PGRST_DB_ANON_ROLE}
       PGRST_JWT_SECRET: ${JWT_SECRET}
@@ -47,7 +47,6 @@ services:
       context: ./web
       dockerfile: Dockerfile
     depends_on: [postgrest, auth]
-    env_file: [.env.secrets]
     ports:
       - "${WEB_PORT}:3000"
 

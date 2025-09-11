@@ -1,0 +1,25 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Sync to Docker host",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-lc",
+        "./scripts/rsync.sh"
+      ],
+      "options": {
+        "shell": {
+          "executable": "C:\\Windows\\System32\\wsl.exe"
+        },
+        "env": {
+          "REMOTE": "mydocker",
+          "REMOTE_DIR": "/srv/myapp",
+          "WSLENV": "REMOTE:REMOTE_DIR"
+        }
+      },
+      "problemMatcher": []
+    }
+  ]
+}

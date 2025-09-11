@@ -51,11 +51,6 @@ services:
       dockerfile: Dockerfile
     depends_on: [postgrest, auth]
     env_file: [.env.secrets]
-    environment:
-      # Drive the app’s public URLs from the single host/ports source:
-      NEXT_PUBLIC_API_URL:  http://${BASE_HOST}:${API_PORT}
-      NEXT_PUBLIC_AUTH_URL: http://${BASE_HOST}:${AUTH_PORT}
-      NEXT_PUBLIC_SITE_URL: http://${BASE_HOST}:${WEB_PORT}
     ports:
       - "${WEB_PORT}:3000"
 

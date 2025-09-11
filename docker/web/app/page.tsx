@@ -1,17 +1,20 @@
-export default function Home() {
-  const api = process.env.NEXT_PUBLIC_API_URL;
-  const auth = process.env.NEXT_PUBLIC_AUTH_URL;
-  const site = process.env.NEXT_PUBLIC_SITE_URL;
+// web/app/page.tsx
+async function fetchApiRoot() {
+  const res = await fetch('/api/', { cache: 'no-store' });
+  if (!res.ok) throw new Error('API not reachable');
+  return res.json();
+}
 
+export default async function Home() {
+  const openapi = await fetchApiRoot();
   return (
     <main style={{ padding: 24 }}>
-      <h1 style={{ marginBottom: 8 }}>ISMS-App</h1>
-      <p style={{ marginBottom: 16 }}>Minimal scaffold is running.</p>
-      <div style={{ lineHeight: 1.8 }}>
-        <div><strong>PostgREST API:</strong> {api}</div>
-        <div><strong>Auth (GoTrue):</strong> {auth}</div>
-        <div><strong>Site URL:</strong> {site}</div>
-      </div>
+      <h1>ISMS-App</h1>
+      <p>Same-origin proxy is active.</p>
+      <pre style={{ whiteSpace: 'pre-wrap' }}>
+        {JSON.stringify({ title: openapi.info?.title, version: openapi.info?.version }, null, 2)}
+      </pre>
+      <p>Auth endpoint is proxied at <code>/auth</code> (e.g. <code>/auth/signup</code>).</p>
     </main>
   );
 }

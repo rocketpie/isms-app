@@ -33,6 +33,7 @@ BEGIN
   END LOOP;
 END $$;
 
--- Keep audit_log private (no policies -> only service/superuser can read)
-ALTER TABLE isms.audit_log ENABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS audit_log_any ON isms.audit_log;
+
+-- keep audit private (no read for authenticated/editor)
+REVOKE ALL ON SCHEMA audit FROM authenticated, editor;
+REVOKE ALL ON ALL TABLES IN SCHEMA audit FROM authenticated, editor;

@@ -7,20 +7,24 @@ set -euo pipefail
 CONN="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}"
 
 psql -v ON_ERROR_STOP=1 "$CONN" <<SQL
--- Roles for PostgREST role-switching
+-- Runtime roles
 CREATE ROLE anon NOLOGIN;
 CREATE ROLE authenticated NOLOGIN;
-CREATE ROLE service_role NOLOGIN;
-CREATE ROLE authenticator NOINHERIT LOGIN PASSWORD '${AUTHENTICATOR_PASSWORD}';
-GRANT anon, authenticated, service_role TO authenticator;
 
 -- App-level “Editor” role (selected via JWT claim: role=editor)
 CREATE ROLE editor NOLOGIN;
-GRANT editor TO authenticator;
+
+-- Connection role for PostgREST
+CREATE ROLE authenticator LOGIN NOINHERIT PASSWORD '${AUTHENTICATOR_PASSWORD}';
+GRANT anon, authenticated, editor TO authenticator;
 
 -- Core extensions (no schema objects here)
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE EXTENSION IF NOT EXISTS pgjwt;
+
+-- Schema hygiene: Lock down public completely
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM anon, authenticated, editor, authenticator;
 SQL
 
-echo "✔ Bootstrap: roles & extensions ready."
+echo "Bootstrap done."

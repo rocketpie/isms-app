@@ -32,6 +32,9 @@ tree
 chmod +x supabase/init/000_reset.sh
 chmod +x supabase/init/001_bootstrap.sh
 
+# Option: Reset
+docker compose down
+docker volume rm isms-app_db_data
 
 # Start App
 docker compose up -d --build
@@ -40,12 +43,23 @@ docker compose up -d --build
 docker compose ps
 docker compose logs -f db auth postgrest web
 
+# Apply bootstrap SQL (run once per fresh reset)
+# app
+docker exec -i -e PGPASSWORD="$POSTGRES_PASSWORD" isms-app-db-1 \
+  psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
+  < supabase/migrations/005_app.sql
 
-docker compose exec db /docker-entrypoint-initdb.d/000_reset.sh
-# apply bootstrap + SQL (run once per fresh reset)
-docker compose exec db /docker-entrypoint-initdb.d/001_bootstrap.sh
-docker compose exec db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -f /docker-entrypoint-initdb.d/005_app.sql
-docker compose exec db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -f /docker-entrypoint-initdb.d/007_audit.sql
-docker compose exec db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -f /docker-entrypoint-initdb.d/010_isms.sql
-docker compose exec db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -f /docker-entrypoint-initdb.d/020_policies.sql
+# audit
+docker exec -i -e PGPASSWORD="$POSTGRES_PASSWORD" isms-app-db-1 \
+  psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
+  < supabase/migrations/007_audit.sql
 
+# isms
+docker exec -i -e PGPASSWORD="$POSTGRES_PASSWORD" isms-app-db-1 \
+  psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
+  < supabase/migrations/010_isms.sql
+
+# policies
+docker exec -i -e PGPASSWORD="$POSTGRES_PASSWORD" isms-app-db-1 \
+  psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
+  < supabase/migrations/020_policies.sql

@@ -5,16 +5,25 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+      AUTHENTICATOR_PASSWORD: ${AUTHENTICATOR_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./supabase/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
 
   auth:
     image: supabase/gotrue:v2.177.0
-    depends_on: [db]
+    depends_on: 
+      db:
+        condition: service_healthy
     environment:
+      GOTRUE_DB_NAMESPACE: auth
       GOTRUE_DB_DRIVER: postgres
       GOTRUE_DB_DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?sslmode=disable
       GOTRUE_API_HOST: 0.0.0.0
@@ -24,10 +33,16 @@ services:
       GOTRUE_JWT_ADMIN_ROLES: service_role
       GOTRUE_JWT_AUD: authenticated
       GOTRUE_SITE_URL: http://${BASE_HOST}:${WEB_PORT}
+      API_EXTERNAL_URL: http://${BASE_HOST}:${AUTH_PORT}
       GOTRUE_EXTERNAL_EMAIL_ENABLED: ${GOTRUE_EXTERNAL_EMAIL_ENABLED}
       GOTRUE_MAILER_AUTOCONFIRM: ${GOTRUE_MAILER_AUTOCONFIRM}
     ports:
       - "${AUTH_PORT}:${API_PORT}"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:7779/health"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
 
   postgrest:
     image: postgrest/postgrest:v12.2.12

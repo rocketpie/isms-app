@@ -4,9 +4,9 @@ set -euo pipefail
 : "${POSTGRES_USER:?missing}"; : "${POSTGRES_PASSWORD:?missing}"; : "${POSTGRES_DB:?missing}"
 : "${AUTHENTICATOR_PASSWORD:?missing}"
 
-CONN="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}"
+export PGPASSWORD="${POSTGRES_PASSWORD}"
 
-psql -v ON_ERROR_STOP=1 "$CONN" <<SQL
+psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" <<SQL
 -- Runtime roles
 CREATE ROLE anon NOLOGIN;
 CREATE ROLE authenticated NOLOGIN;
@@ -19,8 +19,8 @@ CREATE ROLE authenticator LOGIN NOINHERIT PASSWORD '${AUTHENTICATOR_PASSWORD}';
 GRANT anon, authenticated, editor TO authenticator;
 
 -- Core extensions (no schema objects here)
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-CREATE EXTENSION IF NOT EXISTS pgjwt;
+-- CREATE EXTENSION IF NOT EXISTS pgcrypto;
+-- CREATE EXTENSION IF NOT EXISTS pgjwt;
 
 -- Schema hygiene: Lock down public completely
 REVOKE ALL ON SCHEMA public FROM PUBLIC;

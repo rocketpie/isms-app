@@ -44,22 +44,26 @@ docker compose ps
 docker compose logs -f db auth postgrest web
 
 # Apply bootstrap SQL (run once per fresh reset)
-# app
-docker exec -i -e PGPASSWORD="$POSTGRES_PASSWORD" isms-app-db-1 \
-  psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
-  < supabase/migrations/005_app.sql
+# APP
+docker exec -i isms-app-db-1 sh -lc '
+  export PGPASSWORD="$POSTGRES_PASSWORD";
+  psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h 127.0.0.1
+' < supabase/migrations/005_app.sql
 
-# audit
-docker exec -i -e PGPASSWORD="$POSTGRES_PASSWORD" isms-app-db-1 \
-  psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
-  < supabase/migrations/007_audit.sql
+# ISMS
+docker exec -i isms-app-db-1 sh -lc '
+  export PGPASSWORD="$POSTGRES_PASSWORD";
+  psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h 127.0.0.1
+' < supabase/migrations/010_isms.sql
 
-# isms
-docker exec -i -e PGPASSWORD="$POSTGRES_PASSWORD" isms-app-db-1 \
-  psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
-  < supabase/migrations/010_isms.sql
+# POLICIES
+docker exec -i isms-app-db-1 sh -lc '
+  export PGPASSWORD="$POSTGRES_PASSWORD";
+  psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h 127.0.0.1
+' < supabase/migrations/020_policies.sql
 
-# policies
-docker exec -i -e PGPASSWORD="$POSTGRES_PASSWORD" isms-app-db-1 \
-  psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
-  < supabase/migrations/020_policies.sql
+# AUDIT
+docker exec -i isms-app-db-1 sh -lc '
+  export PGPASSWORD="$POSTGRES_PASSWORD";
+  psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h 127.0.0.1
+' < supabase/migrations/030_audit.sql

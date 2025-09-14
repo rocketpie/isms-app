@@ -1,39 +1,50 @@
--- 020_policies.sql
+-- 020_policies.sql — ISMS only (no audit dependency)
 
--- Visibility
+-- Base grants on schema & existing tables
 GRANT USAGE ON SCHEMA isms TO authenticated, editor;
+GRANT SELECT ON ALL TABLES IN SCHEMA isms TO authenticated;
+GRANT ALL    ON ALL TABLES IN SCHEMA isms TO editor;
+GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA isms TO editor;
 
+-- Enable RLS on every base table in isms
 DO $$
-DECLARE t record;
+DECLARE r record;
 BEGIN
-  FOR t IN
-    SELECT schemaname, tablename
-    FROM pg_tables
-    WHERE schemaname = 'isms'
-      AND tablename NOT IN ('audit_log')
+  FOR r IN
+    SELECT table_schema, table_name
+    FROM information_schema.tables
+    WHERE table_schema = 'isms' AND table_type = 'BASE TABLE'
   LOOP
-    EXECUTE format('GRANT SELECT ON TABLE %I.%I TO authenticated;', t.schemaname, t.tablename);
-    EXECUTE format('GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE %I.%I TO editor;', t.schemaname, t.tablename);
-
-    EXECUTE format('ALTER TABLE %I.%I ENABLE ROW LEVEL SECURITY;', t.schemaname, t.tablename);
-
-    -- All authenticated can read
-    EXECUTE format($p$
-      DROP POLICY IF EXISTS %I_read_all ON %I.%I;
-      CREATE POLICY %I_read_all ON %I.%I
-      FOR SELECT TO authenticated USING (true);
-    $p$, t.tablename, t.schemaname, t.tablename, t.tablename, t.schemaname, t.tablename);
-
-    -- Editors can do everything
-    EXECUTE format($p$
-      DROP POLICY IF EXISTS %I_editor_all ON %I.%I;
-      CREATE POLICY %I_editor_all ON %I.%I
-      FOR ALL TO editor USING (true) WITH CHECK (true);
-    $p$, t.tablename, t.schemaname, t.tablename, t.tablename, t.schemaname, t.tablename);
+    EXECUTE format('ALTER TABLE %I.%I ENABLE ROW LEVEL SECURITY;', r.table_schema, r.table_name);
   END LOOP;
-END $$;
+END$$;
 
+-- Create policies per table, idempotently (no DROP; suppress duplicates)
+DO $$
+DECLARE r record;
+BEGIN
+  FOR r IN
+    SELECT table_schema, table_name
+    FROM information_schema.tables
+    WHERE table_schema = 'isms' AND table_type = 'BASE TABLE'
+  LOOP
+    BEGIN
+      EXECUTE format(
+        'CREATE POLICY %I_read_all ON %I.%I FOR SELECT TO authenticated USING (true);',
+        r.table_name, r.table_schema, r.table_name
+      );
+    EXCEPTION WHEN duplicate_object THEN
+      -- policy already exists; ignore
+      NULL;
+    END;
 
--- keep audit private (no read for authenticated/editor)
-REVOKE ALL ON SCHEMA audit FROM authenticated, editor;
-REVOKE ALL ON ALL TABLES IN SCHEMA audit FROM authenticated, editor;
+    BEGIN
+      EXECUTE format(
+        'CREATE POLICY %I_editor_all ON %I.%I FOR ALL TO editor USING (true) WITH CHECK (true);',
+        r.table_name, r.table_schema, r.table_name
+      );
+    EXCEPTION WHEN duplicate_object THEN
+      NULL;
+    END;
+  END LOOP;
+END$$;

@@ -17,6 +17,65 @@ You are an expert full-stack assistant building the Supabase-backed platform 'IS
 'isms': created via `010_isms.sql`, domain model for **ISMS** domain content.
 'audit': deferred until later (`030_audit.sql`) centralized append-only audit log (high-volume, partition/archival ready).
 
+
+## SQL/Migrations
+005\_app.sql (app schema + JWT helpers + user mirror)
+* `CREATE SCHEMA app;`
+* JWT helpers:
+  * `app.jwt_claims()` → JSON of `request.jwt.claims`
+  * `app.jwt_sub()` → `uuid`, `app.jwt_role()` → `text`, `app.jwt_email()` → `text`
+* Mirror table `app.users(id, email, raw_user_meta_data, created_at, updated_at)`.
+* Backfill from `auth.users`.
+* Trigger `trg_app_sync_user` on `auth.users` keeps `app.users` in sync.
+* PGRST schema is `isms` only.
+
+010\_isms.sql (domain only)
+* `CREATE SCHEMA isms;`
+* Core entities (UUID PKs, minimal fields):
+  * `people(id, name)`
+  * `ownership(id, name, primary_person_id → isms.people, deputy_person_id → isms.people)`
+  * `processes`, `applications`, `systems`, `data`, `connections`, `locations`
+  * all: `id, name, owner_id → isms.ownership, description`
+* Junctions:
+  * `process_applications(process_id ↔ applications)`
+  * `application_systems(application_id ↔ systems)`
+  * `system_data(system_id ↔ data)`
+  * `system_locations(system_id ↔ locations)`
+  * `location_connections(location_id ↔ connections)`
+* Helpful indexes on junction secondaries (`*_idx`).
+* **No triggers, no audit, no RLS here** (kept clean).
+
+020\_policies.sql (RLS + grants for isms only)
+* Grants:
+  * `GRANT USAGE ON SCHEMA isms TO authenticated, editor, authenticator;`
+  * `GRANT SELECT ON ALL TABLES IN isms TO authenticated;`
+  * `GRANT ALL ON ALL TABLES IN isms TO editor;`
+  * `GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN isms TO editor;`
+* Enable RLS on every base table in `isms`.
+* Per-table policies (idempotent, no DROP noise):
+  * `<table>_read_all` → `FOR SELECT TO authenticated USING (true)`
+  * `<table>_editor_all` → `FOR ALL TO editor USING (true) WITH CHECK (true)`
+* If `audit` schema exists, revoke everything from `authenticated/editor` (guarded block).
+* **Important**: include `GRANT USAGE ON SCHEMA isms TO authenticator;` so PostgREST can introspect.
+
+030\_audit.sql (deferred until later)
+* Creates `audit.audit_log(change_id, table_name, row_pk, change_kind, timestamps, user/role/email, old_data, new_data)`.
+* `audit.fn_audit()` trigger function capturing `INSERT/UPDATE/DELETE`.
+* Indexes on `(table_name, changed_at)` and GIN on `row_pk`.
+* **Decide one**:
+  * Use `audit.change_kind` enum (self-contained), **or**
+  * Depend on `isms.change_kind` (requires `isms` migration first).
+* Attaching triggers to `isms.*` happens **here**, not in `010_isms.sql`.
+* Keep `audit` private (no grants to regular roles). RLS can be enabled later.
+
+# Bootstrap / Roles (001\_bootstrap.sh)
+* Roles: `anon` (NOLOGIN), `authenticated` (NOLOGIN), `editor` (NOLOGIN), `authenticator` (LOGIN NOINHERIT), `supabase_auth_admin` (LOGIN NOINHERIT).
+* `GRANT anon, authenticated, editor TO authenticator;`
+* Create schemas: `auth`, `app`, `isms` (at least `auth` must exist before GoTrue starts).
+* Extensions: `pgcrypto`, `pgjwt`.
+* Lock down `public` (revoke from PUBLIC); set search\_path for runtime roles if desired.
+* **Auth admin**: `supabase_auth_admin` gets `search_path = auth, pg_catalog` and `USAGE, CREATE ON SCHEMA auth`.
+
 ## Domain Model ('isms')
 **Entities**:
 'people', 'teams', 'ownership', 'processes', 'applications', 'systems', 'data', 'connections', 'locations'.
@@ -32,12 +91,8 @@ All entities (except 'ownership') have a 'name' and optional 'owner_id'.
 * 'app.users' are **login users** (viewers, editors, approvers).
 * 'audit' links all changes to 'app.users'.
 
-## Auditing ('audit')
-* 'audit.audit_log' records every change on domain tables:
-  'table_name', 'row_pk' (JSONB), 'change_kind' ('create|update|delete'),
-  'changed_at', 'changed_by_user_id', 'changed_by_role', 'changed_by_email',
-  'change_id', 'old_data' (JSONB), 'new_data' (JSONB).
-* Triggers on every ISMS table call 'audit.fn_audit()'.
+## Auditing ('audit') (DEFERRED)
+* 'audit.audit_log' records every change on domain tables
 * Designed for **partitioning/archiving** and optional **separate backup lifecycle**.
 
 ## Auth & Roles

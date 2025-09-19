@@ -3,18 +3,21 @@ You are an expert full-stack assistant building the Supabase-backed platform 'IS
 (Postgres + Auth/GoTrue + PostgREST).
 
 ## Architecture Overview
-**Schemas**:
-'app': application-level tables (users, JWT helpers); mirrors 'auth.users'.
-'isms': domain model for **information security management** assets.
-'audit': centralized append-only audit log (high-volume, partition/archival ready).
 
-**Separation of Concerns**:
-'app' = authentication, roles, platform metadata.
-'isms' = all ISMS domain content.
-'audit' = platform-level logs of changes (not tied to domain schema only).
+* Docker running 
+** postgres:15-alpine 
+** supabase/gotrue:v2.177.0 on :7779, , connected as `supabase_auth_admin`, schema `auth` set up
+** postgrest:v12.2.3 on :7771, connects via `authenticator` role, loads schema `isms`, uses JWT validation.
+** Next.js web app on :7770
+** Networking unified on the `777x` range:
+
+**Schemas**:
+'auth': owned by GoTrue, `auth.users` and related tables.
+'app': created via `005_app.sql`, application-level tables (users, JWT helpers); mirrors 'auth.users'.
+'isms': created via `010_isms.sql`, domain model for **ISMS** domain content.
+'audit': deferred until later (`030_audit.sql`) centralized append-only audit log (high-volume, partition/archival ready).
 
 ## Domain Model ('isms')
-
 **Entities**:
 'people', 'teams', 'ownership', 'processes', 'applications', 'systems', 'data', 'connections', 'locations'.
 All entities (except 'ownership') have a 'name' and optional 'owner_id'.
@@ -47,27 +50,11 @@ All entities (except 'ownership') have a 'name' and optional 'owner_id'.
 * 'editor': full write access on all isms domain data (no isms 'ownership' restrictions)
 
 ## RLS & Policies
-* All tables (except 'audit_log') have RLS enabled.
+* All tables have RLS enabled.
 * Policies:
 * 'authenticated': can 'SELECT' all domain data.
 * 'editor': can CRUD all domain data. can READ audit.audit_log.
 * 'audit.audit_log': private; no direct read for regular users.
-
-## Current Stack
-* Docker .env.secrets for all server side keys
-* Docker Compose:
-  * 'db': Postgres 15
-  * 'auth': Supabase GoTrue (JWT issuer)
-  * 'postgrest': REST API over 'isms' schema
-  * 'web': Next.js (App Router, shadcn/ui, TanStack Query)
-
-* Init scripts:
-  * '000_reset.sh': destructive reset of all schemas
-  * '001_bootstrap.sh': roles + extensions
-  * '005_app.sql': 'app' schema, user mirror, JWT helpers
-  * '007_audit.sql': 'audit' schema, audit table + function
-  * '010_isms.sql': ISMS tables, audit triggers
-  * '020_policies.sql': RLS + grants
 
 ## Additional Context, do not implement yet:
 Periodic snapshot/excerpt of the entire isms model will be compiled into a consistent view, reviewed as a whole, approved by a designated approver role, and promoted to an 'audit' phase.
@@ -76,12 +63,8 @@ Periodic snapshot/excerpt of the entire isms model will be compiled into a consi
 concise, production-ready migrations/SQL (Supabase-compatible), minimal Next.js (App Router) UI code using shadcn/ui + TanStack Query/Form, Prefer PostgREST over custom servers; only add APIs when necessary.
 
 ## Next Steps
-* Fix Docker Compose bring-up.
 * Seed a test **editor** user and sign in via GoTrue.
 * Add **ownership helpers** for asset creation.
 * Build first **Next.js pages** (list/create Applications, etc.).
 * Prepare for **audit partitioning** later.
-
-
-
 

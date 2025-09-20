@@ -3,23 +3,31 @@ import { headers } from "next/headers";
 
 export const dynamic = "force-dynamic"; // optional, avoids caching surprises
 
-function getBaseUrl() {
-  const h = headers();
-  const proto = h.get("x-forwarded-proto") ?? "http";
-  const host  = h.get("x-forwarded-host") ?? h.get("host");
-  if (host) return `${proto}://${host}`;
-  // Fallbacks for local/dev or custom envs
-  return process.env.NEXT_PUBLIC_SITE_URL
-      ?? process.env.APP_URL
-      ?? "http://localhost:7770";
+export function getBaseUrl(): string {
+  const h = headers()
+  const proto = h.get("x-forwarded-proto")
+  const host  = h.get("x-forwarded-host") ?? h.get("host")
+
+  if (proto && host) {
+    return `${proto}://${host}`
+  }
+
+  const envUrl = process.env.NEXT_PUBLIC_POSTGREST_URL // e.g. http://dockerhost1:7771
+  if (!envUrl) {
+    throw new Error("Missing NEXT_PUBLIC_POSTGREST_URL environment variable")
+  }
+  return envUrl
 }
 
+// inside app/page.tsx
 async function fetchApiRoot() {
-  const base = getBaseUrl();
-  const res = await fetch(`${base}/api/`, { cache: "no-store" });
-  if (!res.ok) throw new Error(`API not reachable (${res.status})`);
+  const url = getBaseUrl();
+  const res = await fetch(`${url}`, { cache: 'no-store' })
+  if (!res.ok) throw new Error(`PostgREST not reachable (${res.status})`)
+  // PostgREST root returns OpenAPI JSON; you can just return ok:true
   return res.json();
 }
+
 
 export default async function Home() {
   const openapi = await fetchApiRoot();

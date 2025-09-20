@@ -1,10 +1,26 @@
-// app/providers.tsx
-"use client";
+'use client'
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from 'react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { supabase } from '@/lib/supabase'
+
+let client: QueryClient | null = null
+function getClient() {
+  if (!client) client = new QueryClient()
+  return client
+}
 
 export default function Providers({ children }: { children: ReactNode }) {
-  const [queryClient] = useState(() => new QueryClient());
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  const [ready, setReady] = useState(false)
+  useEffect(() => {
+    // hydrate auth state changes => refetch queries on sign-in/out
+    const { data: sub } = supabase.auth.onAuthStateChange(() => {
+      getClient().invalidateQueries()
+    })
+    setReady(true)
+    return () => sub.subscription.unsubscribe()
+  }, [])
+
+  if (!ready) return null
+  return <QueryClientProvider client={getClient()}>{children}</QueryClientProvider>
 }

@@ -11,6 +11,21 @@
     "next": "14.2.5",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "@tanstack/react-query": "5.59.15"
+    "@tanstack/react-query": "5.59.15",
+    "@supabase/supabase-js": "2.47.6",
+    "tailwindcss": "3.4.10",
+    "postcss": "8.4.47",
+    "autoprefixer": "10.4.20",
+    "clsx": "2.1.1",
+    "lucide-react": "0.454.0",
+    "tailwindcss": "3.4.10",
+    "postcss": "8.4.47",
+    "autoprefixer": "10.4.20",
+    "@radix-ui/react-slot": "1.0.2",
+    "tailwind-variants": "0.1.20"
+  },
+  "devDependencies": {
+    "typescript": "5.6.2",
+    "shadcn": "3.3.0"
   }
 }

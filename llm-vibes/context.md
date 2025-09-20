@@ -60,7 +60,7 @@ PostgREST is configured to expose isms,app (default is the first schema; use Acc
 * If `audit` schema exists, revoke everything from `authenticated/editor` (guarded block).
 * **Important**: include `GRANT USAGE ON SCHEMA isms TO authenticator;` so PostgREST can introspect.
 
-021_admin_grant_fn.sql (create app.admin_grant_app_role, app.whoami, grants in app)
+021_admin_grant_fn.sql (create app.admin_grant_app_role, app.whoami function, grants in app)
 Tighten `app` schema exposure, and provide a single, audited, admin-only function to grant/upgrade application roles via JWT-based authorization.
   * `GRANT USAGE ON SCHEMA app` to `authenticator`, `authenticated`, `editor`.
   * Default-deny: `REVOKE ALL` on all **tables** and **functions** in `app`.

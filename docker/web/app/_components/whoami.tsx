@@ -1,33 +1,34 @@
-// app/_components/whoami.tsx
-"use client";
-
-import { useQuery } from "@tanstack/react-query";
+'use client'
+import { useEffect, useState } from 'react'
+import { pgrst } from '@/lib/api'
 
 export default function WhoAmI() {
-  const { data, isLoading } = useQuery({
-    queryKey: ["whoami"],
-    queryFn: async () => {
-      const res = await fetch("/rpc/whoami", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept-Profile": "app",
-          "Content-Profile": "app",
-        },
-        credentials: "include",
-        body: "{}",
-      });
-      if (!res.ok) throw new Error("whoami failed");
-      return res.json();
-    },
-  });
+  const [txt, setTxt] = useState('anonymous')
 
-  if (isLoading) return <div>Loading…</div>;
-  if (!data) return null;
+  useEffect(() => {
+    let alive = true
+    ;(async () => {
+      try {
+        // If app.whoami exists:
+        const who = await pgrst<{ email?: string; role?: string }[]>('/rpc/whoami', {
+          method: 'POST',
+          body: '{}'
+        }).catch(() => null)
 
-  return (
-    <div className="text-sm opacity-70">
-      role: {data.app_role} · {data.email}
-    </div>
-  );
+        if (!alive) return
+        if (who && who[0]?.email) {
+          setTxt(`${who[0].email} (${who[0].role ?? 'authenticated'})`)
+        } else {
+          // Fallback: decode role-like info from a trivial endpoint
+          const me = await pgrst<{ now: string }>('/')
+          setTxt('authenticated')
+        }
+      } catch {
+        setTxt('anonymous')
+      }
+    })()
+    return () => { alive = false }
+  }, [])
+
+  return <span className="text-sm text-neutral-600">You: {txt}</span>
 }

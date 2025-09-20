@@ -111,9 +111,11 @@ note "Admin grants editor role to ${EDITOR_EMAIL} via PostgREST RPC"
 BODY=$(jq -n --arg email "$EDITOR_EMAIL" --arg role editor '{target_email:$email,new_role:$role}')
 TMP=$(mktemp)
 HTTP=$(curl -sS -o "$TMP" -w "%{http_code}" \
-  -X POST "${base_url_api}/rpc/app.admin_grant_app_role" \
+  -X POST "${base_url_api}/rpc/admin_grant_app_role" \
   -H "Authorization: Bearer ${ADMIN_TOKEN}" \
   -H "Content-Type: application/json" \
+  -H "Accept-Profile: app" \
+  -H "Content-Profile: app" \
   --data "$BODY")
 [ "$HTTP" = "200" ] || { echo "RPC grant failed ($HTTP)"; cat "$TMP"; exit 1; }
 cat "$TMP" | $JQ '{id,email,app_metadata}' | sed 's/^/   /'
@@ -122,8 +124,9 @@ rm -f "$TMP"
 note "Whoami (admin): verify app role via PostgREST view"
 TMP=$(mktemp)
 HTTP=$(curl -sS -o "$TMP" -w "%{http_code}" \
-  "${base_url_api}/app.whoami?select=*" \
-  -H "Authorization: Bearer ${ADMIN_TOKEN}")
+  "${base_url_api}/whoami" \
+  -H "Authorization: Bearer ${ADMIN_TOKEN}" \
+  -H "Accept-Profile: app")
 [ "$HTTP" = "200" ] || { echo "GET /app.whoami (admin) expected 200, got $HTTP"; cat "$TMP"; exit 1; }
 cat "$TMP" | $JQ '.[0]' | sed 's/^/   /'
 rm -f "$TMP"
@@ -137,6 +140,16 @@ echo "$EDITOR_TOKEN" | $JQ -R 'split(".")[1] | @base64d | fromjson | {sub,role,a
 
 APP_ROLE=$(echo "$EDITOR_TOKEN" | $JQ -R 'split(".")[1] | @base64d | fromjson | .app_metadata.role // empty' -r)
 [ "$APP_ROLE" = "editor" ] || { echo "Expected app_metadata.role=editor, got: '${APP_ROLE:-<none>}'"; exit 1; }
+
+note "Check /app.whoami as editor"
+TMP=$(mktemp)
+HTTP=$(curl -sS -o "$TMP" -w "%{http_code}" \
+  "${base_url_api}/whoami" \
+  -H "Authorization: Bearer ${EDITOR_TOKEN}" \
+  -H "Accept-Profile: app")
+[ "$HTTP" = "200" ] || { echo "GET /app.whoami expected 200, got $HTTP"; cat "$TMP"; exit 1; }
+cat "$TMP" | $JQ '.' | sed 's/^/   /'
+rm -f "$TMP"
 
 note "RLS write test: POST /applications as editor (needs PGRST_JWT_ROLE_CLAIM_KEY=.app_metadata.role)"
 NEW_APP_JSON=$(mktemp)

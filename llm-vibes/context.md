@@ -7,16 +7,17 @@ You are an expert full-stack assistant building the Supabase-backed platform 'IS
 * Docker running 
 ** postgres:15-alpine 
 ** supabase/gotrue:v2.177.0 on :7779, , connected as `supabase_auth_admin`, schema `auth` set up
-** postgrest:v12.2.3 on :7771, connects via `authenticator` role, loads schema `isms`, uses JWT validation.
+** postgrest:v12.2.12 on :7771, connects via authenticator, loads schemas 'isms,app', uses JWT role claim .app_metadata.role
 ** Next.js web app on :7770
 ** Networking unified on the `777x` range:
 
 **Schemas**:
 'auth': owned by GoTrue, `auth.users` and related tables.
-'app': created via `005_app.sql`, application-level tables (users, JWT helpers); mirrors 'auth.users'.
+'app': created via `005_app.sql`, application-level tables + JWT helpers + auth.users mirrors
 'isms': created via `010_isms.sql`, domain model for **ISMS** domain content.
 'audit': deferred until later (`030_audit.sql`) centralized append-only audit log (high-volume, partition/archival ready).
 
+PostgREST is configured to expose isms,app (default is the first schema; use Accept-Profile/Content-Profile headers to target app if isms is first).
 
 ## SQL/Migrations
 005\_app.sql (app schema + JWT helpers + user mirror)
@@ -29,7 +30,8 @@ You are an expert full-stack assistant building the Supabase-backed platform 'IS
 * Trigger `trg_app_sync_user` on `auth.users` keeps `app.users` in sync.
 * PGRST schema is `isms` only.
 
-010\_isms.sql (domain only)
+
+010_isms.sql (domain only)
 * `CREATE SCHEMA isms;`
 * Core entities (UUID PKs, minimal fields):
   * `people(id, name)`
@@ -45,7 +47,7 @@ You are an expert full-stack assistant building the Supabase-backed platform 'IS
 * Helpful indexes on junction secondaries (`*_idx`).
 * **No triggers, no audit, no RLS here** (kept clean).
 
-020\_policies.sql (RLS + grants for isms only)
+020_policies.sql (RLS + grants for isms only)
 * Grants:
   * `GRANT USAGE ON SCHEMA isms TO authenticated, editor, authenticator;`
   * `GRANT SELECT ON ALL TABLES IN isms TO authenticated;`
@@ -58,7 +60,21 @@ You are an expert full-stack assistant building the Supabase-backed platform 'IS
 * If `audit` schema exists, revoke everything from `authenticated/editor` (guarded block).
 * **Important**: include `GRANT USAGE ON SCHEMA isms TO authenticator;` so PostgREST can introspect.
 
-030\_audit.sql (deferred until later)
+021_admin_grant_fn.sql (create app.admin_grant_app_role, app.whoami, grants in app)
+Tighten `app` schema exposure, and provide a single, audited, admin-only function to grant/upgrade application roles via JWT-based authorization.
+  * `GRANT USAGE ON SCHEMA app` to `authenticator`, `authenticated`, `editor`.
+  * Default-deny: `REVOKE ALL` on all **tables** and **functions** in `app`.
+  * Explicit allow: `GRANT SELECT ON app.users TO authenticated`
+  * `app.admin_grant_app_role(target_email text, new_role text) RETURNS jsonb`
+  * `SECURITY DEFINER`; function `search_path = auth, app, public`.
+  * Caller must be authenticated
+  * Caller’s `app_metadata.role` must be **`admin`**.
+  * `new_role` must be one of **`editor`** or **`admin`**.
+  * **Action:** Updates `auth.users.raw_app_meta_data.role` for `target_email`.
+  * **Return:** JSON of `{ id, email, app_metadata }` (from updated user).
+  * Execution rights: revoked from `public`; **granted to `authenticated`** (so regular JWTs can call it, but only succeed if caller is admin).
+
+030_audit.sql (deferred until later)
 * Creates `audit.audit_log(change_id, table_name, row_pk, change_kind, timestamps, user/role/email, old_data, new_data)`.
 * `audit.fn_audit()` trigger function capturing `INSERT/UPDATE/DELETE`.
 * Indexes on `(table_name, changed_at)` and GIN on `row_pk`.
@@ -103,6 +119,8 @@ All entities (except 'ownership') have a 'name' and optional 'owner_id'.
 * 'anon': no access.
 * 'authenticated': read-only access.
 * 'editor': full write access on all isms domain data (no isms 'ownership' restrictions)
+* 'admin': app-level role used via JWT claim; mapped to DB role admin (inherits authenticated).       
+  Admins can call the RPC to set other users’ app_metadata.role.
 
 ## RLS & Policies
 * All tables have RLS enabled.

@@ -2,7 +2,7 @@
 
 import { ReactNode, useEffect, useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { supabase } from '@/lib/supabase'
+import { auth } from '@/lib/auth'
 
 let client: QueryClient | null = null
 function getClient() {
@@ -14,7 +14,7 @@ export default function Providers({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false)
   useEffect(() => {
     // hydrate auth state changes => refetch queries on sign-in/out
-    const { data: sub } = supabase.auth.onAuthStateChange(() => {
+    const { data: sub } = auth.onAuthStateChange(() => {
       getClient().invalidateQueries()
     })
     setReady(true)

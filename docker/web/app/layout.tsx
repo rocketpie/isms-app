@@ -3,7 +3,6 @@ import './globals.css'
 import Providers from './providers'
 import Link from 'next/link'
 import WhoAmI from './_components/whoami'
-import { supabase } from '@/lib/supabase'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -32,8 +31,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 function AuthButtons() {
   return (
     <div className="flex items-center gap-2">
-      {/* Client component boundary */}
-      {/* @ts-expect-error Async Server Component wrapper */}
       <ClientAuthButtons />
     </div>
   )

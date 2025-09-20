@@ -67,3 +67,4 @@ docker exec -i isms-app-db-1 sh -lc '
   export PGPASSWORD="$POSTGRES_PASSWORD";
   psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h 127.0.0.1
 ' < supabase/migrations/030_audit.sql
+

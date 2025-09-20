@@ -36,7 +36,7 @@ echo "JWT (first 60): ${TOKEN:0:60}..."
 
 
 Optional sanity: peek at the role claim.
-echo "$TOKEN" | cut -d. -f2 | base64 -d 2>/dev/null | jq '{sub,role,aud,exp}'
+echo "$TOKEN" | cut -d. -f2 | base64 -d 2>/dev/null | jq '{sub,role,aud,app_role:.app_metadata.role}'
 
 You should see `"role":"editor"` and `"aud":"authenticated"`.
 

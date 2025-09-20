@@ -24,3 +24,6 @@ docker exec -i isms-app-db-1 sh -lc '
 
 # restart postgrest to reload schema cache
 docker compose restart postgrest
+
+# set environment variables from file
+source .env

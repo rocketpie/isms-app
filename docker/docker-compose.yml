@@ -51,9 +51,10 @@ services:
         condition: service_healthy
     environment:
       PGRST_DB_URI: postgres://authenticator:${AUTHENTICATOR_PASSWORD}@db:5432/${POSTGRES_DB}
-      PGRST_DB_SCHEMA: ${PGRST_DB_SCHEMA}
+      PGRST_DB_SCHEMAS: isms,app
       PGRST_DB_ANON_ROLE: ${PGRST_DB_ANON_ROLE}
       PGRST_JWT_SECRET: ${JWT_SECRET}
+      PGRST_JWT_ROLE_CLAIM_KEY: .app_metadata.role
       # Make OpenAPI advertise the public URL:
       PGRST_OPENAPI_SERVER_PROXY_URI: http://${BASE_HOST}:${API_PORT}   # <— unified
     ports:

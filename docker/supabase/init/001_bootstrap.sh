@@ -11,12 +11,15 @@ psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" <<SQL
 CREATE ROLE anon NOLOGIN;
 CREATE ROLE authenticated NOLOGIN;
 
--- App-level 'Editor' role (selected via JWT claim: role=editor)
+-- App-level roles (selected via JWT claim)
 CREATE ROLE editor NOLOGIN;
+CREATE ROLE admin NOLOGIN;
 
 -- Connection role for PostgREST
 CREATE ROLE authenticator LOGIN NOINHERIT PASSWORD '${AUTHENTICATOR_PASSWORD}';
-GRANT anon, authenticated, editor TO authenticator;
+GRANT anon, authenticated, editor, admin TO authenticator;
+
+GRANT authenticated TO admin;
 
 -- GoTrue Schema setup
 CREATE ROLE supabase_auth_admin LOGIN NOINHERIT PASSWORD '${POSTGRES_PASSWORD}';

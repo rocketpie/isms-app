@@ -28,6 +28,7 @@ REVOKE ALL ON ALL TABLES IN SCHEMA app FROM PUBLIC;
 -- Lock down functions by default and then grant explicitly
 REVOKE ALL ON ALL FUNCTIONS IN SCHEMA app FROM PUBLIC;
 
+
 GRANT SELECT ON app.users TO authenticated;
 
 -------------------------------------------------------------------------------
@@ -78,12 +79,20 @@ revoke all on function app.admin_grant_app_role(text, text) from public;
 GRANT EXECUTE ON FUNCTION app.admin_grant_app_role(text, text) TO authenticated;
 
 -------------------------------------------------------------------------------
--- Optional debug: whoami view (now in `app` since schema is exposed)
+-- Optional debug: whoami function (now in `app` since schema is exposed)
 -------------------------------------------------------------------------------
-create or replace view app.whoami as
-select
-  app.jwt_email() as email,
-  (app.jwt_claims() -> 'app_metadata' ->> 'role') as app_role,
-  app.jwt_claims() as claims;
+CREATE OR REPLACE FUNCTION app.whoami()
+RETURNS jsonb
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = app, public
+AS $$
+  SELECT jsonb_build_object(
+    'email', app.jwt_email(),
+    'app_role', app.jwt_claims() -> 'app_metadata' ->> 'role',
+    'claims', app.jwt_claims()
+  );
+$$;
 
-grant select on app.whoami to authenticated;
+REVOKE ALL ON FUNCTION app.whoami() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION app.whoami() TO authenticated;

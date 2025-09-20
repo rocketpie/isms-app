@@ -20,6 +20,7 @@ CREATE ROLE authenticator LOGIN NOINHERIT PASSWORD '${AUTHENTICATOR_PASSWORD}';
 GRANT anon, authenticated, editor, admin TO authenticator;
 
 GRANT authenticated TO admin;
+GRANT authenticated TO editor;
 
 -- GoTrue Schema setup
 CREATE ROLE supabase_auth_admin LOGIN NOINHERIT PASSWORD '${POSTGRES_PASSWORD}';

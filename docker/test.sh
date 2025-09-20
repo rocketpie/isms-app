@@ -131,11 +131,14 @@ rm -f "$TMP"
 note "Whoami (admin): verify app role via PostgREST view"
 TMP=$(mktemp)
 HTTP=$(curl -sS -o "$TMP" -w "%{http_code}" \
-  "${api_url}/whoami" \
+  -X POST "${api_url}/rpc/whoami" \
   -H "Authorization: Bearer ${ADMIN_TOKEN}" \
-  -H "Accept-Profile: app")
-[ "$HTTP" = "200" ] || { echo "GET /app.whoami (admin) expected 200, got $HTTP"; cat "$TMP"; exit 1; }
-cat "$TMP" | jq '.[0]' | sed 's/^/   /'
+  -H "Content-Type: application/json" \
+  -H "Content-Profile: app" \
+  -H "Accept-Profile: app"\
+  --data '{}')
+[ "$HTTP" = "200" ] || { echo "POST /rpc/whoami (admin) expected 200, got $HTTP"; cat "$TMP"; exit 1; }
+cat "$TMP" | jq '.' | sed 's/^/   /'
 rm -f "$TMP"
 
 note "Re-login editor to pick up updated claims"
@@ -151,10 +154,13 @@ APP_ROLE=$(echo "$EDITOR_TOKEN" | jq -R 'split(".")[1] | @base64d | fromjson | .
 note "Check /app.whoami as editor"
 TMP=$(mktemp)
 HTTP=$(curl -sS -o "$TMP" -w "%{http_code}" \
-  "${api_url}/whoami" \
+  -X POST "${api_url}/rpc/whoami" \
   -H "Authorization: Bearer ${EDITOR_TOKEN}" \
-  -H "Accept-Profile: app")
-[ "$HTTP" = "200" ] || { echo "GET /app.whoami expected 200, got $HTTP"; cat "$TMP"; exit 1; }
+  -H "Content-Type: application/json" \
+  -H "Content-Profile: app" \
+  -H "Accept-Profile: app" \
+  --data '{}')
+[ "$HTTP" = "200" ] || { echo "POST /rpc/whoami expected 200, got $HTTP"; cat "$TMP"; exit 1; }
 cat "$TMP" | jq '.' | sed 's/^/   /'
 rm -f "$TMP"
 

@@ -19,5 +19,7 @@ related: [kb-2010-operations-environment-and-scripts, kb-2015-operations-test-de
 - on docker host, run start.sh
 - on docker host, run test.sh
 - run vscode task `docker npm (ps1)`
+- run `cd web`
+- run `npm install`
 - run `npm run dev`
 - visit http://localhost:3000/

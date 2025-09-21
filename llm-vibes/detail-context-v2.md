@@ -250,17 +250,14 @@ Knowledge Base files (*.md), with metadata: title, tags, relates_to
 organized in kb folders:
 
 **KB folder structure**:
-* `00-index`: 00-overview.md, 10-glossary.md, 20-FAQ.md
-* `10-architecture`: components, flows
-* `20-operations`: dev, docker, env, bootstrap, migrations, smoke tests, debug, backup
-* `30-apis-and-schema`: schema, routes, RPC, RLS
-* `40-security`: secrets, authz matrix, threat model, hardening
-* `50-nextjs-app`: app structure, API calls, client auth helpers, error boundaries
-* `60-runbooks`: first start, CI/CD, deploy, incidents
-* `99-reference`: ADRs, changelog
+* `00-index`: overview, glossary, faq
+* `10-architecture`: components, sequence-auth-flow, data-flow-requests
+* `20-operations`: local-dev, docker-compose, env-variables, bootstrap-db, migrations, smoke-tests, logs-and-debug, backup-restore
+* `30-apis-and-schema`: db-schema-overview, postgrest-routes, rpc-examples, row-level-security
+* `40-security`: secrets-handling, authn-authz-matrix, threat-model, hardening-checklist
+* `50-nextjs-app`: app-structure, api-routes, client-auth-helpers, error-boundaries
+* `60-runbooks`: runbook-first-start, runbook-ci-cd, runbook-prod-deploy, runbook-incident
+* `99-reference`: decisions-log, changelog
 
-
-
-
-
-
+(generate this list
+ls .\kb\ -Directory | %{$dir = $_; "$($dir.name): $((ls $_.fullname -file| %{ $_.name.replace('.md', '').Substring(3) }) -join ', ')" }

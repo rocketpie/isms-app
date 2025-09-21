@@ -57,7 +57,10 @@ cp .env.example .env   # ensure required vars exist
 ```
 
 ## Troubleshooting
-docker compose logs -f db auth postgrest web
+- docker compose logs -f db auth postgrest web
+- When using the `/auth` and `/api` App Router proxies, CORS should not be needed.
+  - Network errors indicate Next.js route handlers issues and `INTERNAL_GOTRUE_URL` / `INTERNAL_POSTGREST_URL` settings, not GoTrue/PostgREST CORS configs.
+
 
 ---
 # Local dev scripts

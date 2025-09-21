@@ -1,6 +1,6 @@
 ---
-title: Decisions Log
-tags: []
+title: Change & Decisions Log
+tags: [adr, changes, history]
 relates_to: []
 ----
 

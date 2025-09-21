@@ -6,6 +6,12 @@ relates_to: [../20-operations/20-docker-compose.md, ../30-apis-and-schema/20-pos
 
 **Purpose**: Describe the Next.js (App Router) frontend that runs in Docker and talks to GoTrue (auth) and PostgREST (ISMS schema).
 
+
+
+**docker/web/.env.local**
+NEXT_PUBLIC_GOTRUE_URL=http://dockerhost1:7779
+NEXT_PUBLIC_POSTGREST_URL=http://dockerhost1:7771
+
 ## Summary
 * Auth: `@supabase/gotrue-js` (JWT in `localStorage`)
 * Data: PostgREST for all domain CRUD (schema: `isms`)

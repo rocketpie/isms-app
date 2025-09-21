@@ -1,7 +1,7 @@
 ---
-title: KB Documentation & Structure
-tags: [documentation, knowledge-base, structure, notes]
-relates_to: [glossary, faq, decisions-log]
+title: KB Overview, Glossary & FAQ
+tags: [documentation, knowledge-base, structure, glossary, faq, reference]
+relates_to: [operations-local-dev, apis-schema]
 ---
 
 # Purpose
@@ -11,10 +11,8 @@ This enables precise retrieval and modular context for the GPT assistant.
 
 # File Format
 - Markdown (`*.md`).  
-- Front-matter (title, tags, relates_to)
-
-# Body
-concise explanation, key objects/actions, gotchas, related links.
+- Front-matter: (title, tags, relates_to)
+- Body: concise explanation, key objects/actions, gotchas, related links.
 
 # Principles
 * One topic per file — keep notes atomic.
@@ -32,7 +30,21 @@ concise explanation, key objects/actions, gotchas, related links.
 * 60-runbooks: runbook-first-start, runbook-ci-cd, runbook-prod-deploy, runbook-incident
 * 99-reference: decisions-log, changelog
 
+# Glossary
+- RLS: Row-Level Security in Postgres.  
+- Service role: Bypasses RLS; for server-only use.  
+- RPC: PostgREST function endpoint.  
+
+# FAQ
+## How do I run locally?
+See [Local Dev Guide](../20-operations/local-dev.md).  
+
+## Why do I get a 401 from PostgREST?
+Check JWT issuer/roles and confirm RLS policies are applied.  
+
+
 # Related
-* [Glossary](glossary.md)
-* [FAQ](faq.md)
-* [Decisions Log](../99-reference/decisions-log.md)
+* [Decisions Log](../99-reference/decisions-log.md)  
+* [Changelog](../99-reference/changelog.md)  
+* [Local Dev](../20-operations/local-dev.md)  
+* [APIs & Schema](../30-apis-and-schema/db-schema-overview.md)  

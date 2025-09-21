@@ -1,11 +1,11 @@
 ---
-title: Smoke Tests (test.sh)
+title: Tests and Troubleshooting
 tags: [operations, tests, smoke, auth, postgrest]
-relates_to: [migrations-startup, mig-021-admin-grant-fn, postgrest-routes]
+relates_to: [operations-docker-scripts]
 ---
 
-# What it does
-Runs end-to-end smoke checks against GoTrue + PostgREST:
+# Overview
+test.sh Runs end-to-end smoke checks against GoTrue + PostgREST:
 - OpenAPI root reachable.
 - Anonymous access is blocked.
 - Sign-up two users (admin/editor), login to get JWTs.

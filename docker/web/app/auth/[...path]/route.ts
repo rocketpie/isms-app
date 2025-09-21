@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { fetchWithTimeout } from '@/lib/fetch-timeout' // 15s cap (ADR-002)
+import { logDebug } from '@/lib/logDebug'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -39,12 +40,8 @@ async function proxy(req: NextRequest) {
   const contentType = req.headers.get('content-type')
   const hasAuth = req.headers.has('authorization')
 
-  console.debug(
-    `[AUTH proxy] ${req.method} → ${target} | ` +
-      `Content-Type=${contentType ?? '-'} ` +
-      `Authorization=${hasAuth ? '[redacted]' : 'none'}`
-  )
 
+  logDebug(`[AUTH proxy] ${req.method} → ${target} | Content-Type=${contentType ?? '-'} Authorization=${hasAuth ? '[redacted]' : 'none'}`)
   const init: RequestInit = {
     method: req.method,
     headers: forwardHeaders(req.headers),
@@ -54,7 +51,7 @@ async function proxy(req: NextRequest) {
   }
 
   const res = await fetchWithTimeout(target, init)
-  console.debug(`[AUTH proxy] Response ${res.status} from ${target}`)
+  logDebug(`[AUTH proxy] Response ${res.status} from ${target}`)
 
   return new Response(res.body, {
     status: res.status,

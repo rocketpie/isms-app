@@ -37,7 +37,7 @@ All services run in containers, orchestrated with a single docker-compose file
 - Ports: `${WEB_PORT}:3000`.
 - Handles login, session state, and UI for ISMS entities.  
 - all browser calls same-origin to `/auth` and `/api`. No need for CORS.
-- Data fetch flow: React Query → `pgrst()` → PostgREST with `Accept-Profile: isms`.  
+- Data fetch flow: React Query → `postgrest()` → PostgREST with `Accept-Profile: isms`.  
 - Core modules: `lib/auth.ts`, `lib/api.ts`, `lib/fetch-timeout.ts`, `app/providers.tsx`, `whoami.tsx`.  
 
 
@@ -50,7 +50,7 @@ All services run in containers, orchestrated with a single docker-compose file
 4. `api.ts` attaches JWT to requests.  
 
 ## Data Fetch Flow
-1. React Query issues request → `pgrst()`.  
+1. React Query issues request → `postgrest()`.  
 2. browser requests to /api, router web proxies to PostgREST
 3. PostgREST receives call with `Accept-Profile: isms`.  
 4. Data returned to frontend.  

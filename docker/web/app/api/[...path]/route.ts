@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { fetchWithTimeout } from '@/lib/fetch-timeout'
+import { logDebug } from '@/lib/logDebug'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -40,14 +41,7 @@ async function proxy(req: NextRequest) {
   const prefer = req.headers.get('prefer')
   const hasAuth = req.headers.has('authorization')
 
-  console.debug(
-    `[API proxy] ${req.method} → ${target} | ` +
-      `Accept-Profile=${acceptProfile ?? '-'} ` +
-      `Content-Profile=${contentProfile ?? '-'} ` +
-      `Prefer=${prefer ?? '-'} ` +
-      `Authorization=${hasAuth ? '[redacted]' : 'none'}`
-  )
-
+  logDebug(`[API proxy] ${req.method} → ${target} | Accept-Profile=${acceptProfile ?? '-'} Content-Profile=${contentProfile ?? '-'} Prefer=${prefer ?? '-'} Authorization=${hasAuth ? '[redacted]' : 'none'}`)
   const init: RequestInit = {
     method: req.method,
     headers: forwardHeaders(req.headers),
@@ -57,7 +51,7 @@ async function proxy(req: NextRequest) {
   }
 
   const res = await fetchWithTimeout(target, init)
-  console.debug(`[API proxy] Response ${res.status} from ${target}`)
+  logDebug(`[API proxy] Response ${res.status} from ${target}`)
 
   return new Response(res.body, {
     status: res.status,

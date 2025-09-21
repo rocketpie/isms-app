@@ -1,7 +1,7 @@
 'use client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { pgrst } from '@/lib/api'
+import { postgrest } from '@/lib/api'
 
 type Application = {
   id: string
@@ -12,15 +12,15 @@ type Application = {
 
 async function listApplications() {
   // GET /applications?select=id,name,description&order=name
-  return await pgrst<Application[]>('/applications?select=id,name,description&order=name.asc')
+  return await postgrest<Application[]>('/applications?select=id,name,description&order=name.asc', { method: 'GET' }, 'isms');
 }
 
 async function createApplication(input: { name: string; description?: string }) {
-  return await pgrst<Application[]>('/applications', {
+  return await postgrest<Application[]>('/applications', {
     method: 'POST',
     body: JSON.stringify([input]), // PostgREST prefers array for bulk/return=representation
     headers: { Prefer: 'return=representation' }
-  })
+  }, 'isms')
 }
 
 export default function ApplicationsPage() {

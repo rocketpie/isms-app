@@ -13,6 +13,7 @@ No custom API routes are exposed — the UI talks directly to PostgREST with thi
 ```bash
 INTERNAL_GOTRUE_URL=http://dockerhost1:7779
 INTERNAL_POSTGREST_URL=http://dockerhost1:7771
+DEBUG=1
 ```
 
 # Summary

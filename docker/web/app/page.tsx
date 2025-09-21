@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 
 async function fetchApiRoot() {
   const url = getApiUrl()
-  const response = await fetchWithTimeout(url, { cache: 'no-store' })
+  const response = await fetchWithTimeout(`${url}`, { cache: 'no-store' })
   if (!response.ok) throw new Error(`PostgREST not reachable (${response.status})`)
   return response.json()
 }

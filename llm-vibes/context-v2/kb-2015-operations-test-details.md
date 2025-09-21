@@ -1,7 +1,7 @@
 ---
-title: Tests and Troubleshooting
-tags: [operations, tests, smoke, auth, postgrest]
-relates_to: [operations-docker-scripts]
+title: Operations – Test & Debug
+tags: [operations, testing, smoke-tests, logs, debug, qa]
+related: [kb-2010-operations-environment-and-scripts, kb-3010-schema-overview, kb-6010-runbooks-runbook-first-start]
 ---
 
 # Overview

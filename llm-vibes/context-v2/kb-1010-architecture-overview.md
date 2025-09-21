@@ -1,7 +1,7 @@
 ---
 title: Architecture & Data Flows
-tags: [architecture, overview, components, data-flow, docker, supabase, postgres, postgrest, gotrue, nextjs]
-relates_to: [db-schema-overview, runbook-first-start]
+tags: [architecture, components, data-flow, supabase, postgres, postgrest, gotrue, nextjs, docker]
+related: [kb-0000-index-overview, kb-3010-schema-overview, kb-2010-operations-environment-and-scripts]
 ---
 
 # Overview
@@ -57,7 +57,9 @@ All services run in containers, orchestrated with a single docker-compose file
 - Errors surfaced via React Query error boundaries.  
 
 ## Deployment Notes (Compose)
-- Keep env vars in `.env` (`JWT_SECRET`, `AUTHENTICATOR_PASSWORD`).  
+- All sensitive values are stored in `docker/.env` (eg. `JWT_SECRET`, `AUTHENTICATOR_PASSWORD`).  
+- `docker/.env` is **gitignored** to prevent accidental commits.  
+- Examples in `docker/.env.template` are committed.
 - Healthchecks gate startup; migrations run after `db` is healthy.  
 - Related scripts: `start.sh`, `test.sh`, `reset.sh`.  
 
@@ -67,8 +69,7 @@ All services run in containers, orchestrated with a single docker-compose file
 - PostgREST caches schema at startup → restart after migrations.  
 - Role mapping relies on `PGRST_JWT_ROLE_CLAIM_KEY=.app_metadata.role`.  
 - `auth` schema is private; queries must go through `app` or `isms`.  
+- when changing `.env`, remind/remember to edit `.env.template` as well!
 
 # Related
-- Scripts: `start.sh`, `test.sh`, `reset.sh`.  
-- [DB Schema Overview]
-- [Nextjs App Structure]
+- Scripts: `start.sh`, `test.sh`, `reset.sh`.

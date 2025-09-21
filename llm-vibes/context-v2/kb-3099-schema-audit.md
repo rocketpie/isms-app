@@ -1,7 +1,7 @@
 ---
-title: MIG-007 Audit Log & Trigger
-tags: [sql, migration, audit, triggers, security-definer, rls]
-relates_to: [mig-005-app, mig-010-isms, mig-020-policies]
+title: Schema Migrations – Audit
+tags: [database, schema, migrations, audit, logging]
+related: [kb-3010-schema-overview, kb-3030-schema-isms, kb-3020-schema-bootstrap-and-app]
 ---
 
 # Important: 

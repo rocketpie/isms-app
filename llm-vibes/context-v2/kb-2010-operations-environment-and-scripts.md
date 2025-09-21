@@ -1,7 +1,7 @@
 ---
-title: Docker Environment and Scripts
-tags: [operations, scripts, tests, migrations, docker, postgres, postgrest]
-relates_to: [operations-test-and-troubleshooting]
+title: Operations – Environment & Scripts
+tags: [operations, environment, scripts, docker, compose, supabase]
+related: [kb-1010-architecture-overview, kb-2015-operations-test-details, kb-6010-runbooks-runbook-first-start]
 ---
 
 All scripts wrap common tasks (dev starting, migrations, tests, dev reset).

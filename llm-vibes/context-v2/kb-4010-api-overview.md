@@ -1,8 +1,16 @@
 ---
-title: Client Auth Helpers
-tags: []
-relates_to: []
+title: API Overview (PostgREST & RPC)
+tags: [api, postgrest, rpc, routes, security, rls]
+related: [kb-3010-schema-overview, kb-5010-nextjs-app-overview, kb-4010-api-overview]
 ---
+
+headers: `Accept-Profile: isms`
+
+# RPC Examples
+- `app.whoami` usage and sample response display in `whoami.tsx`.
+- `app.admin_grant_app_role(target_email, new_role)` preconditions (caller `admin`).
+
+
 
 **Structure**: routes/components.
 

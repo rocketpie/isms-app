@@ -1,12 +1,14 @@
 ---
 title: Row Level Security
 tags: []
-owner: devops
-updated: 2025-09-21
 relates_to: []
----**Table policies** (examples):
+---
+
+**Table policies**:
 
 \\\sql
 -- enable RLS and add basic self-access policies
 -- (replace table/column names)
-\\\
+\\\
+
+ * Roles: `authenticated` (read), `editor` (CRUD), `admin` (app-level via JWT metadata).

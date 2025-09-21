@@ -1,14 +1,15 @@
 ---
 title: Local Dev
 tags: []
-owner: devops
-updated: 2025-09-21
 relates_to: []
----**Context**: …
+---
 
-**Steps**:
-1. …
-2. …
+# Steps:
+* run vscode task 'docker npm' 
+* cd /web
+* npm run dev
+* visit http://localhost:3000/
 
-**Troubleshooting**:
-- Symptom → Likely cause
+# Details:
+* 'docker npm' calls scritps/npm.ps1 
+* npm.ps1 call docker run -it --rm --mount "type=bind,src=$(Join-Path $PSScriptRoot ..\docker\web),dst=/web" -p 3000:3000 --entrypoint sh node:22-alpine

@@ -1,17 +1,14 @@
 ---
 title: Runbook First Start
 tags: []
-owner: devops
-updated: 2025-09-21
 relates_to: []
----**When**: Trigger conditions.
+---
 
 **Steps (copy/paste ready)**:
-1. …
-2. …
+ * set env vars,
+ * start.sh
+ * visit `/` on WEB_PORT (eg. 7770) 
+ * sign up
+ * grant `editor`
+ * edit ISMS data.
 
-**Rollback**:
-- …
-
-**Verification**:
-- …

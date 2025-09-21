@@ -232,4 +232,35 @@ Put this in the GPT’s **Instructions** (system) so it uses your files well:
 * **Sensitive data**: keep real secrets out; store only **shapes** and **placeholders**.
 * **Testability**: include runnable commands and sample responses in every runbook/smoke-test doc.
 
-If you want, paste your current 9.8k context and I’ll split it into this structure in one pass.
+
+
+
+
+
+
+
+
+
+
+
+
+
+**ISMS-App KB Structure**
+Knowledge Base files (*.md), with metadata: title, tags, relates_to
+organized in kb folders:
+
+**KB folder structure**:
+* `00-index`: 00-overview.md, 10-glossary.md, 20-FAQ.md
+* `10-architecture`: components, flows
+* `20-operations`: dev, docker, env, bootstrap, migrations, smoke tests, debug, backup
+* `30-apis-and-schema`: schema, routes, RPC, RLS
+* `40-security`: secrets, authz matrix, threat model, hardening
+* `50-nextjs-app`: app structure, API calls, client auth helpers, error boundaries
+* `60-runbooks`: first start, CI/CD, deploy, incidents
+* `99-reference`: ADRs, changelog
+
+
+
+
+
+

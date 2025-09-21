@@ -11,3 +11,18 @@ relates_to: []
 **Patterns**:
 - Error handling
 - Data fetching
+
+
+**`lib/api.ts`**
+
+   * Use `NEXT_PUBLIC_POSTGREST_URL` (server-safe absolute URL).
+   * Attach JWT from `auth.getSession()`; set `Accept-Profile: isms`.
+   * Use `fetchWithTimeout` for every call.
+   * Keep `cache: 'no-store'`.
+   * This makes all PostgREST reads/writes reliable and capped at 15s.
+   
+   
+   **`lib/config.ts`**
+
+   * Centralize `getPostgrestUrl()` and `getAuthUrl()` with clear error throws if envs are missing.
+ 

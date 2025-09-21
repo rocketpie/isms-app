@@ -1,13 +1,11 @@
 ---
 title: Data Flow Requests
 tags: []
-owner: devops
-updated: 2025-09-21
 relates_to: []
----**Purpose**: High-level view.
+---
 
-**Key flows**:
-1. …
-2. …
+**Purpose**: High-level view.
 
-**Diagrams**: (add Mermaid or links)
+* Auth flow (sign in → localStorage session → JWT added by `api.ts`).
+* Data fetch flow (React Query → `pgrst()` → PostgREST with `Accept-Profile: isms`).
+* Error/timeout handling (AbortController 15s).

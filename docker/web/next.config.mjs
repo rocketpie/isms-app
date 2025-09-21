@@ -1,13 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
-  async rewrites() {
-    return [
-      // Browser -> Next.js (web) -> PostgREST (container)
-      { source: '/api/:path*',  destination: 'http://postgrest:3000/:path*' },
-      // Browser -> Next.js (web) -> GoTrue (container)
-      { source: '/auth/:path*', destination: 'http://auth:7779/:path*' }
-    ];
-  }
-};
-export default nextConfig;
+  reactStrictMode: true,
+  // If you run in Docker and want fewer file watcher issues:
+  // webpackDevMiddleware: config => {
+  //   config.watchOptions = { poll: 1000, aggregateTimeout: 300 }
+  //   return config
+  // },
+}
+
+export default nextConfig

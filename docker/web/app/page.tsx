@@ -1,17 +1,10 @@
 // web/app/page.tsx
 import { headers } from "next/headers";
+import { fetchWithTimeout } from '@/lib/fetch-timeout'
 
 export const dynamic = "force-dynamic"; // optional, avoids caching surprises
 
-export function getBaseUrl(): string {
-  const h = headers()
-  const proto = h.get("x-forwarded-proto")
-  const host  = h.get("x-forwarded-host") ?? h.get("host")
-
-  if (proto && host) {
-    return `${proto}://${host}`
-  }
-
+export function getApiUrl(): string {
   const envUrl = process.env.NEXT_PUBLIC_POSTGREST_URL // e.g. http://dockerhost1:7771
   if (!envUrl) {
     throw new Error("Missing NEXT_PUBLIC_POSTGREST_URL environment variable")
@@ -19,15 +12,12 @@ export function getBaseUrl(): string {
   return envUrl
 }
 
-// inside app/page.tsx
 async function fetchApiRoot() {
-  const url = getBaseUrl();
-  const res = await fetch(`${url}`, { cache: 'no-store' })
+  const url = getApiUrl();
+  const res = await fetchWithTimeout(`${url}`, { cache: 'no-store' }) // relative is fine; runs server-side
   if (!res.ok) throw new Error(`PostgREST not reachable (${res.status})`)
-  // PostgREST root returns OpenAPI JSON; you can just return ok:true
-  return res.json();
+  return res.json()
 }
-
 
 export default async function Home() {
   const openapi = await fetchApiRoot();
@@ -44,3 +34,4 @@ export default async function Home() {
     </main>
   );
 }
+

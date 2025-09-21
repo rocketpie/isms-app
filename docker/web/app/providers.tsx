@@ -1,26 +1,23 @@
 'use client'
-
-import { ReactNode, useEffect, useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { auth } from '@/lib/auth'
+import { ReactNode } from 'react'
 
-let client: QueryClient | null = null
-function getClient() {
-  if (!client) client = new QueryClient()
-  return client
+function makeClient() {
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: 2,
+        gcTime: 5 * 60 * 1000,
+      },
+      mutations: {
+        retry: 1,
+      },
+    },
+  })
 }
 
-export default function Providers({ children }: { children: ReactNode }) {
-  const [ready, setReady] = useState(false)
-  useEffect(() => {
-    // hydrate auth state changes => refetch queries on sign-in/out
-    const { data: sub } = auth.onAuthStateChange(() => {
-      getClient().invalidateQueries()
-    })
-    setReady(true)
-    return () => sub.subscription.unsubscribe()
-  }, [])
+const client = makeClient()
 
-  if (!ready) return null
-  return <QueryClientProvider client={getClient()}>{children}</QueryClientProvider>
+export default function Providers({ children }: { children: ReactNode }) {
+  return <QueryClientProvider client={client}>{children}</QueryClientProvider>
 }

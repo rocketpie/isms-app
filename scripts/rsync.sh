@@ -7,7 +7,7 @@ set -euo pipefail
 : "${SYNC_SRC:=docker/}"                # sync this source folder
 : "${REMOTE:?REMOTE not set}"           # SSH alias (or user@host)
 : "${REMOTE_DIR:?REMOTE_DIR not set}"   # target path on the remote host
-EXCLUDES_FILE=".rsyncignore"
+EXCLUDES_FILE="docker/.rsyncignore"
 
 # -z compress, -a archive, -v verbose, --delete keep remote in sync
 # --mkpath creates the target dir if rsync is new enough; if not, pre-create it once.

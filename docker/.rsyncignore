@@ -1,0 +1,7 @@
+.env.template
+
+web/.next/
+web/node_modules/
+web/dist/
+web/build/
+web/*.log

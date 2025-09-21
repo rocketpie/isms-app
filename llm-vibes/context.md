@@ -132,12 +132,56 @@ All entities (except 'ownership') have a 'name' and optional 'owner_id'.
 ## Additional Context, do not implement yet:
 Periodic snapshot/excerpt of the entire isms model will be compiled into a consistent view, reviewed as a whole, approved by a designated approver role, and promoted to an 'audit' phase.
 
+# ISMS-App (Next.js + Supabase/PostgREST)
+
+A Next.js (App Router) frontend running inside Docker, talking to **Supabase GoTrue** for auth and **PostgREST** for the ISMS domain schema.
+
+**Key points:**
+* Auth handled by `@supabase/gotrue-js` with JWT sessions stored in localStorage.
+* PostgREST used for all domain data access (`isms` schema).
+* React Query for data fetching, Tailwind + shadcn/ui styling.
+* Custom fetch wrapper (`fetchWithTimeout`) enforces a 15s hard timeout on all requests.
+
+## Directory summary
+```
+.
+├── app/                           # Next.js app router pages & UI
+│   ├── applications/              # CRUD UI for isms.applications
+│   │   └── page.tsx
+│   ├── _components/               # Shared UI components
+│   │   └── whoami.tsx             # Displays current user info (via /rpc/whoami)
+│   ├── error.tsx                  # Global error boundary (nice UI for errors)
+│   ├── globals.css                # Tailwind + global styles
+│   ├── layout.tsx                 # App-wide layout, includes header + WhoAmI
+│   ├── login/                     # Auth UI
+│   │   ├── _client-auth-buttons.tsx # Login/Logout buttons in header
+│   │   └── page.tsx               # Login form (sign in/up)
+│   ├── page.tsx                   # Home page → probes PostgREST/OpenAPI
+│   └── providers.tsx              # React Query provider + auth listener
+│
+├── lib/                           # Shared client libs
+│   ├── api.ts                     # PostgREST fetch helper (adds JWT, timeout)
+│   ├── auth.ts                    # GoTrue client wrapper (@supabase/gotrue-js)
+│   ├── config.ts                  # Reads env vars (PostgREST, Auth URLs)
+│   └── fetch-timeout.ts           # 15s abort wrapper for all fetches
+│
+├── Dockerfile                     # Container build for Next.js app
+├── next.config.mjs                # Minimal Next.js config
+├── next-env.d.ts                  # TS env shim
+├── package.json                   # Dependencies (Next 14, React 18, gotrue-js, react-query, Tailwind, etc.)
+├── package-lock.json
+├── postcss.config.js              # Tailwind build config
+├── public/                        # Static assets
+├── tailwind.config.js             # Tailwind config
+└── tsconfig.json                  # TypeScript config
+```
+
 ## Your output:
 concise, production-ready migrations/SQL (Supabase-compatible), minimal Next.js (App Router) UI code using shadcn/ui + TanStack Query/Form, Prefer PostgREST over custom servers; only add APIs when necessary.
 
 ## Next Steps
-* Seed a test **editor** user and sign in via GoTrue.
-* Add **ownership helpers** for asset creation.
-* Build first **Next.js pages** (list/create Applications, etc.).
+* Troubleshoot App Issues
+* Add ISMS Test Data (persons, systems, locations etc.)
+* Show ISMS Data 
 * Prepare for **audit partitioning** later.
 

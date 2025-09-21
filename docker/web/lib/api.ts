@@ -1,7 +1,8 @@
 import { auth } from './auth'
 import { fetchWithTimeout } from './fetch-timeout'
+import { getApiUrl } from './config'
 
-const POSTGREST_URL = process.env.NEXT_PUBLIC_POSTGREST_URL! // your existing var
+const apiUrl = getApiUrl()
 
 export async function pgrst<T = unknown>(path: string, init: RequestInit = {}): Promise<T> {
   const { data } = await auth.getSession()
@@ -13,7 +14,7 @@ export async function pgrst<T = unknown>(path: string, init: RequestInit = {}): 
   headers.set('Accept-Profile', 'isms')
   if (token) headers.set('Authorization', `Bearer ${token}`)
 
-  const res = await fetchWithTimeout(`${POSTGREST_URL}${path}`, {
+  const res = await fetchWithTimeout(`${apiUrl}${path}`, {
     ...init,
     headers,
     cache: 'no-store',

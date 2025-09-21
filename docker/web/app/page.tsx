@@ -1,13 +1,13 @@
 // web/app/page.tsx
 import { fetchWithTimeout } from '@/lib/fetch-timeout'
-import { getPostgrestUrl } from '@/lib/config'
+import { getApiUrl } from '@/lib/config'
 import { getAuthUrl } from '@/lib/config'
 
 
 export const dynamic = 'force-dynamic'
 
 async function fetchApiRoot() {
-  const url = getPostgrestUrl()
+  const url = getApiUrl()
   const response = await fetchWithTimeout(url, { cache: 'no-store' })
   if (!response.ok) throw new Error(`PostgREST not reachable (${response.status})`)
   return response.json()

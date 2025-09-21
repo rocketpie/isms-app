@@ -1,8 +1,9 @@
 import { GoTrueClient } from '@supabase/gotrue-js'
 import { fetchWithTimeout } from './fetch-timeout'
+import { getAuthUrl } from './config'
 
 export const auth = new GoTrueClient({
-  url: process.env.NEXT_PUBLIC_GOTRUE_URL!,   // e.g. http://dockerhost1:7779
+  url: getAuthUrl(),   // e.g. http://dockerhost1:7779
   autoRefreshToken: true,
   persistSession: true,
   storageKey: 'isms-auth',

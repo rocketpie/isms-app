@@ -49,6 +49,7 @@ All services run in containers, orchestrated with a single docker-compose file
 
 ## Data Fetch Flow
 1. React Query issues request → `pgrst()`.  
+2. node api routes to browser hits /auth & /api; web proxies to GoTrue/PostgREST.
 2. PostgREST receives call with `Accept-Profile: isms`.  
 4. Data returned to frontend.  
 

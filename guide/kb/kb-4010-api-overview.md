@@ -23,7 +23,6 @@ headers: `Accept-Profile: isms`
 
 **`lib/api.ts`**
 
-   * Use `NEXT_PUBLIC_POSTGREST_URL` (server-safe absolute URL).
    * Attach JWT from `auth.getSession()`; set `Accept-Profile: isms`.
    * Use `fetchWithTimeout` for every call.
    * Keep `cache: 'no-store'`.
@@ -31,6 +30,5 @@ headers: `Accept-Profile: isms`
    
    
    **`lib/config.ts`**
-
-   * Centralize `getPostgrestUrl()` and `getAuthUrl()` with clear error throws if envs are missing.
+   * Centralize `getApiUrl()` and `getAuthUrl()`
  

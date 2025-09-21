@@ -11,8 +11,8 @@ No custom API routes are exposed — the UI talks directly to PostgREST with thi
 # Environment
 `docker/web/.env.local`  
 ```bash
-NEXT_PUBLIC_GOTRUE_URL=http://dockerhost1:7779
-NEXT_PUBLIC_POSTGREST_URL=http://dockerhost1:7771
+INTERNAL_GOTRUE_URL=http://dockerhost1:7779
+INTERNAL_POSTGREST_URL=http://dockerhost1:7771
 ```
 
 # Summary

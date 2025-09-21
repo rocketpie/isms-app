@@ -1,9 +1,7 @@
 ---
 title: Next.js App Structure
 tags: [nextjs, app-router, react-query, tailwind, shadcn]
-owner: devops
-updated: 2025-09-21
-relates_to: [../20-operations/20-docker-compose.md, ../30-apis-and-schema/20-postgrest-routes.md, ../40-security/20-authn-authz-matrix.md]
+relates_to: [../20-operations/20-docker-compose.md, ../30-apis-and-schema/20-postgrest-routes.md]
 ---
 
 **Purpose**: Describe the Next.js (App Router) frontend that runs in Docker and talks to GoTrue (auth) and PostgREST (ISMS schema).

@@ -244,9 +244,26 @@ Put this in the GPT’s **Instructions** (system) so it uses your files well:
 
 
 
+to generate the list: 
+ls .\kb\ -Directory | %{$dir = $_; "* $($dir.name): $((ls $_.fullname -file| %{ $_.name.replace('.md', '').Substring(3) }) -join ', ')" }
+
+
+
+
+
+
+
+
+
+I want to move this GPTs context into a new structure, to acommodate more context by specializing and splitting into files for context based lookup.
 
 **ISMS-App KB Structure**
-Knowledge Base files (*.md), with metadata: title, tags, relates_to
+Knowledge Base files
+Markdown (*.md)
+Keep each file 600–1,500 chars (max 2,000).
+One topic per file. 
+Clear names. 
+Add front-matter (title, tags, relates_to) so retrieval has context.
 organized in kb folders:
 
 **KB folder structure**:
@@ -254,10 +271,22 @@ organized in kb folders:
 * `10-architecture`: components, sequence-auth-flow, data-flow-requests
 * `20-operations`: local-dev, docker-compose, env-variables, bootstrap-db, migrations, smoke-tests, logs-and-debug, backup-restore
 * `30-apis-and-schema`: db-schema-overview, postgrest-routes, rpc-examples, row-level-security
-* `40-security`: secrets-handling, authn-authz-matrix, threat-model, hardening-checklist
+* `40-security`: secrets-handling, threat-model, hardening-checklist
 * `50-nextjs-app`: app-structure, api-routes, client-auth-helpers, error-boundaries
 * `60-runbooks`: runbook-first-start, runbook-ci-cd, runbook-prod-deploy, runbook-incident
 * `99-reference`: decisions-log, changelog
 
-(generate this list
-ls .\kb\ -Directory | %{$dir = $_; "$($dir.name): $((ls $_.fullname -file| %{ $_.name.replace('.md', '').Substring(3) }) -join ', ')" }
+**Purpose**: 
+Provide specialized context lookup options
+Think “small, single-purpose, linkable notes” that your GPT can retrieve precisely.
+
+
+Step by step, let's start with the SQL migrations first.
+If you need the current projects's files content, dont reinvent them, ask for their content.
+
+where do we start?
+
+
+
+
+

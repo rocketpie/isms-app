@@ -14,7 +14,7 @@ export default function WhoAmI() {
 
           if (!alive) return
           if (who && who?.email) {
-            setTxt(`${who.email} (${who.app_role ?? 'authenticated'})`)
+            setTxt(`${who.email} (${who.app_role ?? 'authenticated?'})`)
           }
         } catch {
           setTxt('anonymous')

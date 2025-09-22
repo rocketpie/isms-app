@@ -22,7 +22,7 @@ function forwardHeaders(h: Headers) {
   h.forEach((v, k) => {
     const lk = k.toLowerCase()
     if (
-      ['connection', 'keep-alive', 'proxy-connection', 'transfer-encoding', 'upgrade', 'host', 'content-length'].includes(
+      ['host', 'content-length', 'content-type', 'connection', 'proxy-connection', 'transfer-encoding', 'upgrade'].includes(
         lk,
       )
     )

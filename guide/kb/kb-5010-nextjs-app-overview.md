@@ -27,7 +27,7 @@ DEBUG=1
 # Key Directories & Files 
 ## `app/` 
 - `_components/whoami.tsx` — shows current user via `/rpc/whoami`.
-  important: show `${email} (${app_role ?? 'authenticated'})` since app_role is a defining rpc authorization claim. 
+  important: show `${email} (${app_role ?? 'authenticated?'})` since app_role is a defining rpc authorization claim. 
 - `applications/page.tsx` — CRUD UI for `isms.applications`. 
 - `error.tsx` — global error boundary. 
 - `globals.css` — Tailwind + global styles. 

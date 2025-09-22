@@ -1,7 +1,7 @@
 'use client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { postgrest } from '@/lib/api'
+import { postgrest } from '@/lib/browser/api-isms'
 
 type Application = {
   id: string
@@ -12,7 +12,7 @@ type Application = {
 
 async function listApplications() {
   // GET /applications?select=id,name,description&order=name
-  return await postgrest<Application[]>('/applications?select=id,name,description&order=name.asc', { method: 'GET' }, 'isms');
+  return await postgrest<Application[]>('/applications?select=id,name,description&order=name.asc', { method: 'GET' });
 }
 
 async function createApplication(input: { name: string; description?: string }) {
@@ -20,7 +20,7 @@ async function createApplication(input: { name: string; description?: string }) 
     method: 'POST',
     body: JSON.stringify([input]), // PostgREST prefers array for bulk/return=representation
     headers: { Prefer: 'return=representation' }
-  }, 'isms')
+  })
 }
 
 export default function ApplicationsPage() {

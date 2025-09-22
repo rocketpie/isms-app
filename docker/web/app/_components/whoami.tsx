@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { postgrest } from '@/lib/api'
+import { postgrest } from '@/lib/browser/api-app'
 
 export default function WhoAmI() {
   const [txt, setTxt] = useState('anonymous')
@@ -9,7 +9,7 @@ export default function WhoAmI() {
     let alive = true
     ;(async () => {
       try {
-        const who = await postgrest<{ email?: string; role?: string }>('/rpc/whoami', { method: 'POST' }, 'app');
+        const who = await postgrest<{ email?: string; role?: string }>('/rpc/whoami', { method: 'POST' })
         
         if (!alive) return
         if (who && who[0]?.email) {

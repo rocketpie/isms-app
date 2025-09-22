@@ -15,10 +15,10 @@ async function fetchAuthSettings() {
   if (!response.ok) throw new Error(`GoTrue not reachable (${response.status})`)
     return response.json()
 }
-const authSettings = await fetchAuthSettings()
 
 export default async function Home() {
   const openapi = await fetchApiRoot()
+  const authSettings = await fetchAuthSettings()
   return (
     <main style={{ padding: 24 }}>
       <h1>ISMS-App</h1>

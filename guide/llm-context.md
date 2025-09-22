@@ -35,6 +35,7 @@ Stack:
 
 ## Coding guidelines
 - do not abbreviate variable names
+- If GPT needs exact file content (eg. full SQL or code), it should **ask the user to provide the verbatim file** instead of guessing.
 
 ## Next Steps
 - Troubleshoot App Issues

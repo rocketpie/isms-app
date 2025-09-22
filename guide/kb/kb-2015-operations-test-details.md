@@ -26,6 +26,8 @@ test.sh Runs end-to-end smoke checks against GoTrue + PostgREST:
 4. **Dev-only** SQL sets admin role. 
 5. Admin calls `/rpc/admin_grant_app_role` to set editor’s role. 
 6. `/rpc/whoami` for both. 
+   - Assert: editor whoami.app_role = 'editor'
+   - Assert: admin whoami.app_role = 'admin'
 7. Editor `POST /applications` (201) then GET (200). 
 8. Admin `POST /applications` → 403. 
  

@@ -32,13 +32,13 @@ Adds helper functions for claim extraction, a mirrored `app.users` table, and a 
 ## Key objects 
 - Schema: `app` 
 - Functions: 
-  - `app.jwt_claims()` — returns full JWT claims JSON 
+  - `app.jwt_claims()` — returns full JWT claims JSON. 
+  - `app_role` convention: The application role is read from `app.jwt_claims() -> 'app_metadata' ->> 'role'`. This is the **source of truth** used in authorization checks and admin RPCs. 
   - `app.jwt_sub()` → UUID from `sub` 
-  - `app.jwt_role()` → text from `role` 
   - `app.jwt_email()` → text from `email` 
 - Table: `app.users(id, email, raw_user_meta_data, created_at, updated_at)` 
 - Trigger: `trg_app_sync_user` keeps `app.users` in sync with `auth.users` 
- 
+
 ## Gotchas 
 - **Backfill** step pulls existing users into `app.users`; safe to re-run (`ON CONFLICT DO NOTHING`). 
 - Trigger function uses `SECURITY DEFINER` — ensure owner has correct permissions. 
@@ -60,16 +60,17 @@ Locks down `app` by default (tables & functions), then explicitly allows what Po
 - GRANT USAGE on `app` to `authenticator, authenticated, editor`. 
 - GRANT SELECT on `app.users` to `authenticated`. 
 - RPC: `app.admin_grant_app_role(target_email text, new_role text)` 
-  - `SECURITY DEFINER`, `search_path = auth, app, public` 
-  - Validates caller is authenticated **and** `app_metadata.role = 'admin'` 
+  - `SECURITY DEFINER`, `search_path = auth, app, public`. 
+  - Implementation reads caller role via: caller_role := (app.jwt_claims() -> 'app_metadata' ->> 'role'); 
+  - Validates caller is authenticated **and** Aborts with "forbidden" if caller_role <> 'admin'. 
   - Accepts `editor|admin`; updates `auth.users.raw_app_meta_data.role` 
   - Returns `{ id, email, app_metadata }` 
   - `GRANT EXECUTE TO authenticated` 
-- Utility: `app.whoami()` (SECURITY DEFINER) for debugging claims. 
+- Utility: `app.whoami()` (SECURITY DEFINER) for showing claims. Includes 'app_role', app.jwt_claims() -> 'app_metadata' ->> 'role'. 
  
 # Gotchas 
 - Requires `pgjwt`/PostgREST to set `request.jwt.claims`; otherwise `whoami()`/checks fail. 
 - If you don’t want `app.users` readable, drop the SELECT grant (but keep for UI/admin screens). 
 - Ensure the function owner is a superuser or has rights on `auth.users`. 
 - Errors: raises `unauthenticated`, `forbidden`, `invalid role`, or `user not found`. 
- 
+- Ensure PostgREST is configured with: `PGRST_JWT_ROLE_CLAIM_KEY = .app_metadata.role`

@@ -6,9 +6,18 @@ related: [kb-3010-schema-overview, kb-5010-nextjs-app-overview, kb-4010-api-over
  
 # RPC Examples 
 - `app.whoami` usage and sample response display in `whoami.tsx`. 
-- `app.admin_grant_app_role(target_email, new_role)` preconditions (caller `admin`). 
- 
+ `app.whoami()` (SECURITY DEFINER) returns a single JSON object with: 
+   { 
+     "email": app.jwt_email(), 
+     "app_role": app.jwt_claims() -> 'app_metadata' ->> 'role', 
+     'claims', app.jwt_claims() 
+   } 
+ UI should **display app_role** (fallback to 'authenticated'). 
+
+- `app.admin_grant_app_role(target_email, new_role)` preconditions (caller_role `admin`). 
+  caller_role := (app.jwt_claims() -> 'app_metadata' ->> 'role'); 
   
+
 # Browser helpers
 - `lib/browser/api-isms` → `/api` base, sets `Accept-Profile/Content-Profile: isms`, attaches JWT, `no-store`, 15s timeout. 
 - `lib/browser/api-app`  → `/api` base, sets `Accept-Profile/Content-Profile: app`, attaches JWT, `no-store`, 15s timeout. 

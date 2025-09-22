@@ -17,7 +17,8 @@ This enables precise retrieval and modular context for the GPT assistant.
 # Principles 
 - Link notes via `related`. 
 - Clear titles — use prefixes like `MIG-010` for migrations. 
-- Size target: 600–2000 chars (max 3,000). 
+- Size target: 1K to 3K chars.
+- If GPT needs exact file content (eg. full SQL or code), it should **ask the user to provide the verbatim file** instead of guessing.
  
 # KB folder Map 
 - kb-0000-index-overview 

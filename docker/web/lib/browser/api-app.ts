@@ -1,7 +1,7 @@
 
 'use client'
 
-import { getAuthUrl } from '@/lib/browser/config'
+import { getApiUrl } from '@/lib/browser/config'
 import { auth } from '@/lib/auth'
 import { fetchWithTimeout } from '@/lib/fetch-timeout'
 
@@ -23,7 +23,7 @@ export async function postgrest<T = unknown>(
 ): Promise<T> {
   ensureBrowser()
 
-  const base = getAuthUrl() // '/api'
+  const base = getApiUrl() // '/api'
   const method = ((init.method || 'GET').toUpperCase() as Method)
 
   const headers = new Headers(init.headers || {})

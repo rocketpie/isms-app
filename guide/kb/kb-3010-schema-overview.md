@@ -24,6 +24,7 @@ related: [kb-1010-architecture-overview, kb-3020-schema-bootstrap-and-app, kb-30
 # Data Flow 
 - Users sign up/login via GoTrue → `auth.users`. 
 - `app.users` mirror is kept in sync via trigger. 
-- JWTs carry `app_metadata.role`; PostgREST maps claim → DB role. 
+- JWTs carry `app_metadata.role`; this **app_role** is the canonical application role (editor, admin). 
+- PostgREST maps the same claim to a DB role (PGRST_JWT_ROLE_CLAIM_KEY=.app_metadata.role) for RLS. 
+- UIs and RPCs should read app_role from JWT claims for consistent behavior. 
 - RLS (enabled in MIG-020) enforces read-only vs. editor. 
- 

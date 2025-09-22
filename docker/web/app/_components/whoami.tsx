@@ -1,3 +1,4 @@
+// app/_components/whoami.tsx
 'use client'
 import { useEffect, useState } from 'react'
 import { postgrest } from '@/lib/browser/api-app'
@@ -7,18 +8,18 @@ export default function WhoAmI() {
 
   useEffect(() => {
     let alive = true
-    ;(async () => {
-      try {
-        const who = await postgrest<{ email?: string; role?: string }>('/rpc/whoami', { method: 'POST' })
-        
-        if (!alive) return
-        if (who && who[0]?.email) {
-          setTxt(`${who[0].email} (${who[0].role ?? 'authenticated'})`)
-        } 
-      } catch {
-        setTxt('anonymous')
-      }
-    })()
+      ; (async () => {
+        try {
+          const who = await postgrest<{ email?: string; app_role?: string; }>('/rpc/whoami', { method: 'POST' })
+
+          if (!alive) return
+          if (who && who?.email) {
+            setTxt(`${who.email} (${who.app_role ?? 'authenticated'})`)
+          }
+        } catch {
+          setTxt('anonymous')
+        }
+      })()
     return () => { alive = false }
   }, [])
 

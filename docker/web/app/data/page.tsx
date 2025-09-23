@@ -1,11 +1,11 @@
-//app/applications/page.tsx
+//app/data/page.tsx
 'use client'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { postgrest } from '@/lib/browser/api-isms'
 
-type Application = {
+type DataAsset = {
   id: string
   name: string
   owner_id: string | null
@@ -19,11 +19,11 @@ type Ownership = {
   deputy_person_id: string | null
 }
 
-/** ---------- API ---------- */
-async function listApplications() {
-  // GET /applications?select=id,name,description,owner_id&order=name.asc
-  return await postgrest<Application[]>(
-    '/applications?select=id,name,description,owner_id&order=name.asc',
+/* ---------- API ---------- */
+async function listDataAssets() {
+  // GET /data?select=id,name,description,owner_id&order=name.asc
+  return await postgrest<DataAsset[]>(
+    '/data?select=id,name,description,owner_id&order=name.asc',
     { method: 'GET' }
   )
 }
@@ -36,21 +36,21 @@ async function listOwnerships() {
   )
 }
 
-async function createApplication(input: {
+async function createDataAsset(input: {
   name: string
   description?: string
   owner_id?: string | null
 }) {
-  return await postgrest<Application[]>('/applications', {
+  return await postgrest<DataAsset[]>('/data', {
     method: 'POST',
     body: JSON.stringify([input]),
     headers: { Prefer: 'return=representation' },
   })
 }
 
-async function updateApplication(id: string, patch: Partial<Application>) {
-  return await postgrest<Application[]>(
-    `/applications?id=eq.${encodeURIComponent(id)}`,
+async function updateDataAsset(id: string, patch: Partial<DataAsset>) {
+  return await postgrest<DataAsset[]>(
+    `/data?id=eq.${encodeURIComponent(id)}`,
     {
       method: 'PATCH',
       body: JSON.stringify(patch),
@@ -59,47 +59,45 @@ async function updateApplication(id: string, patch: Partial<Application>) {
   )
 }
 
-async function deleteApplication(id: string) {
-  return await postgrest<null>(`/applications?id=eq.${encodeURIComponent(id)}`, {
-    method: 'DELETE',
-  })
+async function deleteDataAsset(id: string) {
+  return await postgrest<null>(`/data?id=eq.${encodeURIComponent(id)}`, { method: 'DELETE' })
 }
 
-/** ---------- Page ---------- */
-export default function ApplicationsPage() {
+/* ---------- Page ---------- */
+export default function DataPage() {
   const queryClient = useQueryClient()
 
-  const appsQuery = useQuery({ queryKey: ['applications'], queryFn: listApplications })
+  const dataQuery = useQuery({ queryKey: ['data-assets'], queryFn: listDataAssets })
   const ownersQuery = useQuery({ queryKey: ['ownership'], queryFn: listOwnerships })
 
   const create = useMutation({
-    mutationFn: createApplication,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['applications'] }),
+    mutationFn: createDataAsset,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['data-assets'] }),
   })
 
   const update = useMutation({
-    mutationFn: ({ id, patch }: { id: string; patch: Partial<Application> }) =>
-      updateApplication(id, patch),
+    mutationFn: ({ id, patch }: { id: string; patch: Partial<DataAsset> }) =>
+      updateDataAsset(id, patch),
     onMutate: async ({ id, patch }) => {
-      await queryClient.cancelQueries({ queryKey: ['applications'] })
-      const prev = queryClient.getQueryData<Application[]>(['applications'])
+      await queryClient.cancelQueries({ queryKey: ['data-assets'] })
+      const prev = queryClient.getQueryData<DataAsset[]>(['data-assets'])
       if (prev) {
-        queryClient.setQueryData<Application[]>(
-          ['applications'],
-          prev.map(a => (a.id === id ? { ...a, ...patch } : a))
+        queryClient.setQueryData<DataAsset[]>(
+          ['data-assets'],
+          prev.map(d => (d.id === id ? { ...d, ...patch } : d))
         )
       }
       return { prev }
     },
-    onError: (_err, _vars, ctx) => {
-      if (ctx?.prev) queryClient.setQueryData(['applications'], ctx.prev)
+    onError: (_e, _vars, ctx) => {
+      if (ctx?.prev) queryClient.setQueryData(['data-assets'], ctx.prev)
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['applications'] }),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['data-assets'] }),
   })
 
   const remove = useMutation({
-    mutationFn: deleteApplication,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['applications'] }),
+    mutationFn: deleteDataAsset,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['data-assets'] }),
   })
 
   // Create form state
@@ -107,46 +105,46 @@ export default function ApplicationsPage() {
   const [desc, setDesc] = useState('')
   const [ownerId, setOwnerId] = useState<string>('')
 
-  // Inline edit state per row
+  // Inline edit state
   const [editing, setEditing] = useState<
     Record<string, { name: string; description: string; owner_id: string | '' }>
   >({})
 
-  const apps = useMemo(() => appsQuery.data ?? [], [appsQuery.data])
+  const items = useMemo(() => dataQuery.data ?? [], [dataQuery.data])
   const owners = useMemo(() => ownersQuery.data ?? [], [ownersQuery.data])
   const ownerById = useMemo(() => new Map(owners.map(o => [o.id, o.name] as const)), [owners])
 
   return (
     <div className="grid gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Applications</h1>
+        <h1 className="text-2xl font-semibold">Data</h1>
       </div>
 
       <div className="grid gap-2">
-        {(appsQuery.isLoading || ownersQuery.isLoading) && <p>Loading…</p>}
-        {(appsQuery.error || ownersQuery.error) && (
+        {(dataQuery.isLoading || ownersQuery.isLoading) && <p>Loading…</p>}
+        {(dataQuery.error || ownersQuery.error) && (
           <p className="text-red-600 text-sm">
-            {(appsQuery.error as Error)?.message || (ownersQuery.error as Error)?.message}
+            {(dataQuery.error as Error)?.message || (ownersQuery.error as Error)?.message}
           </p>
         )}
-        {apps.length === 0 && !appsQuery.isLoading && (
-          <p className="text-neutral-600">No applications yet.</p>
+        {items.length === 0 && !dataQuery.isLoading && (
+          <p className="text-neutral-600">No data assets yet.</p>
         )}
 
         <ul className="grid gap-2">
-          {apps.map(app => {
-            const isEditing = editing[app.id] !== undefined
+          {items.map(d => {
+            const isEditing = editing[d.id] !== undefined
             const value = isEditing
-              ? editing[app.id]
+              ? editing[d.id]
               : {
-                name: app.name,
-                description: app.description ?? '',
-                owner_id: app.owner_id ?? '',
-              }
-            const ownerLabel = app.owner_id ? ownerById.get(app.owner_id) ?? '—' : '—'
+                  name: d.name,
+                  description: d.description ?? '',
+                  owner_id: d.owner_id ?? '',
+                }
+            const ownerLabel = d.owner_id ? ownerById.get(d.owner_id) ?? '—' : '—'
 
             return (
-              <li key={app.id} className="bg-white border rounded-xl p-3">
+              <li key={d.id} className="bg-white border rounded-xl p-3">
                 {isEditing ? (
                   <div className="grid gap-2 md:grid-cols-5">
                     <input
@@ -155,7 +153,7 @@ export default function ApplicationsPage() {
                       onChange={e =>
                         setEditing(prev => ({
                           ...prev,
-                          [app.id]: { ...prev[app.id], name: e.target.value },
+                          [d.id]: { ...prev[d.id], name: e.target.value },
                         }))
                       }
                     />
@@ -166,7 +164,7 @@ export default function ApplicationsPage() {
                       onChange={e =>
                         setEditing(prev => ({
                           ...prev,
-                          [app.id]: { ...prev[app.id], description: e.target.value },
+                          [d.id]: { ...prev[d.id], description: e.target.value },
                         }))
                       }
                     />
@@ -176,7 +174,7 @@ export default function ApplicationsPage() {
                       onChange={e =>
                         setEditing(prev => ({
                           ...prev,
-                          [app.id]: { ...prev[app.id], owner_id: e.target.value },
+                          [d.id]: { ...prev[d.id], owner_id: e.target.value },
                         }))
                       }
                     >
@@ -187,20 +185,19 @@ export default function ApplicationsPage() {
                         </option>
                       ))}
                     </select>
-
                     <div className="flex gap-2 md:col-span-1">
                       <button
                         className="rounded-xl px-3 py-2 border bg-black text-white disabled:opacity-60"
                         disabled={update.isPending || value.name.trim().length === 0}
                         onClick={() => {
-                          const patch: Partial<Application> = {
+                          const patch: Partial<DataAsset> = {
                             name: value.name.trim(),
                             description: value.description.trim() || null,
                             owner_id: value.owner_id || null,
                           }
-                          update.mutate({ id: app.id, patch })
+                          update.mutate({ id: d.id, patch })
                           setEditing(prev => {
-                            const { [app.id]: _omit, ...rest } = prev
+                            const { [d.id]: _omit, ...rest } = prev
                             return rest
                           })
                         }}
@@ -211,7 +208,7 @@ export default function ApplicationsPage() {
                         className="rounded-xl px-3 py-2 border bg-white"
                         onClick={() =>
                           setEditing(prev => {
-                            const { [app.id]: _omit, ...rest } = prev
+                            const { [d.id]: _omit, ...rest } = prev
                             return rest
                           })
                         }
@@ -222,10 +219,10 @@ export default function ApplicationsPage() {
                   </div>
                 ) : (
                   <div className="grid gap-1 md:grid-cols-5 md:items-center">
-                    <div className="font-medium">{app.name}</div>
+                    <div className="font-medium">{d.name}</div>
                     <div className="text-sm text-neutral-700 md:col-span-2">
-                      {app.description ? (
-                        <span className="text-neutral-600">{app.description}</span>
+                      {d.description ? (
+                        <span className="text-neutral-600">{d.description}</span>
                       ) : (
                         <span className="text-neutral-400">No description</span>
                       )}
@@ -239,10 +236,10 @@ export default function ApplicationsPage() {
                         onClick={() =>
                           setEditing(prev => ({
                             ...prev,
-                            [app.id]: {
-                              name: app.name,
-                              description: app.description ?? '',
-                              owner_id: app.owner_id ?? '',
+                            [d.id]: {
+                              name: d.name,
+                              description: d.description ?? '',
+                              owner_id: d.owner_id ?? '',
                             },
                           }))
                         }
@@ -254,9 +251,9 @@ export default function ApplicationsPage() {
                         disabled={remove.isPending}
                         onClick={() => {
                           const ok = confirm(
-                            'Delete this application?\n\nNote: if this application has relationships (e.g., junction tables), deletion may be blocked by foreign key constraints.'
+                            'Delete this data asset?\n\nNote: if referenced by junctions (e.g., system_data), deletion may be blocked by foreign keys.'
                           )
-                          if (ok) remove.mutate(app.id)
+                          if (ok) remove.mutate(d.id)
                         }}
                       >
                         Delete
@@ -271,7 +268,7 @@ export default function ApplicationsPage() {
       </div>
 
       <div className="bg-white border rounded-2xl p-4">
-        <h2 className="text-lg font-medium mb-2">Create application</h2>
+        <h2 className="text-lg font-medium mb-2">Create data asset</h2>
         <form
           className="grid gap-2 md:grid-cols-4"
           onSubmit={e => {
@@ -326,7 +323,7 @@ export default function ApplicationsPage() {
                 {((create.error || update.error || remove.error) as Error)?.message}
               </p>
               <p className="text-xs text-neutral-500">
-                Requires <code>editor</code> role for writes; <code>authenticated</code> can read.
+                Writes require <code>editor</code>; reads are allowed for <code>authenticated</code>.
               </p>
             </div>
           )}

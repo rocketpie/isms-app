@@ -1,3 +1,4 @@
+//app/api/[...path]/route.ts
 import { NextRequest } from 'next/server'
 import { fetchWithTimeout } from '@/lib/fetch-timeout'
 import { logDebug } from '@/lib/logDebug'

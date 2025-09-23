@@ -17,19 +17,16 @@ set local search_path = public;
 -------------------------------------------------------------------------------
 -- Hardening: limit what PostgREST can do in `app`
 -------------------------------------------------------------------------------
--- Allow introspection
-GRANT USAGE ON SCHEMA app TO authenticator, authenticated, editor;
-
--- Lock down tables by default (adjust as needed)
+-- Lock down tables and functions by default and then grant explicitly
 REVOKE ALL ON ALL TABLES IN SCHEMA app FROM PUBLIC;
--- Read-only mirror of users is OK to expose if you want it; otherwise comment out:
--- grant select on table app.users to authenticated;
-
--- Lock down functions by default and then grant explicitly
 REVOKE ALL ON ALL FUNCTIONS IN SCHEMA app FROM PUBLIC;
 
+-- Allow introspection
+GRANT USAGE ON SCHEMA app TO anon, authenticator, authenticated, editor;
 
+-- Read-only mirror of users is OK to expose
 GRANT SELECT ON app.users TO authenticated;
+
 
 -------------------------------------------------------------------------------
 -- Core function in `app`
@@ -75,7 +72,6 @@ begin
   );
 end;$$;
 
-revoke all on function app.admin_grant_app_role(text, text) from public;
 GRANT EXECUTE ON FUNCTION app.admin_grant_app_role(text, text) TO authenticated;
 
 -------------------------------------------------------------------------------
@@ -94,5 +90,4 @@ AS $$
   );
 $$;
 
-REVOKE ALL ON FUNCTION app.whoami() FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION app.whoami() TO authenticated;
+GRANT EXECUTE ON FUNCTION app.whoami() TO anon, authenticated;

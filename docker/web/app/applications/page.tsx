@@ -1,59 +1,61 @@
-//app/applications/page.tsx
+//listItem/applications/page.tsx
 'use client'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { postgrest } from '@/lib/browser/api-isms'
+import { listOwnerships, OwnershipView } from '@/lib/browser/isms-ownership'
 
-type Application = {
+type ApplicationView = {
   id: string
   name: string
-  owner_id: string | null
   description: string | null
+  owner: OwnershipView | null
 }
 
-type Ownership = {
-  id: string
+type ApplicationRow = {
+  id?: string
   name: string
-  primary_person_id: string | null
-  deputy_person_id: string | null
+  description: string | null
+  owner_id: string | null
 }
 
 /** ---------- API ---------- */
 async function listApplications() {
-  // GET /applications?select=id,name,description,owner_id&order=name.asc
-  return await postgrest<Application[]>(
-    '/applications?select=id,name,description,owner_id&order=name.asc',
+  return await postgrest<ApplicationView[]>(
+    '/applications?select=id,name,description,owner:ownership(id,name)&order=name.asc',
     { method: 'GET' }
   )
 }
 
-async function listOwnerships() {
-  // GET /ownership?select=id,name&order=name.asc
-  return await postgrest<Ownership[]>(
-    '/ownership?select=id,name,primary_person_id,deputy_person_id&order=name.asc',
-    { method: 'GET' }
-  )
-}
-
-async function createApplication(input: {
-  name: string
-  description?: string
-  owner_id?: string | null
-}) {
-  return await postgrest<Application[]>('/applications', {
+async function createApplication(input: ApplicationView) {
+  // strip the owner object
+  const { id, owner, ...rest } = input
+  // set the owner_id, if any
+  const dataModel: ApplicationRow = {
+    ...rest,
+    owner_id: owner?.id ?? null
+  }
+  return await postgrest<ApplicationRow[]>('/applications', {
     method: 'POST',
-    body: JSON.stringify([input]),
+    body: JSON.stringify([dataModel]),
     headers: { Prefer: 'return=representation' },
   })
 }
 
-async function updateApplication(id: string, patch: Partial<Application>) {
-  return await postgrest<Application[]>(
+async function updateApplication(id: string, input: Partial<ApplicationView>) {
+  // strip the owner object
+  const { owner, ...rest } = input
+  // set the owner_id, if any
+  const dataModel: Partial<ApplicationRow> = {
+    ...rest,
+    owner_id: owner?.id ?? null
+  }
+  return await postgrest<ApplicationRow[]>(
     `/applications?id=eq.${encodeURIComponent(id)}`,
     {
       method: 'PATCH',
-      body: JSON.stringify(patch),
+      body: JSON.stringify(dataModel),
       headers: { Prefer: 'return=representation' },
     }
   )
@@ -78,13 +80,13 @@ export default function ApplicationsPage() {
   })
 
   const update = useMutation({
-    mutationFn: ({ id, patch }: { id: string; patch: Partial<Application> }) =>
+    mutationFn: ({ id, patch }: { id: string; patch: Partial<ApplicationView> }) =>
       updateApplication(id, patch),
     onMutate: async ({ id, patch }) => {
       await queryClient.cancelQueries({ queryKey: ['applications'] })
-      const prev = queryClient.getQueryData<Application[]>(['applications'])
+      const prev = queryClient.getQueryData<ApplicationView[]>(['applications'])
       if (prev) {
-        queryClient.setQueryData<Application[]>(
+        queryClient.setQueryData<ApplicationView[]>(
           ['applications'],
           prev.map(a => (a.id === id ? { ...a, ...patch } : a))
         )
@@ -108,13 +110,13 @@ export default function ApplicationsPage() {
   const [ownerId, setOwnerId] = useState<string>('')
 
   // Inline edit state per row
+  // Record -> Map<key, value>
   const [editing, setEditing] = useState<
-    Record<string, { name: string; description: string; owner_id: string | '' }>
+    Record<string, ApplicationView>
   >({})
 
   const apps = useMemo(() => appsQuery.data ?? [], [appsQuery.data])
   const owners = useMemo(() => ownersQuery.data ?? [], [ownersQuery.data])
-  const ownerById = useMemo(() => new Map(owners.map(o => [o.id, o.name] as const)), [owners])
 
   return (
     <div className="grid gap-6">
@@ -134,19 +136,14 @@ export default function ApplicationsPage() {
         )}
 
         <ul className="grid gap-2">
-          {apps.map(app => {
-            const isEditing = editing[app.id] !== undefined
+          {apps.map(listItem => {
+            const isEditing = editing[listItem.id] !== undefined
             const value = isEditing
-              ? editing[app.id]
-              : {
-                name: app.name,
-                description: app.description ?? '',
-                owner_id: app.owner_id ?? '',
-              }
-            const ownerLabel = app.owner_id ? ownerById.get(app.owner_id) ?? '—' : '—'
+              ? editing[listItem.id]
+              : listItem
 
             return (
-              <li key={app.id} className="bg-white border rounded-xl p-3">
+              <li key={listItem.id} className="bg-white border rounded-xl p-3">
                 {isEditing ? (
                   <div className="grid gap-2 md:grid-cols-5">
                     <input
@@ -155,52 +152,51 @@ export default function ApplicationsPage() {
                       onChange={e =>
                         setEditing(prev => ({
                           ...prev,
-                          [app.id]: { ...prev[app.id], name: e.target.value },
+                          [listItem.id]: { ...prev[listItem.id], name: e.target.value },
                         }))
                       }
                     />
                     <input
                       className="border rounded-lg px-3 py-2 md:col-span-2"
                       placeholder="Description (optional)"
-                      value={value.description}
+                      value={value.description ?? ''}
                       onChange={e =>
                         setEditing(prev => ({
                           ...prev,
-                          [app.id]: { ...prev[app.id], description: e.target.value },
+                          [listItem.id]: { ...prev[listItem.id], description: e.target.value },
                         }))
                       }
                     />
                     <select
                       className="border rounded-lg px-3 py-2 md:col-span-1"
-                      value={value.owner_id}
+                      value={value.owner?.id}
                       onChange={e =>
                         setEditing(prev => ({
                           ...prev,
-                          [app.id]: { ...prev[app.id], owner_id: e.target.value },
+                          [listItem.id]: { ...prev[listItem.id], owner: owners.find(o => o.id === e.target.value) ?? null },
                         }))
                       }
                     >
-                      <option value="">Ownership (optional)</option>
+                      <option value="">Owner (optional)</option>
                       {owners.map(o => (
                         <option key={o.id} value={o.id}>
                           {o.name}
                         </option>
                       ))}
                     </select>
-
                     <div className="flex gap-2 md:col-span-1">
                       <button
                         className="rounded-xl px-3 py-2 border bg-black text-white disabled:opacity-60"
                         disabled={update.isPending || value.name.trim().length === 0}
                         onClick={() => {
-                          const patch: Partial<Application> = {
+                          const patch: Partial<ApplicationView> = {
                             name: value.name.trim(),
-                            description: value.description.trim() || null,
-                            owner_id: value.owner_id || null,
+                            description: value.description?.trim() || null,
+                            owner: value.owner || null,
                           }
-                          update.mutate({ id: app.id, patch })
+                          update.mutate({ id: listItem.id, patch })
                           setEditing(prev => {
-                            const { [app.id]: _omit, ...rest } = prev
+                            const { [listItem.id]: _omit, ...rest } = prev
                             return rest
                           })
                         }}
@@ -211,7 +207,7 @@ export default function ApplicationsPage() {
                         className="rounded-xl px-3 py-2 border bg-white"
                         onClick={() =>
                           setEditing(prev => {
-                            const { [app.id]: _omit, ...rest } = prev
+                            const { [listItem.id]: _omit, ...rest } = prev
                             return rest
                           })
                         }
@@ -222,16 +218,16 @@ export default function ApplicationsPage() {
                   </div>
                 ) : (
                   <div className="grid gap-1 md:grid-cols-5 md:items-center">
-                    <div className="font-medium">{app.name}</div>
+                    <div className="font-medium">{listItem.name}</div>
                     <div className="text-sm text-neutral-700 md:col-span-2">
-                      {app.description ? (
-                        <span className="text-neutral-600">{app.description}</span>
+                      {listItem.description ? (
+                        <span className="text-neutral-600">{listItem.description}</span>
                       ) : (
                         <span className="text-neutral-400">No description</span>
                       )}
                     </div>
                     <div className="text-sm text-neutral-700">
-                      Ownership: <span className="text-neutral-600">{ownerLabel}</span>
+                      Owner: <span className="text-neutral-600">{listItem.owner?.name}</span>
                     </div>
                     <div className="flex gap-2">
                       <button
@@ -239,11 +235,7 @@ export default function ApplicationsPage() {
                         onClick={() =>
                           setEditing(prev => ({
                             ...prev,
-                            [app.id]: {
-                              name: app.name,
-                              description: app.description ?? '',
-                              owner_id: app.owner_id ?? '',
-                            },
+                            [listItem.id]: listItem,
                           }))
                         }
                       >
@@ -256,7 +248,7 @@ export default function ApplicationsPage() {
                           const ok = confirm(
                             'Delete this application?\n\nNote: if this application has relationships (e.g., junction tables), deletion may be blocked by foreign key constraints.'
                           )
-                          if (ok) remove.mutate(app.id)
+                          if (ok) remove.mutate(listItem.id)
                         }}
                       >
                         Delete
@@ -280,9 +272,10 @@ export default function ApplicationsPage() {
             if (!trimmed) return
             create.mutate(
               {
+                id: '',
                 name: trimmed,
-                description: desc.trim() || undefined,
-                owner_id: ownerId || null,
+                description: desc.trim() || null,
+                owner: owners.find(o => { o.id === ownerId }) || null
               },
               {
                 onSuccess: () => {
@@ -312,7 +305,7 @@ export default function ApplicationsPage() {
             value={ownerId}
             onChange={e => setOwnerId(e.target.value)}
           >
-            <option value="">Ownership (optional)</option>
+            <option value="">Owner (optional)</option>
             {owners.map(o => (
               <option key={o.id} value={o.id}>
                 {o.name}

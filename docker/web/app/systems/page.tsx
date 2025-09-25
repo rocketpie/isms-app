@@ -276,7 +276,7 @@ export default function SystemsPage() {
                 id: '',
                 name: trimmed,
                 description: desc.trim() || null,
-                owner: owners.find(o => { o.id === ownerId }) || null,
+                owner: owners.find(o => o.id === ownerId) || null,
               },
               {
                 onSuccess: () => {

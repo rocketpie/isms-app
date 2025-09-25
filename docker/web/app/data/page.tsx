@@ -273,7 +273,7 @@ export default function DataPage() {
                 id: '',
                 name: trimmed,
                 description: desc.trim() || null,
-                owner: owners.find(o => { o.id === ownerId }) || null
+                owner: owners.find(o => o.id === ownerId) || null
               },
               {
                 onSuccess: () => {

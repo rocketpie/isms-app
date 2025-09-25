@@ -1,146 +1,138 @@
-//listItem/applications/page.tsx
-'use client'
+// app/connections/page.tsx
+'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useMemo, useState } from 'react'
-import { postgrest } from '@/lib/browser/api-isms'
-import { listOwnerships, OwnershipView } from '@/lib/browser/isms-ownership'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
+import { postgrest } from '@/lib/browser/api-isms';
+import { listOwnerships, OwnershipView } from '@/lib/browser/isms-ownership';
 
-type ApplicationView = {
-  id: string
-  name: string
-  description: string | null
-  owner: OwnershipView | null
-}
+type ConnectionView = {
+  id: string;
+  name: string;
+  description: string | null;
+  owner: OwnershipView | null;
+};
 
-type ApplicationRow = {
-  id?: string
-  name: string
-  description: string | null
-  owner_id: string | null
-}
+type ConnectionRow = {
+  id?: string;
+  name: string;
+  owner_id: string | null;
+  description: string | null;
+};
 
-/** ---------- API ---------- */
-async function listApplications() {
-  return await postgrest<ApplicationView[]>(
-    '/applications?select=id,name,description,owner:ownership(id,name)&order=name.asc',
+/* ---------- API ---------- */
+async function listConnections() {
+  // GET /connections?select=id,name,description,owner:ownership(id,name)&order=name.asc
+  return await postgrest<ConnectionView[]>(
+    '/connections?select=id,name,description,owner:ownership(id,name)&order=name.asc',
     { method: 'GET' }
-  )
+  );
 }
 
-async function createApplication(input: ApplicationView) {
-  // strip the owner object
-  const { id, owner, ...rest } = input
-  // set the owner_id, if any
-  const dataModel: ApplicationRow = {
+async function createConnection(input: ConnectionView) {
+  const { id, owner, ...rest } = input;
+  const dataModel: ConnectionRow = {
     ...rest,
-    owner_id: owner?.id ?? null
-  }
-  return await postgrest<ApplicationRow[]>('/applications', {
+    owner_id: owner?.id ?? null,
+  };
+  return await postgrest<ConnectionView[]>('/connections', {
     method: 'POST',
     body: JSON.stringify([dataModel]),
     headers: { Prefer: 'return=representation' },
-  })
+  });
 }
 
-async function updateApplication(id: string, input: Partial<ApplicationView>) {
-  // strip the owner object
-  const { owner, ...rest } = input
-  // set the owner_id, if any
-  const dataModel: Partial<ApplicationRow> = {
+async function updateConnection(id: string, input: Partial<ConnectionView>) {
+  const { owner, ...rest } = input;
+  const dataModel: Partial<ConnectionRow> = {
     ...rest,
-    owner_id: owner?.id ?? null
-  }
-  return await postgrest<ApplicationRow[]>(
-    `/applications?id=eq.${encodeURIComponent(id)}`,
+    owner_id: owner?.id ?? null,
+  };
+  return await postgrest<ConnectionRow[]>(
+    `/connections?id=eq.${encodeURIComponent(id)}`,
     {
       method: 'PATCH',
       body: JSON.stringify(dataModel),
       headers: { Prefer: 'return=representation' },
     }
-  )
+  );
 }
 
-async function deleteApplication(id: string) {
-  return await postgrest<null>(`/applications?id=eq.${encodeURIComponent(id)}`, {
+async function deleteConnection(id: string) {
+  return await postgrest<null>(`/connections?id=eq.${encodeURIComponent(id)}`, {
     method: 'DELETE',
-  })
+  });
 }
 
-/** ---------- Page ---------- */
-export default function ApplicationsPage() {
-  const queryClient = useQueryClient()
+/* ---------- Page ---------- */
+export default function ConnectionsPage() {
+  const queryClient = useQueryClient();
 
-  const appsQuery = useQuery({ queryKey: ['applications'], queryFn: listApplications })
-  const ownersQuery = useQuery({ queryKey: ['ownership'], queryFn: listOwnerships })
+  const connectionsQuery = useQuery({ queryKey: ['connections'], queryFn: listConnections });
+  const ownersQuery = useQuery({ queryKey: ['ownership'], queryFn: listOwnerships });
 
   const create = useMutation({
-    mutationFn: createApplication,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['applications'] }),
-  })
+    mutationFn: createConnection,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['connections'] }),
+  });
 
   const update = useMutation({
-    mutationFn: ({ id, patch }: { id: string; patch: Partial<ApplicationView> }) =>
-      updateApplication(id, patch),
+    mutationFn: ({ id, patch }: { id: string; patch: Partial<ConnectionView> }) =>
+      updateConnection(id, patch),
     onMutate: async ({ id, patch }) => {
-      await queryClient.cancelQueries({ queryKey: ['applications'] })
-      const prev = queryClient.getQueryData<ApplicationView[]>(['applications'])
-      if (prev) {
-        queryClient.setQueryData<ApplicationView[]>(
-          ['applications'],
-          prev.map(a => (a.id === id ? { ...a, ...patch } : a))
-        )
+      await queryClient.cancelQueries({ queryKey: ['connections'] });
+      const previous = queryClient.getQueryData<ConnectionView[]>(['connections']);
+      if (previous) {
+        queryClient.setQueryData<ConnectionView[]>(
+          ['connections'],
+          previous.map(c => (c.id === id ? { ...c, ...patch } : c))
+        );
       }
-      return { prev }
+      return { previous };
     },
-    onError: (_err, _vars, ctx) => {
-      if (ctx?.prev) queryClient.setQueryData(['applications'], ctx.prev)
+    onError: (_e, _vars, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(['connections'], ctx.previous);
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['applications'] }),
-  })
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['connections'] }),
+  });
 
   const remove = useMutation({
-    mutationFn: deleteApplication,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['applications'] }),
-  })
+    mutationFn: deleteConnection,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['connections'] }),
+  });
 
   // Create form state
-  const [name, setName] = useState('')
-  const [desc, setDesc] = useState('')
-  const [ownerId, setOwnerId] = useState<string>('')
+  const [name, setName] = useState('');
+  const [desc, setDesc] = useState('');
+  const [ownerId, setOwnerId] = useState<string>('');
 
-  // Inline edit state per row
-  // Record -> Map<key, value>
-  const [editing, setEditing] = useState<
-    Record<string, ApplicationView>
-  >({})
+  // Inline edit state
+  const [editing, setEditing] = useState<Record<string, ConnectionView>>({});
 
-  const apps = useMemo(() => appsQuery.data ?? [], [appsQuery.data])
-  const owners = useMemo(() => ownersQuery.data ?? [], [ownersQuery.data])
+  const connections = useMemo(() => connectionsQuery.data ?? [], [connectionsQuery.data]);
+  const owners = useMemo(() => ownersQuery.data ?? [], [ownersQuery.data]);
 
   return (
     <div className="grid gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Applications</h1>
+        <h1 className="text-2xl font-semibold">Connections</h1>
       </div>
 
       <div className="grid gap-2">
-        {(appsQuery.isLoading || ownersQuery.isLoading) && <p>Loading…</p>}
-        {(appsQuery.error || ownersQuery.error) && (
+        {(connectionsQuery.isLoading || ownersQuery.isLoading) && <p>Loading…</p>}
+        {(connectionsQuery.error || ownersQuery.error) && (
           <p className="text-red-600 text-sm">
-            {(appsQuery.error as Error)?.message || (ownersQuery.error as Error)?.message}
+            {(connectionsQuery.error as Error)?.message || (ownersQuery.error as Error)?.message}
           </p>
         )}
-        {apps.length === 0 && !appsQuery.isLoading && (
-          <p className="text-neutral-600">No applications yet.</p>
+        {connections.length === 0 && !connectionsQuery.isLoading && (
+          <p className="text-neutral-600">No connections yet.</p>
         )}
 
         <ul className="grid gap-2">
-          {apps.map(listItem => {
-            const isEditing = editing[listItem.id] !== undefined
-            const value = isEditing
-              ? editing[listItem.id]
-              : listItem
+          {connections.map(listItem => {
+            const isEditing = editing[listItem.id] !== undefined;
+            const value = isEditing ? editing[listItem.id] : listItem;
 
             return (
               <li key={listItem.id} className="bg-white border rounded-xl p-3">
@@ -169,11 +161,14 @@ export default function ApplicationsPage() {
                     />
                     <select
                       className="border rounded-lg px-3 py-2 md:col-span-1"
-                      value={value.owner?.id}
+                      value={value.owner?.id ?? ''}
                       onChange={e =>
                         setEditing(prev => ({
                           ...prev,
-                          [listItem.id]: { ...prev[listItem.id], owner: owners.find(o => o.id === e.target.value) ?? null },
+                          [listItem.id]: {
+                            ...prev[listItem.id],
+                            owner: owners.find(o => o.id === e.target.value) ?? null,
+                          },
                         }))
                       }
                     >
@@ -189,16 +184,16 @@ export default function ApplicationsPage() {
                         className="rounded-xl px-3 py-2 border bg-black text-white disabled:opacity-60"
                         disabled={update.isPending || value.name.trim().length === 0}
                         onClick={() => {
-                          const patch: Partial<ApplicationView> = {
+                          const patch: Partial<ConnectionView> = {
                             name: value.name.trim(),
                             description: value.description?.trim() || null,
                             owner: value.owner || null,
-                          }
-                          update.mutate({ id: listItem.id, patch })
+                          };
+                          update.mutate({ id: listItem.id, patch });
                           setEditing(prev => {
-                            const { [listItem.id]: _omit, ...rest } = prev
-                            return rest
-                          })
+                            const { [listItem.id]: _omit, ...rest } = prev;
+                            return rest;
+                          });
                         }}
                       >
                         Save
@@ -207,8 +202,8 @@ export default function ApplicationsPage() {
                         className="rounded-xl px-3 py-2 border bg-white"
                         onClick={() =>
                           setEditing(prev => {
-                            const { [listItem.id]: _omit, ...rest } = prev
-                            return rest
+                            const { [listItem.id]: _omit, ...rest } = prev;
+                            return rest;
                           })
                         }
                       >
@@ -246,9 +241,9 @@ export default function ApplicationsPage() {
                         disabled={remove.isPending}
                         onClick={() => {
                           const ok = confirm(
-                            'Delete this application?\n\nNote: if this application has relationships (e.g., junction tables), deletion may be blocked by foreign key constraints.'
-                          )
-                          if (ok) remove.mutate(listItem.id)
+                            'Delete this connection?\n\nNote: if this record is referenced by junctions (e.g., system_locations, location_connections), deletion may be blocked by FKs.'
+                          );
+                          if (ok) remove.mutate(listItem.id);
                         }}
                       >
                         Delete
@@ -257,34 +252,34 @@ export default function ApplicationsPage() {
                   </div>
                 )}
               </li>
-            )
+            );
           })}
         </ul>
       </div>
 
       <div className="bg-white border rounded-2xl p-4">
-        <h2 className="text-lg font-medium mb-2">Create application</h2>
+        <h2 className="text-lg font-medium mb-2">Create connection</h2>
         <form
           className="grid gap-2 md:grid-cols-4"
           onSubmit={e => {
-            e.preventDefault()
-            const trimmed = name.trim()
-            if (!trimmed) return
+            e.preventDefault();
+            const trimmed = name.trim();
+            if (!trimmed) return;
             create.mutate(
               {
                 id: '',
                 name: trimmed,
                 description: desc.trim() || null,
-                owner: owners.find(o => o.id === ownerId) || null
+                owner: owners.find(o => o.id === ownerId) || null, // ← returns value correctly
               },
               {
                 onSuccess: () => {
-                  setName('')
-                  setDesc('')
-                  setOwnerId('')
+                  setName('');
+                  setDesc('');
+                  setOwnerId('');
                 },
               }
-            )
+            );
           }}
         >
           <input
@@ -319,7 +314,7 @@ export default function ApplicationsPage() {
                 {((create.error || update.error || remove.error) as Error)?.message}
               </p>
               <p className="text-xs text-neutral-500">
-                Requires <code>editor</code> role for writes; <code>authenticated</code> can read.
+                Writes require <code>editor</code>; reads are allowed for <code>authenticated</code>.
               </p>
             </div>
           )}
@@ -336,5 +331,5 @@ export default function ApplicationsPage() {
         </form>
       </div>
     </div>
-  )
+  );
 }

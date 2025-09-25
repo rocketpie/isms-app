@@ -1,3 +1,4 @@
+//app/login/page.tsx
 'use client'
 
 import { useState } from 'react'
@@ -36,6 +37,8 @@ export default function LoginPage() {
       <form className="grid gap-3" onSubmit={handleSubmit}>
         <input
           type="email"
+          name="username"
+          autoComplete="username"
           placeholder="you@example.com"
           className="border rounded-lg px-3 py-2"
           value={email}
@@ -44,6 +47,8 @@ export default function LoginPage() {
         />
         <input
           type="password"
+          name="current-password"
+          autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
           placeholder="••••••••"
           className="border rounded-lg px-3 py-2"
           value={password}

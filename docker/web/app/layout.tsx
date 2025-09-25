@@ -4,6 +4,17 @@ import Providers from './providers'
 import Link from 'next/link'
 import WhoAmI from './_components/whoami'
 
+// shadcn/ui dropdown
+import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu'
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -13,20 +24,53 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div className="mx-auto max-w-5xl flex items-center justify-between p-3">
               <div className="flex items-center gap-4">
                 <Link href="/" className="font-semibold">ISMS-App</Link>
-                <Link href="/people" className="text-sm text-neutral-600 hover:text-black">People</Link>
-                <Link href="/ownership" className="text-sm text-neutral-600 hover:text-black">Teams</Link>
-                <Link href="/applications" className="text-sm text-neutral-600 hover:text-black">Applications</Link>
-                <Link href="/systems" className="text-sm text-neutral-600 hover:text-black">Systems</Link>
-                <Link href="/data" className="text-sm text-neutral-600 hover:text-black">Data</Link>
-                <Link href="/locations" className="text-sm text-neutral-600 hover:text-black">Locations</Link>
-                <Link href="/connections" className="text-sm text-neutral-600 hover:text-black">Connections</Link>
+
+                {/* Assets dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 px-2 text-sm text-neutral-700">
+                      Assets
+                      <span className="ml-1 inline-block align-middle">▾</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-56">
+                    <DropdownMenuLabel className="text-xs text-neutral-500">Core Assets</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/people">People</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/ownership">Owner/Teams</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/processes">Processes</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/applications">Applications</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/systems">Systems</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/data">Data</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/locations">Locations</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/connections">Connections</Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
+
               <div className="flex items-center gap-3">
                 <WhoAmI />
                 <AuthButtons />
               </div>
             </div>
           </header>
+
           <main className="mx-auto max-w-5xl p-4">{children}</main>
         </Providers>
       </body>

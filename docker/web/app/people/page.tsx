@@ -5,28 +5,26 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { postgrest } from '@/lib/browser/api-isms'
 
-type Person = {
+type PersonView = {
   id: string
   name: string
 }
 
 async function listPeople() {
-  // GET /people?select=id,name&order=name
-  return await postgrest<Person[]>('/people?select=id,name&order=name.asc', { method: 'GET' })
+  return await postgrest<PersonView[]>('/people?select=id,name&order=name.asc', { method: 'GET' })
 }
 
 async function createPerson(input: { name: string }) {
   // POST /people with 'return=representation' so we get created row(s) back
-  return await postgrest<Person[]>('/people', {
+  return await postgrest<PersonView[]>('/people', {
     method: 'POST',
     body: JSON.stringify([input]),
     headers: { Prefer: 'return=representation' },
   })
 }
 
-async function updatePerson(id: string, patch: Partial<Pick<Person, 'name'>>) {
-  // PATCH /people?id=eq.<id>
-  return await postgrest<Person[]>(
+async function updatePerson(id: string, patch: Partial<PersonView>) {
+  return await postgrest<PersonView[]>(
     `/people?id=eq.${encodeURIComponent(id)}`,
     {
       method: 'PATCH',
@@ -37,7 +35,6 @@ async function updatePerson(id: string, patch: Partial<Pick<Person, 'name'>>) {
 }
 
 async function deletePerson(id: string) {
-  // DELETE /people?id=eq.<id>
   return await postgrest<null>(`/people?id=eq.${encodeURIComponent(id)}`, {
     method: 'DELETE',
   })
@@ -57,14 +54,14 @@ export default function PeoplePage() {
   })
 
   const update = useMutation({
-    mutationFn: ({ id, patch }: { id: string; patch: Partial<Pick<Person, 'name'>> }) =>
+    mutationFn: ({ id, patch }: { id: string; patch: Partial<Pick<PersonView, 'name'>> }) =>
       updatePerson(id, patch),
     // Optimistic UI for quick rename feedback
     onMutate: async ({ id, patch }) => {
       await queryClient.cancelQueries({ queryKey: ['people'] })
-      const prev = queryClient.getQueryData<Person[]>(['people'])
+      const prev = queryClient.getQueryData<PersonView[]>(['people'])
       if (prev) {
-        queryClient.setQueryData<Person[]>(
+        queryClient.setQueryData<PersonView[]>(
           ['people'],
           prev.map(p => (p.id === id ? { ...p, ...patch } : p))
         )
@@ -103,24 +100,24 @@ export default function PeoplePage() {
         )}
 
         <ul className="grid gap-2">
-          {sorted.map(person => {
-            const isEditing = editing[person.id] !== undefined
-            const value = isEditing ? editing[person.id] : person.name
+          {sorted.map(listItem => {
+            const isEditing = editing[listItem.id] !== undefined
+            const value = isEditing ? editing[listItem.id] : listItem.name
 
             return (
-              <li key={person.id} className="bg-white border rounded-xl p-3 flex items-center gap-3">
+              <li key={listItem.id} className="bg-white border rounded-xl p-3 flex items-center gap-3">
                 {isEditing ? (
                   <>
                     <input
                       className="border rounded-lg px-3 py-2 flex-1"
                       value={value}
                       onChange={e =>
-                        setEditing(prev => ({ ...prev, [person.id]: e.target.value }))
+                        setEditing(prev => ({ ...prev, [listItem.id]: e.target.value }))
                       }
                       onKeyDown={e => {
                         if (e.key === 'Escape') {
                           setEditing(prev => {
-                            const { [person.id]: _omit, ...rest } = prev
+                            const { [listItem.id]: _omit, ...rest } = prev
                             return rest
                           })
                         }
@@ -132,11 +129,11 @@ export default function PeoplePage() {
                       disabled={update.isPending || value.trim().length === 0}
                       onClick={() => {
                         const newName = value.trim()
-                        if (newName && newName !== person.name) {
-                          update.mutate({ id: person.id, patch: { name: newName } })
+                        if (newName && newName !== listItem.name) {
+                          update.mutate({ id: listItem.id, patch: { name: newName } })
                         }
                         setEditing(prev => {
-                          const { [person.id]: _omit, ...rest } = prev
+                          const { [listItem.id]: _omit, ...rest } = prev
                           return rest
                         })
                       }}
@@ -147,7 +144,7 @@ export default function PeoplePage() {
                       className="rounded-xl px-3 py-2 border bg-white"
                       onClick={() =>
                         setEditing(prev => {
-                          const { [person.id]: _omit, ...rest } = prev
+                          const { [listItem.id]: _omit, ...rest } = prev
                           return rest
                         })
                       }
@@ -157,11 +154,11 @@ export default function PeoplePage() {
                   </>
                 ) : (
                   <>
-                    <div className="font-medium flex-1">{person.name}</div>
+                    <div className="font-medium flex-1">{listItem.name}</div>
                     <button
                       className="rounded-xl px-3 py-2 border bg-white"
                       onClick={() =>
-                        setEditing(prev => ({ ...prev, [person.id]: person.name }))
+                        setEditing(prev => ({ ...prev, [listItem.id]: listItem.name }))
                       }
                     >
                       Rename
@@ -171,9 +168,9 @@ export default function PeoplePage() {
                       disabled={remove.isPending}
                       onClick={() => {
                         const ok = confirm(
-                          'Delete this person?\n\nNote: if this person is referenced in ownership, related ownerships may be deleted due to ON DELETE CASCADE.'
+                          'Delete this listItem?\n\nNote: if this person is referenced in ownership, related ownerships may be deleted due to ON DELETE CASCADE.'
                         )
-                        if (ok) remove.mutate(person.id)
+                        if (ok) remove.mutate(listItem.id)
                       }}
                     >
                       Delete

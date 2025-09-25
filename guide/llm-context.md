@@ -22,6 +22,7 @@ Stack:
   - kb-3099-schema-audit
   - kb-4010-api-overview
   - kb-5010-nextjs-app-overview
+  - kb-5015-nextjs-app-postgrest-embedding 
   - kb-6010-runbooks-runbook-first-start
   - kb-9910-reference-history
 

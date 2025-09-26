@@ -110,7 +110,7 @@ async function listLinkedApplications(processId: string) {
   return await postgrest<ProcessApplicationView[]>(
     `/process_applications?process_id=eq.${encodeURIComponent(
       processId
-    )}&select=process_id,application_id,application:applications(id,name,description,owner:ownership(id,name))&order=application.name.asc`,
+    )}&select=process_id,application_id,application:applications(id,name,description,owner:ownership(id,name))&order=application(name)asc`,
     { method: 'GET' }
   );
 }
@@ -296,7 +296,7 @@ export default function ProcessesPage() {
                         }}
                       >
                         Save
-                      </button>                      
+                      </button>
                       <button
                         className="rounded-xl px-3 py-2 border bg-white text-red-600 disabled:opacity-60"
                         disabled={remove.isPending}
@@ -329,7 +329,7 @@ export default function ProcessesPage() {
                    8I  dY 88 o.`Y8b 88"""  88  .o  dP__Yb    8P
                   8888Y"  88 8bodP' 88     88ood8 dP""""Yb  dP
                   */
-                 // md:grid-cols-6 -> 6 column grid
+                  // md:grid-cols-6 -> 6 column grid
                   <div className="grid gap-1 grid-cols-1 md:grid-cols-[auto,1fr,2fr,1fr,auto] md:items-center">
                     {/* ▼ / ▲ toggle on the left */}
                     <button
@@ -344,7 +344,15 @@ export default function ProcessesPage() {
                       />
                     </button>
 
-                    <div className="font-medium">{listItem.name}</div>
+                    <button
+                      className="font-medium text-left"
+                      onClick={() =>
+                        setExpanded(prev => ({ ...prev, [listItem.id]: !prev[listItem.id] }))
+                      }
+                    >
+                      {listItem.name}
+                    </button>
+
                     <div className="text-sm text-neutral-700">
                       {listItem.description ? (
                         <span className="text-neutral-600">{listItem.description}</span>

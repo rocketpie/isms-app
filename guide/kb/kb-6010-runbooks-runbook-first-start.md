@@ -23,3 +23,10 @@ related: [kb-2010-operations-environment-and-scripts, kb-2015-operations-test-de
 - run `npm install` 
 - run `npm run dev` 
 - visit http://localhost:3000/ 
+
+
+# Adding new components
+* To add a new domain CRUD page:
+  1. Define `{Feature}View` type and helpers in `lib/browser/{Feature}.ts`.
+  2. Add `use{Feature}()` hook with keys + optimistic updates.
+  4. Compose `DisplayRow`, `EditorRow`, `CreateForm` in the page.

@@ -21,7 +21,13 @@ related: [kb-3010-schema-overview, kb-5010-nextjs-app-overview, kb-4010-api-over
 # Browser helpers
 - `lib/browser/api-isms` → `/api` base, sets `Accept-Profile/Content-Profile: isms`, attaches JWT, `no-store`, 15s timeout. 
 - `lib/browser/api-app`  → `/api` base, sets `Accept-Profile/Content-Profile: app`, attaches JWT, `no-store`, 15s timeout. 
- 
+- All helpers return **arrays** for list/insert (per PostgREST), and `null` for DELETE.
+
+## Thin browser modules per domain
+- `lib/browser/isms/processes.ts` — CRUD for processes. 
+- `lib/browser/isms/process-applications.ts` — list/link/unlink, create-and-link. 
+- same pattern for `applications`, `systems`, `data`, etc.
+
 # Backend helper
 - `lib/backend/postgrest` → `INTERNAL_POSTGREST_URL` base, schema header per call (`'isms' | 'app'`), optional token, `no-store`, 15s timeout. 
  

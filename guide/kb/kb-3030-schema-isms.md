@@ -14,14 +14,15 @@ This schema is intentionally **clean**: no triggers, no RLS, no audit hooks. Tho
   - `people` — organizational persons (not app users) 
   - `ownership` — ties assets to `primary_person` + `deputy_person` 
   - `processes`, `applications`, `systems`, `data`, `connections`, `locations` 
-- **Junctions** (many-to-many): 
-  - `process_applications` 
+- **Junctions** (many-to-many, all **composite PK**): 
+  - `process_applications`
   - `application_systems` 
   - `system_data` 
   - `system_locations` 
   - `location_connections` 
+- **FK policy for Junctions**: **ON DELETE CASCADE** from entities to junctions, so deletes don’t get blocked (UI should still confirm).
 - **Indexes**: created on junction *secondary keys* (e.g., `application_id` in `process_applications`) 
- 
+
 ## Gotchas 
 - **No RLS** here — policies are added in [MIG-020 Policies](mig-020-policies.md). 
 - All FKs use `ON DELETE CASCADE`, so deleting an asset removes its links. 

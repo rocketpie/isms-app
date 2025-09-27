@@ -14,11 +14,23 @@ Use PostgREST **embedding** in read endpoints to fetch related labels (e.g., own
 - Aligns with our ADR to favor PostgREST shaping over custom routes.
 
 # Scope
-- **Reads**: embed minimal related fields needed for display.
-- **Writes**: continue sending foreign keys (`owner_id`), not nested objects.
-- For edit UIs that need selection lists, keep a separate query to `/ownership?select=id,name`.
+- Reads: use **embedded selects** for nice UI labels. 
+- Writes: send **foreign keys** only (eg. `owner_id`), never nested objects. 
+- Use `Prefer: return=representation` for POST/PATCH to hydrate UI with server-truth. 
+- Use **optimistic updates** in React Query; always `invalidateQueries` on settle. 
 
 # Impact
 - Reduced UI complexity and less invalidation glue.
 - Clearer React Query caches (one list contains what we render).
 - Maintain performance by selecting only required columns from related tables.
+
+# Exapmle
+```ts
+// Read (embed)
+GET /process_applications?process_id=eq.${encodeURIComponent(processId)}&select=process_id,application_id,application:applications(id,name,description,owner:ownership(id,name))&order=application(name).asc 
+
+// Create (FK only)
+POST /processes
+[{ "process_id": "<uuid>", "application_id": "<uuid>" }])
+Prefer: return=representation
+```

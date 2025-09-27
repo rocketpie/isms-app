@@ -56,6 +56,11 @@ All services run in containers, orchestrated with a single docker-compose file
 3. PostgREST receives call with `Accept-Profile: isms` (or `app`). 
 4. Data returned to frontend. 
  
+## Caching rules
+* Reads keyed by **resource + params** (see `queryKeys`).
+* Mutations must **invalidate** impacted keys.
+* Shared lookups (e.g., `ownership`) are **global keys** and reused everywhere.
+
 ## Error & Timeout Handling 
 - fetch wrapper `fetchWithTimeout` (default 15s timeout). 
 - Errors surfaced via React Query error boundaries. 

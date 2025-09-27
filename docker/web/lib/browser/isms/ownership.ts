@@ -1,4 +1,6 @@
-import { postgrest } from '@/lib/browser/api-isms'
+'use client'
+
+import { postgrest } from "../api-isms"
 
 export type OwnershipView = {
   id: string

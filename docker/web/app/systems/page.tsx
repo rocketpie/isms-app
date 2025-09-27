@@ -4,7 +4,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { postgrest } from '@/lib/browser/api-isms'
-import { listOwnerships, OwnershipView } from '@/lib/browser/isms-ownership'
+import { listOwnerships, OwnershipView } from '@/lib/browser/isms/ownership'
 
 type SystemView = {
   id: string

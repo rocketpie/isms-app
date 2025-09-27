@@ -37,5 +37,10 @@ Stack:
 
 ## Next Steps
 - Troubleshoot App Issues
+- Apply UI refactoring / Page splitting to applications, systems, data, etc.
 - Add ISMS Test Data (persons, systems, locations etc.)
-- Show ISMS Data 
+- `ErrorBanner` (standardize error rendering).
+- `ConfirmButton` (wraps confirm() UX for destructive actions).
+- `LoadingLine` / `EmptyState` (consistent loading/empty visuals).
+- `SearchInput` (with debounced `onChange`, used by sections like applications).
+- `EntityPicker` (generic select fed by a query + labelKey/idKey).

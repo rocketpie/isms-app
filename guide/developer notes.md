@@ -30,7 +30,8 @@ might as well
 # Troubleshoot containers
 docker compose logs -f db auth postgrest web
 
-
+# List documentation files
+guide\kb> ls | %{ "- $($_.name.Replace('.md', '')) " }
 
 # run db queries through docker
 

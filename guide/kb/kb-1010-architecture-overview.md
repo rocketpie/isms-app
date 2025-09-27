@@ -1,7 +1,7 @@
 --- 
 title: Architecture & Data Flows 
 tags: [architecture, components, data-flow, supabase, postgres, postgrest, gotrue, nextjs, docker] 
-related: [kb-0000-index-overview, kb-3010-schema-overview, kb-2010-operations-environment-and-scripts] 
+related: [kb-0000-index-overview, kb-3010-schema-overview, kb-2010-operations-environment-and-scripts, kb-5012-nextjs-app-isms-pages] 
 --- 
  
 # Overview 
@@ -45,7 +45,7 @@ All services run in containers, orchestrated with a single docker-compose file
  
 ## Authentication Flow 
 1. User signs in via GoTrue. 
-2. browser calls to `/auth` and `/api`.
+2. browser calls to `/auth` and `/api`. 
 3. `auth/[...path]/route.ts` web proxies to GoTrue. 
 4. Session (JWT) stored in `localStorage`. 
  
@@ -56,11 +56,11 @@ All services run in containers, orchestrated with a single docker-compose file
 3. PostgREST receives call with `Accept-Profile: isms` (or `app`). 
 4. Data returned to frontend. 
  
-## Caching rules
-* Reads keyed by **resource + params** (see `queryKeys`).
-* Mutations must **invalidate** impacted keys.
-* Shared lookups (e.g., `ownership`) are **global keys** and reused everywhere.
-
+## Caching rules 
+* Reads keyed by **resource + params** (see `queryKeys`). 
+* Mutations must **invalidate** impacted keys. 
+* Shared lookups (e.g., `ownership`) are **global keys** and reused everywhere. 
+ 
 ## Error & Timeout Handling 
 - fetch wrapper `fetchWithTimeout` (default 15s timeout). 
 - Errors surfaced via React Query error boundaries. 

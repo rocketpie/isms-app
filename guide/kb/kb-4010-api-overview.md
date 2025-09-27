@@ -13,25 +13,25 @@ related: [kb-3010-schema-overview, kb-5010-nextjs-app-overview, kb-4010-api-over
      'claims', app.jwt_claims() 
    } 
  UI should **display app_role** (fallback to 'authenticated'). 
-
+ 
 - `app.admin_grant_app_role(target_email, new_role)` preconditions (caller_role `admin`). 
   caller_role := (app.jwt_claims() -> 'app_metadata' ->> 'role'); 
-  
-
-# Browser helpers
+ 
+ 
+# Browser helpers 
 - `lib/browser/api-isms` → `/api` base, sets `Accept-Profile/Content-Profile: isms`, attaches JWT, `no-store`, 15s timeout. 
 - `lib/browser/api-app`  → `/api` base, sets `Accept-Profile/Content-Profile: app`, attaches JWT, `no-store`, 15s timeout. 
-- All helpers return **arrays** for list/insert (per PostgREST), and `null` for DELETE.
-
-## Thin browser modules per domain
+- All helpers return **arrays** for list/insert (per PostgREST), and `null` for DELETE. 
+ 
+## Thin browser modules per domain 
 - `lib/browser/isms/processes.ts` — CRUD for processes. 
 - `lib/browser/isms/process-applications.ts` — list/link/unlink, create-and-link. 
-- same pattern for `applications`, `systems`, `data`, etc.
-
-# Backend helper
+- same pattern for `applications`, `systems`, `data`, etc. 
+ 
+# Backend helper 
 - `lib/backend/postgrest` → `INTERNAL_POSTGREST_URL` base, schema header per call (`'isms' | 'app'`), optional token, `no-store`, 15s timeout. 
  
-# Config
+# Config 
 - `lib/browser/config.ts` → `getApiUrl() -> '/api'`, `getAuthUrl() -> '/auth'`. 
 - `lib/backend/config.ts` → validates `INTERNAL_POSTGREST_URL` / `INTERNAL_GOTRUE_URL`, exports `IsDebug` = process.env.DEBUG. 
  

@@ -1,7 +1,7 @@
 --- 
 title: Next.js App Overview 
 tags: [nextjs, frontend, react-query, tailwind, shadcn, auth, api] 
-related: [kb-4010-api-overview, kb-1010-architecture-overview, kb-2010-operations-environment-and-scripts] 
+related: [kb-4010-api-overview, kb-1010-architecture-overview, kb-2010-operations-environment-and-scripts, kb-5012-nextjs-app-isms-pages, kb-5015-nextjs-app-postgrest-embedding] 
 --- 
  
 # Purpose 
@@ -26,7 +26,7 @@ DEBUG=1
  
 # Key Directories & Files 
 ## `app/` 
-- `_components/whoami.tsx` — shows current user via `/rpc/whoami`.
+- `_components/whoami.tsx` — shows current user via `/rpc/whoami`. 
   important: show `${email} (${app_role ?? 'authenticated?'})` since app_role is a defining rpc authorization claim. 
 - `applications/page.tsx` — CRUD UI for `isms.applications`. 
 - `error.tsx` — global error boundary. 
@@ -77,7 +77,7 @@ DEBUG=1
  
 # Gotchas 
 - RLS: Depends on `PGRST_JWT_ROLE_CLAIM_KEY=.app_metadata.role`; JWTs must include role claims. 
-- SECURITY DEFINER functions may report `db_role` as the definer; prefer `app_role` from JWT claims for UI.
+- SECURITY DEFINER functions may report `db_role` as the definer; prefer `app_role` from JWT claims for UI. 
 - Server Components: Cannot use `localStorage`; do client-side fetching or server actions with server-side secrets (never expose service key to client). 
 - Timeouts: Global 15s abort — long queries should be paginated or wrapped in RPCs/server endpoints. 
  

@@ -1,7 +1,7 @@
 --- 
 title: KB Overview, Glossary & FAQ 
-tags: [documentation, knowledge-base, glossary, faq, reference] 
-related: [kb-1010-architecture-overview, kb-2010-operations-environment-and-scripts, kb-9910-reference-history] 
+tags: [navigation, documentation, glossary, faq, reference] 
+related: [kb-1010-architecture-overview, kb-3010-schema-overview, kb-5010-nextjs-app-overview, operations-environment-and-scripts, kb-9910-reference-history] 
 --- 
  
 # Purpose 
@@ -17,8 +17,8 @@ This enables precise retrieval and modular context for the GPT assistant.
 # Principles 
 - Link notes via `related`. 
 - Clear titles — use prefixes like `MIG-010` for migrations. 
-- Size target: 1K to 3K chars.
-- If GPT needs exact file content (eg. full SQL or code), it should **ask the user to provide the verbatim file** instead of guessing.
+- Size target: 1K to 3K chars. 
+- If GPT needs exact file content (eg. full SQL or code), it should **ask the user to provide the verbatim file** instead of guessing. 
  
 # KB folder Map 
 - kb-0000-index-overview 
@@ -31,6 +31,7 @@ This enables precise retrieval and modular context for the GPT assistant.
 - kb-3099-schema-audit 
 - kb-4010-api-overview 
 - kb-5010-nextjs-app-overview 
+- kb-5012-nextjs-app-isms-pages 
 - kb-5015-nextjs-app-postgrest-embedding 
 - kb-6010-runbooks-runbook-first-start 
 - kb-9910-reference-history 

@@ -1,4 +1,5 @@
-
+//app/_hooks/queryKeys.ts
+ 
 export const queryKeys = {
   processes: ['processes'] as const,
   ownership: ['ownership'] as const,

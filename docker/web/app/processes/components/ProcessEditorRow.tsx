@@ -1,3 +1,5 @@
+//app/processes/components/ProcessEditorRow.tsx
+ 
 import { ProcessView } from "@/lib/browser/isms/processes";
 
 export function EditorRow(props: {

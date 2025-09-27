@@ -1,4 +1,5 @@
-// app/_components/whoami.tsx
+//app/_components/whoami.tsx
+ 
 'use client'
 import { useEffect, useState } from 'react'
 import { postgrest } from '@/lib/browser/api-app'

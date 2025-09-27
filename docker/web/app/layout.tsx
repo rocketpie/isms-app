@@ -1,4 +1,5 @@
-// web/app/layout.tsx
+//app/layout.tsx
+ 
 import './globals.css'
 import Providers from './providers'
 import Link from 'next/link'

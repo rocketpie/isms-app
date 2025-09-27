@@ -1,3 +1,5 @@
+//app/processes/components/ProcessDisplayRow.tsx
+ 
 import { ProcessView } from "@/lib/browser/isms/processes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronRight } from "@fortawesome/free-solid-svg-icons";

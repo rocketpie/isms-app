@@ -1,3 +1,5 @@
+//app/_components/ownerSelect.tsx
+ 
 'use client';
 import { listOwnerships } from '@/lib/browser/isms/ownership';
 import { useQuery } from '@tanstack/react-query';

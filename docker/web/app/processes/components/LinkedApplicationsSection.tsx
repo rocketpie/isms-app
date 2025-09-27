@@ -1,3 +1,5 @@
+//app/processes/components/LinkedApplicationsSection.tsx
+ 
 import { postgrest } from "@/lib/browser/api-isms";
 import { ApplicationView, listApplications } from "@/lib/browser/isms/applications";
 import { listOwnerships } from "@/lib/browser/isms/ownership";

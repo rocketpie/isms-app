@@ -5,14 +5,16 @@ $webFolderPath = Resolve-Path (Join-Path $appFolderPath '..')
 "found $($tsFiles.Count) ts(x) files..."
 foreach ($file in $tsFiles) {
     $relativePath = [System.IO.Path]::GetRelativePath($webFolderPath, $file.FullName)
-    $fileHeader = "//$($relativePath)"
+    $fileHeader = "//$($relativePath)".Replace('\', '/')
 
-    $firstLine = Get-Content -LiteralPath $file.FullName -ReadCount 1 
+    $content = [System.IO.File]::ReadAllLines($file.FullName)
+    "content? $($content.GetType().FullName)"
+    $firstLine = $content | Select-Object -First 1 
 
-    "testing '$($firstLine)' to start with '$($fileHeader)'..."
-    if (-not $firstLine.StartsWith($fileHeader)) {
-        $content = Get-Content -LiteralPath $file.FullName
-        $content = @($fileHeader) + $content
-        Set-Content -LiteralPath $file.FullName -Value $content
+    $firstLineMatch = $firstLine.StartsWith($fileHeader)
+    "testing '$($firstLine)' to start with '$($fileHeader)' ($($firstLineMatch))..."
+    if (-not $firstLineMatch) {
+        [System.IO.File]::WriteAllLines($file.FullName, @($fileHeader, " "))
+        [System.IO.File]::AppendAllLines($file.FullName, $content)
     }
 }

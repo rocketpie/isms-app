@@ -1,4 +1,5 @@
-// web/app/page.tsx
+//app/page.tsx
+ 
 import { fetchWithTimeout } from '@/lib/fetch-timeout'
 import { postgrest } from '@/lib/backend/postgrest'
 import { getGoTrueUrl } from '@/lib/backend/config'

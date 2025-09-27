@@ -1,4 +1,5 @@
-//listItem/applications/page.tsx
+//app/applications/page.tsx
+ 
 'use client'
 
 import { ApplicationView, createApplication, deleteApplication, listApplications, updateApplication } from '@/lib/browser/isms/applications'

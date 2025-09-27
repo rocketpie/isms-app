@@ -1,3 +1,5 @@
+//app/_hooks/useProcessApplications.ts
+ 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from './queryKeys';
 import { createApplication, listApplications } from '@/lib/browser/isms/applications';

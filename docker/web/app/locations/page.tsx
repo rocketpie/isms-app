@@ -1,11 +1,11 @@
 //app/locations/page.tsx
- 
-'use client';
+'use client'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { postgrest } from '@/lib/browser/api-isms';
 import { OwnershipView, listOwnerships } from '@/lib/browser/isms/ownership';
+import { queryKeys } from '../_hooks/queryKeys';
 
 type LocationView = {
     id: string;
@@ -71,37 +71,37 @@ async function deleteLocation(id: string) {
 export default function LocationsPage() {
     const queryClient = useQueryClient();
 
-    const locationsQuery = useQuery({ queryKey: ['locations'], queryFn: listLocations });
-    const ownersQuery = useQuery({ queryKey: ['ownership'], queryFn: listOwnerships });
+    const locationsQuery = useQuery({ queryKey: queryKeys.allLocations, queryFn: listLocations });
+    const ownersQuery = useQuery({ queryKey: queryKeys.allOwnership, queryFn: listOwnerships });
 
     const create = useMutation({
         mutationFn: createLocation,
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['locations'] }),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.allLocations }),
     });
 
     const update = useMutation({
         mutationFn: ({ id, patch }: { id: string; patch: Partial<LocationView> }) =>
             updateLocation(id, patch),
         onMutate: async ({ id, patch }) => {
-            await queryClient.cancelQueries({ queryKey: ['locations'] });
-            const previous = queryClient.getQueryData<LocationView[]>(['locations']);
+            await queryClient.cancelQueries({ queryKey: queryKeys.allLocations });
+            const previous = queryClient.getQueryData<LocationView[]>(queryKeys.allLocations);
             if (previous) {
                 queryClient.setQueryData<LocationView[]>(
-                    ['locations'],
+                    queryKeys.allLocations,
                     previous.map(loc => (loc.id === id ? { ...loc, ...patch } : loc))
                 );
             }
             return { previous };
         },
         onError: (_e, _vars, ctx) => {
-            if (ctx?.previous) queryClient.setQueryData(['locations'], ctx.previous);
+            if (ctx?.previous) queryClient.setQueryData(queryKeys.allLocations, ctx.previous);
         },
-        onSettled: () => queryClient.invalidateQueries({ queryKey: ['locations'] }),
+        onSettled: () => queryClient.invalidateQueries({ queryKey: queryKeys.allLocations }),
     });
 
     const remove = useMutation({
         mutationFn: deleteLocation,
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['locations'] }),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.allLocations }),
     });
 
     // Create form state

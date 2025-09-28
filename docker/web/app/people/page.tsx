@@ -4,6 +4,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { postgrest } from '@/lib/browser/api-isms'
+import { queryKeys } from '../_hooks/queryKeys'
 
 type PersonView = {
   id: string
@@ -44,13 +45,13 @@ export default function PeoplePage() {
   const queryClient = useQueryClient()
 
   const peopleQuery = useQuery({
-    queryKey: ['people'],
+    queryKey: queryKeys.allPeople,
     queryFn: listPeople,
   })
 
   const create = useMutation({
     mutationFn: createPerson,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['people'] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.allPeople }),
   })
 
   const update = useMutation({
@@ -58,25 +59,25 @@ export default function PeoplePage() {
       updatePerson(id, patch),
     // Optimistic UI for quick rename feedback
     onMutate: async ({ id, patch }) => {
-      await queryClient.cancelQueries({ queryKey: ['people'] })
-      const prev = queryClient.getQueryData<PersonView[]>(['people'])
+      await queryClient.cancelQueries({ queryKey: queryKeys.allPeople })
+      const prev = queryClient.getQueryData<PersonView[]>(queryKeys.allPeople)
       if (prev) {
         queryClient.setQueryData<PersonView[]>(
-          ['people'],
+          queryKeys.allPeople,
           prev.map(p => (p.id === id ? { ...p, ...patch } : p))
         )
       }
       return { prev }
     },
     onError: (_err, _vars, ctx) => {
-      if (ctx?.prev) queryClient.setQueryData(['people'], ctx.prev)
+      if (ctx?.prev) queryClient.setQueryData(queryKeys.allPeople, ctx.prev)
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['people'] }),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: queryKeys.allPeople }),
   })
 
   const remove = useMutation({
     mutationFn: deletePerson,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['people'] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.allPeople }),
   })
 
   const [name, setName] = useState('')

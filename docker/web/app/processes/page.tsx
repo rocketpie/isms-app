@@ -15,8 +15,8 @@ import ProcessCreateForm from './components/ProcessCreateForm';
 import { LinkedApplicationsSection } from './components/LinkedApplicationsSection';
 
 export default function ProcessesPage() {
-  const { list: processesQuery, create, update, remove } = useProcesses();
-  const ownersQuery = useQuery({ queryKey: queryKeys.ownership, queryFn: listOwnerships });
+  const { list: processesQuery, update, remove } = useProcesses();
+  const ownersQuery = useQuery({ queryKey: queryKeys.allOwnership, queryFn: listOwnerships });
 
   const processes = useMemo(() => processesQuery.data ?? [], [processesQuery.data]);
   const owners = useMemo(() => ownersQuery.data ?? [], [ownersQuery.data]);
@@ -25,11 +25,6 @@ export default function ProcessesPage() {
   const [editing, setEditing] = useState<Record<string, ProcessView>>({});
   // Expanded rows: map of id -> boolean
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-
-  // Create form state
-  const [createName, setCreateName] = useState('');
-  const [createDescription, setCreateDescription] = useState('');
-  const [createOwnerId, setCreateOwnerId] = useState<string>('');
 
   return (
     <div className="grid gap-6">
@@ -104,7 +99,6 @@ export default function ProcessesPage() {
                   />
                 )}
 
-                {/* Linked Applications */}
                 {!isEditing && expanded[listItem.id] && (
                   <div className="col-span-full mt-3">
                     <LinkedApplicationsSection processId={listItem.id} />

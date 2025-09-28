@@ -4,6 +4,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { postgrest } from '@/lib/browser/api-isms'
+import { queryKeys } from '../_hooks/queryKeys'
 
 type Person = {
   id: string
@@ -64,13 +65,13 @@ async function deleteOwnership(id: string) {
 export default function OwnershipPage() {
   const queryClient = useQueryClient()
 
-  const peopleQuery = useQuery({ queryKey: ['people'], queryFn: listPeople })
-  const ownershipQuery = useQuery({ queryKey: ['ownership'], queryFn: listOwnerships })
+  const peopleQuery = useQuery({ queryKey: queryKeys.allPeople, queryFn: listPeople })
+  const ownershipQuery = useQuery({ queryKey: queryKeys.allOwnership, queryFn: listOwnerships })
 
   const create = useMutation({
     mutationFn: createOwnership,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['ownership'] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.allOwnership })
     },
   })
 
@@ -78,25 +79,25 @@ export default function OwnershipPage() {
     mutationFn: ({ id, patch }: { id: string; patch: Partial<Ownership> }) =>
       updateOwnership(id, patch),
     onMutate: async ({ id, patch }) => {
-      await queryClient.cancelQueries({ queryKey: ['ownership'] })
-      const prev = queryClient.getQueryData<Ownership[]>(['ownership'])
+      await queryClient.cancelQueries({ queryKey: queryKeys.allOwnership })
+      const prev = queryClient.getQueryData<Ownership[]>(queryKeys.allOwnership)
       if (prev) {
         queryClient.setQueryData<Ownership[]>(
-          ['ownership'],
+          queryKeys.allOwnership,
           prev.map(o => (o.id === id ? { ...o, ...patch } : o))
         )
       }
       return { prev }
     },
     onError: (_err, _vars, ctx) => {
-      if (ctx?.prev) queryClient.setQueryData(['ownership'], ctx.prev)
+      if (ctx?.prev) queryClient.setQueryData(queryKeys.allOwnership, ctx.prev)
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['ownership'] }),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: queryKeys.allOwnership }),
   })
 
   const remove = useMutation({
     mutationFn: deleteOwnership,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['ownership'] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.allOwnership }),
   })
 
   // Create form state
@@ -140,10 +141,10 @@ export default function OwnershipPage() {
             const value = isEditing
               ? editing[o.id]
               : {
-                  name: o.name,
-                  primary_person_id: o.primary_person_id ?? '',
-                  deputy_person_id: o.deputy_person_id ?? '',
-                }
+                name: o.name,
+                primary_person_id: o.primary_person_id ?? '',
+                deputy_person_id: o.deputy_person_id ?? '',
+              }
 
             const primaryLabel =
               o.primary_person_id ? peopleById.get(o.primary_person_id)?.name ?? '—' : '—'

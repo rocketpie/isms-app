@@ -8,7 +8,7 @@ import { listLinkedSystems } from '@/lib/browser/isms/application-systems';
 export function LinkedSystemsSection({ applicationId }: { applicationId: string }) {
   const q = useQuery({
     // Keep this under the app list key so invalidations refresh linked sections too
-    queryKey: [...queryKeys.allApplications, applicationId, 'systems'],
+    queryKey: queryKeys.applicationSystems(applicationId),
     queryFn: () => listLinkedSystems(applicationId),
   });
 

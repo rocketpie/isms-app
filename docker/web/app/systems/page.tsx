@@ -5,42 +5,43 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { listOwnerships } from '@/lib/browser/isms/ownership'
 import { createSystem, deleteSystem, listSystems, SystemView, updateSystem } from '@/lib/browser/isms/systems'
+import { queryKeys } from '../_hooks/queryKeys'
 
 /* ---------- Page ---------- */
 export default function SystemsPage() {
   const queryClient = useQueryClient()
 
-  const systemsQuery = useQuery({ queryKey: ['systems'], queryFn: listSystems })
-  const ownersQuery = useQuery({ queryKey: ['ownership'], queryFn: listOwnerships })
+  const systemsQuery = useQuery({ queryKey: queryKeys.allSystems, queryFn: listSystems })
+  const ownersQuery = useQuery({ queryKey: queryKeys.allOwnership, queryFn: listOwnerships })
 
   const create = useMutation({
     mutationFn: createSystem,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['systems'] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.allSystems }),
   })
 
   const update = useMutation({
     mutationFn: ({ id, patch }: { id: string; patch: Partial<SystemView> }) =>
       updateSystem(id, patch),
     onMutate: async ({ id, patch }) => {
-      await queryClient.cancelQueries({ queryKey: ['systems'] })
-      const prev = queryClient.getQueryData<SystemView[]>(['systems'])
+      await queryClient.cancelQueries({ queryKey: queryKeys.allSystems })
+      const prev = queryClient.getQueryData<SystemView[]>(queryKeys.allSystems)
       if (prev) {
         queryClient.setQueryData<SystemView[]>(
-          ['systems'],
+          queryKeys.allSystems,
           prev.map(s => (s.id === id ? { ...s, ...patch } : s))
         )
       }
       return { prev }
     },
     onError: (_e, _vars, ctx) => {
-      if (ctx?.prev) queryClient.setQueryData(['systems'], ctx.prev)
+      if (ctx?.prev) queryClient.setQueryData(queryKeys.allSystems, ctx.prev)
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['systems'] }),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: queryKeys.allSystems }),
   })
 
   const remove = useMutation({
     mutationFn: deleteSystem,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['systems'] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.allSystems }),
   })
 
   // Create form state

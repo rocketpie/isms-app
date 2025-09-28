@@ -1,11 +1,11 @@
 //app/connections/page.tsx
- 
-'use client';
+'use client'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { postgrest } from '@/lib/browser/api-isms';
 import { OwnershipView, listOwnerships } from '@/lib/browser/isms/ownership';
+import { queryKeys } from '../_hooks/queryKeys';
 
 type ConnectionView = {
   id: string;
@@ -69,20 +69,20 @@ async function deleteConnection(id: string) {
 export default function ConnectionsPage() {
   const queryClient = useQueryClient();
 
-  const connectionsQuery = useQuery({ queryKey: ['connections'], queryFn: listConnections });
-  const ownersQuery = useQuery({ queryKey: ['ownership'], queryFn: listOwnerships });
+  const connectionsQuery = useQuery({ queryKey: queryKeys.allConnections, queryFn: listConnections });
+  const ownersQuery = useQuery({ queryKey: queryKeys.allOwnership, queryFn: listOwnerships });
 
   const create = useMutation({
     mutationFn: createConnection,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['connections'] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.allConnections }),
   });
 
   const update = useMutation({
     mutationFn: ({ id, patch }: { id: string; patch: Partial<ConnectionView> }) =>
       updateConnection(id, patch),
     onMutate: async ({ id, patch }) => {
-      await queryClient.cancelQueries({ queryKey: ['connections'] });
-      const previous = queryClient.getQueryData<ConnectionView[]>(['connections']);
+      await queryClient.cancelQueries({ queryKey: queryKeys.allConnections });
+      const previous = queryClient.getQueryData<ConnectionView[]>(queryKeys.allConnections);
       if (previous) {
         queryClient.setQueryData<ConnectionView[]>(
           ['connections'],
@@ -92,14 +92,14 @@ export default function ConnectionsPage() {
       return { previous };
     },
     onError: (_e, _vars, ctx) => {
-      if (ctx?.previous) queryClient.setQueryData(['connections'], ctx.previous);
+      if (ctx?.previous) queryClient.setQueryData(queryKeys.allConnections, ctx.previous);
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['connections'] }),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: queryKeys.allConnections }),
   });
 
   const remove = useMutation({
     mutationFn: deleteConnection,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['connections'] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.allConnections }),
   });
 
   // Create form state

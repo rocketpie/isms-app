@@ -16,7 +16,7 @@ import ApplicationCreateForm from './components/ApplicationCreateForm';
 
 export default function ApplicationsPage() {
   const { list: appsQuery, create, update, remove } = useApplications();
-  const ownersQuery = useQuery({ queryKey: queryKeys.ownership, queryFn: listOwnerships });
+  const ownersQuery = useQuery({ queryKey: queryKeys.allOwnership, queryFn: listOwnerships });
 
   const applications = useMemo(() => appsQuery.data ?? [], [appsQuery.data]);
   const owners = useMemo(() => ownersQuery.data ?? [], [ownersQuery.data]);

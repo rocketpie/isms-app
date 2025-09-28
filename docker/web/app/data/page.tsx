@@ -4,7 +4,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { postgrest } from '@/lib/browser/api-isms'
-import { listOwnerships, OwnershipView } from '@/lib/browser/isms-ownership'
+import { queryKeys } from '../_hooks/queryKeys'
+import { listOwnerships, OwnershipView } from '@/lib/browser/isms/ownership'
 
 type DataAssetView = {
   id: string
@@ -69,37 +70,37 @@ async function deleteDataAsset(id: string) {
 export default function DataPage() {
   const queryClient = useQueryClient()
 
-  const dataQuery = useQuery({ queryKey: ['data-assets'], queryFn: listDataAssets })
-  const ownersQuery = useQuery({ queryKey: ['ownership'], queryFn: listOwnerships })
+  const dataQuery = useQuery({ queryKey: queryKeys.allData, queryFn: listDataAssets })
+  const ownersQuery = useQuery({ queryKey: queryKeys.allOwnership, queryFn: listOwnerships })
 
   const create = useMutation({
     mutationFn: createDataAsset,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['data-assets'] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.allData }),
   })
 
   const update = useMutation({
     mutationFn: ({ id, patch }: { id: string; patch: Partial<DataAssetView> }) =>
       updateDataAsset(id, patch),
     onMutate: async ({ id, patch }) => {
-      await queryClient.cancelQueries({ queryKey: ['data-assets'] })
-      const prev = queryClient.getQueryData<DataAssetView[]>(['data-assets'])
+      await queryClient.cancelQueries({ queryKey: queryKeys.allData })
+      const prev = queryClient.getQueryData<DataAssetView[]>(queryKeys.allData)
       if (prev) {
         queryClient.setQueryData<DataAssetView[]>(
-          ['data-assets'],
+          queryKeys.allData,
           prev.map(listItem => (listItem.id === id ? { ...listItem, ...patch } : listItem))
         )
       }
       return { prev }
     },
     onError: (_e, _vars, ctx) => {
-      if (ctx?.prev) queryClient.setQueryData(['data-assets'], ctx.prev)
+      if (ctx?.prev) queryClient.setQueryData(queryKeys.allData, ctx.prev)
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['data-assets'] }),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: queryKeys.allData }),
   })
 
   const remove = useMutation({
     mutationFn: deleteDataAsset,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['data-assets'] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.allData }),
   })
 
   // Create form state

@@ -25,7 +25,7 @@ export default function ApplicationCreateForm(props: {
 
   // Load owners only if not provided
   const ownersQuery = useQuery({
-    queryKey: queryKeys.ownership,
+    queryKey: queryKeys.allOwnership,
     queryFn: listOwnerships,
     enabled: !ownersProp,
   });

@@ -5,17 +5,16 @@ import { ApplicationView } from "./applications";
 
 export type ProcessApplicationView = {
     application: ApplicationView;
-    application_id: string;
     process_id: string;
+    application_id: string;
 };
 
 type ProcessApplicationRow = {
-    application_id: string;
     process_id: string;
+    application_id: string;
 };
 
 export async function listLinkedApplications(processId: string) {
-    // Embed the application label for nice rendering
     return await postgrest<ProcessApplicationView[]>(
         `/process_applications?process_id=eq.${encodeURIComponent(processId)}` +
         `&select=process_id,application_id,application:applications(id,name,description,owner:ownership(id,name))` +
@@ -23,7 +22,6 @@ export async function listLinkedApplications(processId: string) {
         { method: 'GET' }
     );
 }
-
 
 export async function linkApplication(processId: string, applicationId: string) {
     return await postgrest<ProcessApplicationRow[]>(

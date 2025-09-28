@@ -1,11 +1,11 @@
-//app/processes/components/ProcessDisplayRow.tsx
+//app/processes/components/SystemDisplayRow.tsx
 'use client'
 
-import { ProcessView } from "@/lib/browser/isms/processes";
+import { SystemView } from "@/lib/browser/isms/systems";
 import { ChevronDown, ChevronRight, Pencil } from "lucide-react";
 
-export function ProcessDisplayRow(props: {
-  listItem: ProcessView;
+export function SystemDisplayRow(props: {
+  listItem: SystemView;
   expanded: boolean;
   onEdit: () => void;
   onToggle?: () => void;

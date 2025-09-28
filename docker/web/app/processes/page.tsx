@@ -112,7 +112,7 @@ export default function ProcessesPage() {
 
       <ProcessCreateForm
         owners={owners}
-        className="g-white border rounded-2xl p-4" />
+        className="bg-white border rounded-2xl p-4" />
     </div>
   );
 }

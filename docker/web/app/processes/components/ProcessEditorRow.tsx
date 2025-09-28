@@ -41,13 +41,14 @@ export function ProcessEditorRow(props: {
         }
         disabled={disabled}
       >
-        <option value="">Owner (optional)</option>
+        <option value="">No owner</option>
         {owners.map(o => (
           <option key={o.id} value={o.id}>
             {o.name}
           </option>
         ))}
       </select>
+      
       <div className="flex gap-2">
         <button
           className="rounded-xl px-3 py-2 border bg-black text-white disabled:opacity-60"

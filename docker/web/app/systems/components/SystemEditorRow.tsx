@@ -1,14 +1,14 @@
-//app/applications/components/ApplicationEditorRow.tsx
+//app/processes/components/SystemEditorRow.tsx
 'use client'
 
-import { OwnershipView } from '@/lib/browser/isms/ownership';
-import { ApplicationView } from '@/lib/browser/isms/applications';
+import { OwnershipView } from "@/lib/browser/isms/ownership";
+import { SystemView } from "@/lib/browser/isms/systems";
 
-export function ApplicationEditorRow(props: {
-  value: ApplicationView;
+export function SystemEditorRow(props: {
+  value: SystemView;
   owners: OwnershipView[];
   disabled?: boolean;
-  onChange: (draft: ApplicationView) => void;
+  onChange: (draft: SystemView) => void;
   onSave: () => void;
   onDelete: () => void;
   onCancel: () => void;

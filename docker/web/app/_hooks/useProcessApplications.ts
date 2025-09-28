@@ -36,7 +36,6 @@ export function useProcessApplications(processId: string) {
     onError: (_e, _v, ctx) => { if (ctx?.prev) queryClient.setQueryData(queryKeys.processApplications(processId), ctx.prev); },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.processApplications(processId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.allApplications });
     },
   });
 
@@ -54,7 +53,6 @@ export function useProcessApplications(processId: string) {
     onError: (_e, _v, ctx) => { if (ctx?.prev) queryClient.setQueryData(queryKeys.processApplications(processId), ctx.prev); },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.processApplications(processId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.allApplications });
     },
   });
 

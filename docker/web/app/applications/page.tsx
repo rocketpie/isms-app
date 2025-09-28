@@ -15,7 +15,7 @@ import { LinkedSystemsSection } from './components/LinkedSystemsSection';
 import ApplicationCreateForm from './components/ApplicationCreateForm';
 
 export default function ApplicationsPage() {
-  const { list: appsQuery, create, update, remove } = useApplications();
+  const { list: appsQuery, update, remove } = useApplications();
   const ownersQuery = useQuery({ queryKey: queryKeys.allOwnership, queryFn: listOwnerships });
 
   const applications = useMemo(() => appsQuery.data ?? [], [appsQuery.data]);
@@ -95,7 +95,9 @@ export default function ApplicationsPage() {
         </ul>
       </div>
 
-      <ApplicationCreateForm owners={owners} className="bg-white border rounded-2xl p-4" />
+      <ApplicationCreateForm
+        owners={owners}
+        className="bg-white border rounded-2xl p-4" />
     </div>
   );
 }

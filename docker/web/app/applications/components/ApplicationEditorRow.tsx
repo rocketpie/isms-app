@@ -1,14 +1,14 @@
-//app/processes/components/ProcessEditorRow.tsx
+//app/applications/components/ApplicationEditorRow.tsx
 'use client'
 
-import { OwnershipView } from "@/lib/browser/isms/ownership";
-import { ProcessView } from "@/lib/browser/isms/processes";
+import { OwnershipView } from '@/lib/browser/isms/ownership';
+import { ApplicationView } from '@/lib/browser/isms/applications';
 
-export function ProcessEditorRow(props: {
-  value: ProcessView;
+export function ApplicationEditorRow(props: {
+  value: ApplicationView;
   owners: OwnershipView[];
   disabled?: boolean;
-  onChange: (draft: ProcessView) => void;
+  onChange: (draft: ApplicationView) => void;
   onSave: () => void;
   onDelete: () => void;
   onCancel: () => void;
@@ -23,7 +23,7 @@ export function ProcessEditorRow(props: {
         onChange={e => onChange({ ...value, name: e.target.value })}
         disabled={disabled}
       />
-      <input
+      <textarea
         className="border rounded-lg px-3 py-2"
         placeholder="Description"
         value={value.description ?? ''}
@@ -41,13 +41,14 @@ export function ProcessEditorRow(props: {
         }
         disabled={disabled}
       >
-        <option value="">Owner (optional)</option>
+        <option value="">No owner</option>
         {owners.map(o => (
           <option key={o.id} value={o.id}>
             {o.name}
           </option>
         ))}
       </select>
+
       <div className="flex gap-2">
         <button
           className="rounded-xl px-3 py-2 border bg-black text-white disabled:opacity-60"
@@ -66,6 +67,7 @@ export function ProcessEditorRow(props: {
         <button
           className="rounded-xl px-3 py-2 border bg-white"
           onClick={onCancel}
+          disabled={disabled}
         >
           Cancel
         </button>

@@ -1,21 +1,18 @@
 //app/processes/page.tsx
- 
 'use client';
 
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-
-// hooks & helpers (from the refactor plan)
 import { useProcesses } from '@/app/_hooks/useProcesses';
 import { queryKeys } from '@/app/_hooks/queryKeys';
 
-// extracted section component that uses its own hook
-import { ProcessView } from '@/lib/browser/isms/processes';
 import { listOwnerships } from '@/lib/browser/isms/ownership';
-import { DisplayRow } from './components/ProcessDisplayRow';
-import { EditorRow } from './components/ProcessEditorRow';
-import { LinkedApplicationsSection } from './components/LinkedApplicationsSection';
+import { ProcessView } from '@/lib/browser/isms/processes';
+
+import { ProcessDisplayRow } from './components/ProcessDisplayRow';
+import { ProcessEditorRow } from './components/ProcessEditorRow';
 import ProcessCreateForm from './components/ProcessCreateForm';
+import { LinkedApplicationsSection } from './components/LinkedApplicationsSection';
 
 export default function ProcessesPage() {
   const { list: processesQuery, create, update, remove } = useProcesses();
@@ -59,7 +56,7 @@ export default function ProcessesPage() {
             return (
               <li key={listItem.id} className="bg-white border rounded-xl p-3">
                 {isEditing ? (
-                  <EditorRow
+                  <ProcessEditorRow
                     value={value}
                     owners={owners}
                     disabled={update.isPending || remove.isPending}
@@ -76,10 +73,7 @@ export default function ProcessesPage() {
                         owner: value.owner || null,
                       };
                       update.mutate({ id: listItem.id, patch });
-                      setEditing(prev => {
-                        const { [listItem.id]: _omit, ...rest } = prev;
-                        return rest;
-                      });
+                      setEditing(({ [listItem.id]: _omit, ...rest }) => rest);
                     }}
                     onDelete={() => {
                       const ok = confirm(
@@ -95,8 +89,8 @@ export default function ProcessesPage() {
                     }
                   />
                 ) : (
-                  <DisplayRow
-                    item={listItem}
+                  <ProcessDisplayRow
+                    listItem={listItem}
                     expanded={!!expanded[listItem.id]}
                     onToggle={() =>
                       setExpanded(prev => ({ ...prev, [listItem.id]: !prev[listItem.id] }))

@@ -1,11 +1,11 @@
-//app/processes/components/ProcessDisplayRow.tsx
+//app/applications/components/ApplicationDisplayRow.tsx
 'use client'
 
-import { ProcessView } from "@/lib/browser/isms/processes";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ApplicationView } from '@/lib/browser/isms/applications';
+import { ChevronDown, ChevronRight, Pencil } from 'lucide-react';
 
-export function ProcessDisplayRow(props: {
-  listItem: ProcessView;
+export function ApplicationDisplayRow(props: {
+  listItem: ApplicationView;
   expanded: boolean;
   onToggle: () => void;
   onEdit: () => void;
@@ -15,7 +15,7 @@ export function ProcessDisplayRow(props: {
     <div className="grid gap-1 grid-cols-1 md:grid-cols-[1fr,2fr,1fr,auto] md:items-center">
 
       <button
-        className="text-base text-neutral-700 hover:text-black"
+        className="text-lg text-neutral-500 hover:text-black"
         onClick={onToggle}
       >
         {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
@@ -36,7 +36,7 @@ export function ProcessDisplayRow(props: {
 
       <div className="flex gap-2">
         <button className="rounded-xl px-3 py-2 border bg-white" onClick={onEdit}>
-          Edit
+          <Pencil className="h-3.5 w-3.5" /> Edit
         </button>
       </div>
     </div>

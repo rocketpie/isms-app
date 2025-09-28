@@ -1,32 +1,32 @@
 'use client'
 
 import { postgrest } from "../api-isms";
-import { ApplicationView } from "./applications";
+import { SystemView } from "./systems";
 
-export type ProcessApplicationView = {
-    application: ApplicationView;
+
+export type ApplicationSystemView = {
     application_id: string;
-    process_id: string;
+    system_id: string;
+    system: SystemView
 };
 
-type ProcessApplicationRow = {
+export type ApplicationSystemRow = {
     application_id: string;
-    process_id: string;
+    system_id: string;
 };
 
-export async function listLinkedApplications(processId: string) {
-    // Embed the application label for nice rendering
-    return await postgrest<ProcessApplicationView[]>(
-        `/process_applications?process_id=eq.${encodeURIComponent(processId)}` +
-        `&select=process_id,application_id,application:applications(id,name,description,owner:ownership(id,name))` +
-        `&order=application(name).asc`,
-        { method: 'GET' }
-    );
+
+export async function listLinkedSystems(applicationId: string): Promise<ApplicationSystemView[]> {
+    const url =
+        `/application_systems?application_id=eq.${encodeURIComponent(applicationId)}` +
+        `&select=application_id,system_id,system:systems(id,name,description,owner:ownership(id,name))`
+        + `&order=system(name).asc`;
+    return await postgrest<ApplicationSystemView[]>(url);
 }
 
 
 export async function linkApplication(processId: string, applicationId: string) {
-    return await postgrest<ProcessApplicationRow[]>(
+    return await postgrest<ApplicationSystemRow[]>(
         '/process_applications',
         {
             method: 'POST',

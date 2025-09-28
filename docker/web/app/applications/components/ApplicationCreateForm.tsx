@@ -1,12 +1,12 @@
-//app/processes/components/ProcessCreateForm.tsx
+//app/applications/components/ApplicationCreateForm.tsx
 'use client'
 
-import { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { useProcesses } from '@/app/_hooks/useProcesses';
-import { queryKeys } from '@/app/_hooks/queryKeys';
+import { useMemo, useState } from 'react';
+import { useApplications } from '@/app/_hooks/useApplications';
 import { listOwnerships, OwnershipView } from '@/lib/browser/isms/ownership';
-import { ProcessView } from '@/lib/browser/isms/processes';
+import { ApplicationView } from '@/lib/browser/isms/applications';
+import { queryKeys } from '@/app/_hooks/queryKeys';
+import { useQuery } from '@tanstack/react-query';
 
 /**
  * A reusable, self-contained create form for Processes.
@@ -16,9 +16,9 @@ import { ProcessView } from '@/lib/browser/isms/processes';
  *
  * You can pass a preloaded owners array to avoid an extra query.
  */
-export default function ProcessCreateForm(props: {
+export default function ApplicationCreateForm(props: {
   owners?: OwnershipView[];
-  onCreated?: (created: ProcessView) => void;
+  onCreated?: (created: ApplicationView) => void;
   className?: string;
 }) {
   const { owners: ownersProp, onCreated, className } = props;
@@ -32,7 +32,7 @@ export default function ProcessCreateForm(props: {
 
   const owners = useMemo(() => ownersProp ?? ownersQuery.data ?? [], [ownersProp, ownersQuery.data]);
 
-  const { create } = useProcesses();
+  const { create } = useApplications();
 
   // Local form state
   const [name, setName] = useState('');
@@ -43,7 +43,7 @@ export default function ProcessCreateForm(props: {
 
   return (
     <div className={className}>
-      <h2 className="text-lg font-medium mb-2">Create process</h2>
+      <h2 className="text-lg font-medium mb-2">Create Application</h2>
 
       <form
         className="grid gap-2 md:grid-cols-4"
@@ -62,7 +62,7 @@ export default function ProcessCreateForm(props: {
             {
               onSuccess: rows => {
                 // postgrest returns representation; take first row
-                const created = Array.isArray(rows) ? (rows[0] as ProcessView | undefined) : undefined;
+                const created = Array.isArray(rows) ? (rows[0] as ApplicationView | undefined) : undefined;
                 // clear form
                 setName('');
                 setDescription('');

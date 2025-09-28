@@ -1,5 +1,6 @@
 // lib/backend/postgrest.ts
 import 'server-only'
+
 import { fetchWithTimeout } from '../fetch-timeout'
 import { getPostgrestUrl } from './config';
 import { logDebug } from '../logDebug';

@@ -1,5 +1,10 @@
+# Don't forget!
+occasionally run 
+~/isms-app$ docker system prune
+
 # Use docker to debug app locally
 `./scripts/npm.ps1`
+`cd web/`
 
 optionally reset the build cache
 `rm -rf .next`
@@ -7,36 +12,33 @@ optionally reset the build cache
 then
 `npm run dev`
 
-don't forget to
-`npm install --package-lock-only`
+# List documentation files
+guide\kb> ls | %{ "- $($_.name.Replace('.md', '')) " }
 
-# Sync to dockerhost
+
+# Sync and start on dockerhost
 up top, click the search bar > Run Task > Sync to docker host
 
-# enable execute init scripts
+## enable execute init scripts
 chmod +x supabase/init/000_reset.sh
 chmod +x supabase/init/001_bootstrap.sh
 ...
 
-# Option: Reset
-~/isms-app$ ./reset.sh
+## Start App without DB Init
+docker compose up -d --build
 
-# Start App
+## Restart App with DB Init
 ~/isms-app$ ./reset.sh
-
-might as well 
+~/isms-app$ ./start.sh
 ~/isms-app$ ./test.sh
+
+
 
 # Troubleshoot containers
 docker compose logs -f db auth postgrest web
 
-# List documentation files
-guide\kb> ls | %{ "- $($_.name.Replace('.md', '')) " }
-
-# run db queries through docker
-
 ## eg. Confirm what’s in the DB right now
-docker exec -it isms-app-db-1 sh -lc '
+~/isms-app$ docker compose exec db sh -lc '
   psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h 127.0.0.1 \
     -c "select schema_name from information_schema.schemata where schema_name in ('\''auth'\'','\''app'\'','\''isms'\'');" \
     -c "\dn" \
@@ -44,9 +46,17 @@ docker exec -it isms-app-db-1 sh -lc '
     -c "\dt isms.*"
 '
 ## eg. search for exposed functions
-docker exec -it isms-app-db-1 sh -lc '
+~/isms-app$ docker compose exec db sh -lc '
   psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h 127.0.0.1 \
     -c "SELECT routine_schema, routine_name FROM information_schema.routines WHERE routine_name = '\''whoami'\'';"
 '
 
+## eg. confirm API availability
+~/isms-app$ docker compose exec web sh -lc '
+apk add --no-cache curl
+echo $INTERNAL_GOTRUE_URL
+curl -i $INTERNAL_GOTRUE_URL/settings
 
+echo $INTERNAL_POSTGREST_URL
+curl -i $INTERNAL_POSTGREST_URL/
+'

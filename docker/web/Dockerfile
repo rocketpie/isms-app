@@ -8,6 +8,8 @@ RUN npm ci --no-audit --no-fund
 FROM node:22-alpine AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
+# add libc6-compat (recommended for Next/sharp on Alpine) https://medium.com/@lucaslauriano.souza/why-you-should-use-run-apk-add-no-cache-libc6-compat-docker-with-node-js-6028a12d0ac5
+RUN apk add --no-cache libc6-compat
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
@@ -18,10 +20,6 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV NEXT_TELEMETRY_DISABLED=1
-# These can be overridden by compose env_file at runtime
-ENV NEXT_PUBLIC_API_URL=http://localhost:7771
-ENV NEXT_PUBLIC_AUTH_URL=http://localhost:7779
-ENV NEXT_PUBLIC_SITE_URL=http://localhost:7770
 
 # copy the standalone output
 COPY --from=builder /app/.next/standalone ./

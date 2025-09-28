@@ -13,13 +13,13 @@ services:
       - ./supabase/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
-      interval: 3s
+      interval: 15s
       timeout: 3s
-      retries: 20
+      retries: 5
 
   auth:
     image: supabase/gotrue:v2.177.0
-    depends_on: 
+    depends_on:
       db:
         condition: service_healthy
     environment:
@@ -27,7 +27,7 @@ services:
       GOTRUE_DB_DATABASE_URL: postgres://supabase_auth_admin:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?sslmode=disable
       GOTRUE_DB_NAMESPACE: auth
       GOTRUE_API_HOST: 0.0.0.0
-      GOTRUE_API_PORT: ${API_PORT}
+      PORT: 9999
       GOTRUE_JWT_SECRET: ${JWT_SECRET}
       GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
       GOTRUE_JWT_ADMIN_ROLES: service_role
@@ -37,12 +37,12 @@ services:
       GOTRUE_EXTERNAL_EMAIL_ENABLED: ${GOTRUE_EXTERNAL_EMAIL_ENABLED}
       GOTRUE_MAILER_AUTOCONFIRM: ${GOTRUE_MAILER_AUTOCONFIRM}
     ports:
-      - "${AUTH_PORT}:${API_PORT}"
+      - "${AUTH_PORT}:9999"
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:7779/health"]
-      interval: 3s
+      test: ["CMD", "wget", "-qO-", "http://localhost:9999/settings"]
+      interval: 300s
       timeout: 3s
-      retries: 20
+      retries: 5
 
   postgrest:
     image: postgrest/postgrest:v12.2.12
@@ -56,15 +56,23 @@ services:
       PGRST_JWT_SECRET: ${JWT_SECRET}
       PGRST_JWT_ROLE_CLAIM_KEY: .app_metadata.role
       # Make OpenAPI advertise the public URL:
-      PGRST_OPENAPI_SERVER_PROXY_URI: http://${BASE_HOST}:${API_PORT}   # <— unified
+      PGRST_OPENAPI_SERVER_PROXY_URI: http://${BASE_HOST}:${API_PORT} # <— unified
     ports:
       - "${API_PORT}:3000"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/"]
+      interval: 300s
+      timeout: 3s
+      retries: 5
 
   web:
     build:
       context: ./web
       dockerfile: Dockerfile
     depends_on: [postgrest, auth]
+    environment:    
+      INTERNAL_POSTGREST_URL: http://postgrest:3000
+      INTERNAL_GOTRUE_URL: http://auth:9999
     ports:
       - "${WEB_PORT}:3000"
 

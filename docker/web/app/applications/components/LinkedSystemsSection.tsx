@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { ChevronRight, ChevronDown } from 'lucide-react';
 
 import { listOwnerships } from '@/lib/browser/isms/ownership';
 import { SystemView, listSystems } from '@/lib/browser/isms/systems';
@@ -55,7 +56,6 @@ export function LinkedSystemsSection({ applicationId }: { applicationId: string 
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.applicationSystems(applicationId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.allSystems });
     },
   });
 
@@ -76,7 +76,6 @@ export function LinkedSystemsSection({ applicationId }: { applicationId: string 
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.applicationSystems(applicationId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.allApplications });
     },
   });
 
@@ -190,23 +189,25 @@ export function LinkedSystemsSection({ applicationId }: { applicationId: string 
       </div>
 
       {/* Create new + auto-link (reusing the shared form) */}
-      <div className="mt-4">
-        <details className="group">
-          <summary className="cursor-pointer text-sm text-neutral-700">+ New system</summary>
-          <SystemCreateForm
-            owners={ownersQuery.data || []}
-            className="mt-2 grid gap-2 md:grid-cols-4 bg-transparent border-0 p-0"
-            onCreated={(created) => {
-              // Auto-link and refresh
-              linkSystem(applicationId, created.id)
-                .finally(() => {
-                  queryClient.invalidateQueries({ queryKey: queryKeys.applicationSystems(applicationId) });
-                  queryClient.invalidateQueries({ queryKey: queryKeys.allSystems });
-                });
-            }}
-          />
-        </details>
-      </div>
+      <details className="group mt-2">
+        <summary className="flex items-center gap-2 text-sm text-neutral-700">
+          <ChevronRight className="h-4 w-4 group-open:hidden" />
+          <ChevronDown className="h-4 w-4 hidden group-open:block" />
+          <span>link a new system</span>
+        </summary>
+        <SystemCreateForm
+          owners={ownersQuery.data || []}
+          className="mt-4"
+          onCreated={(created) => {
+            linkSystem(applicationId, created.id)
+              .finally(() => {
+                queryClient.invalidateQueries({ queryKey: queryKeys.applicationSystems(applicationId) });
+                queryClient.invalidateQueries({ queryKey: queryKeys.allSystems });
+              });
+          }}
+        />
+      </details>
+
     </div>
   );
 }

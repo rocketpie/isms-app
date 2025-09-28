@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 
 import { listOwnerships } from '@/lib/browser/isms/ownership';
 import { ApplicationView, listApplications } from '@/lib/browser/isms/applications';
@@ -55,7 +56,6 @@ export function LinkedApplicationsSection({ processId }: { processId: string }) 
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.processApplications(processId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.allApplications });
     },
   });
 
@@ -76,7 +76,6 @@ export function LinkedApplicationsSection({ processId }: { processId: string }) 
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.processApplications(processId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.allApplications });
     },
   });
 
@@ -111,36 +110,36 @@ export function LinkedApplicationsSection({ processId }: { processId: string }) 
             <li key={link.application_id} className="border rounded-lg p-3">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex-1">
-                {isEditing ? (
-                  <ApplicationEditorRow
-                    value={value}
-                    owners={ownersQuery.data || []}
-                    disabled={update.isPending || remove.isPending}
-                    onChange={draft => setEditing(prev => ({ ...prev, [item.id]: draft }))}
-                    onSave={() => {
-                      const patch: Partial<ApplicationView> = {
-                        name: value.name.trim(),
-                        description: value.description?.trim() || null,
-                        owner: value.owner || null,
-                      };
-                      update.mutate({ id: item.id, patch });
-                      setEditing(({ [item.id]: _omit, ...rest }) => rest);
-                    }}
-                    onDelete={() => {
-                      const ok = confirm(
-                        'Delete this application?\n\nNote: related junctions may cascade delete depending on FK policy.'
-                      );
-                      if (ok) remove.mutate(item.id);
-                    }}
-                    onCancel={() => setEditing(({ [item.id]: _omit, ...rest }) => rest)}
-                  />
-                ) : (
-                  <ApplicationDisplayRow
-                    listItem={item}
-                    expanded={false}
-                    onEdit={() => setEditing(prev => ({ ...prev, [item.id]: item }))}
-                  />
-                )}
+                  {isEditing ? (
+                    <ApplicationEditorRow
+                      value={value}
+                      owners={ownersQuery.data || []}
+                      disabled={update.isPending || remove.isPending}
+                      onChange={draft => setEditing(prev => ({ ...prev, [item.id]: draft }))}
+                      onSave={() => {
+                        const patch: Partial<ApplicationView> = {
+                          name: value.name.trim(),
+                          description: value.description?.trim() || null,
+                          owner: value.owner || null,
+                        };
+                        update.mutate({ id: item.id, patch });
+                        setEditing(({ [item.id]: _omit, ...rest }) => rest);
+                      }}
+                      onDelete={() => {
+                        const ok = confirm(
+                          'Delete this application?\n\nNote: related junctions may cascade delete depending on FK policy.'
+                        );
+                        if (ok) remove.mutate(item.id);
+                      }}
+                      onCancel={() => setEditing(({ [item.id]: _omit, ...rest }) => rest)}
+                    />
+                  ) : (
+                    <ApplicationDisplayRow
+                      listItem={item}
+                      expanded={false}
+                      onEdit={() => setEditing(prev => ({ ...prev, [item.id]: item }))}
+                    />
+                  )}
                 </div>
                 <button
                   className="rounded-lg px-3 py-1 border text-red-600 disabled:opacity-60"
@@ -190,23 +189,24 @@ export function LinkedApplicationsSection({ processId }: { processId: string }) 
       </div>
 
       {/* Create new + auto-link (reusing the shared form) */}
-      <div className="mt-4">
-        <details className="group">
-          <summary className="cursor-pointer text-sm text-neutral-700">+ New application</summary>
-          <ApplicationCreateForm
-            owners={ownersQuery.data || []}
-            className="mt-2 grid gap-2 md:grid-cols-4 bg-transparent border-0 p-0"
-            onCreated={(created) => {
-              // Auto-link and refresh
-              linkApplication(processId, created.id)
-                .finally(() => {
-                  queryClient.invalidateQueries({ queryKey: queryKeys.processApplications(processId) });
-                  queryClient.invalidateQueries({ queryKey: queryKeys.allApplications });
-                });
-            }}
-          />
-        </details>
-      </div>
+      <details className="group mt-2">
+        <summary className="flex items-center gap-2 text-sm text-neutral-700">
+          <ChevronRight className="h-4 w-4 group-open:hidden" />
+          <ChevronDown className="h-4 w-4 hidden group-open:block" />
+          <span>link a new application</span>
+        </summary>
+        <ApplicationCreateForm
+          owners={ownersQuery.data || []}
+          className="mt-4"
+          onCreated={(created) => {
+            linkApplication(processId, created.id).finally(() => {
+              queryClient.invalidateQueries({ queryKey: queryKeys.processApplications(processId) });
+              queryClient.invalidateQueries({ queryKey: queryKeys.allApplications });
+            });
+          }}
+        />
+      </details>
+
     </div>
   );
 }

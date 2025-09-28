@@ -8,14 +8,14 @@ import { queryKeys } from '@/app/_hooks/queryKeys';
 
 import { listOwnerships } from '@/lib/browser/isms/ownership';
 
-import { ProcessEditorRow } from './components/ProcessEditorRow';
-import ProcessCreateForm from './components/ProcessCreateForm';
 import { LinkedApplicationsSection } from './components/LinkedApplicationsSection';
 import SimpleAssetDisplayRow from '../_components/SimpleAssetDisplayRow';
 import { ProcessView } from '@/lib/browser/isms/assetTypes';
+import SimpleAssetEditorRow from '../_components/SimpleAssetEditorRow';
+import SimpleAssetCreateForm from '../_components/SimpleAssetCreateForm';
 
 export default function ProcessesPage() {
-  const { list: processesQuery, update, remove } = useProcesses();
+  const { list: processesQuery, create, update, remove } = useProcesses();
   const ownersQuery = useQuery({ queryKey: queryKeys.allOwnership, queryFn: listOwnerships });
 
   const processes = useMemo(() => processesQuery.data ?? [], [processesQuery.data]);
@@ -47,23 +47,13 @@ export default function ProcessesPage() {
             return (
               <li key={listItem.id} className="bg-white border rounded-xl p-3">
                 {isEditing ? (
-                  <ProcessEditorRow
+                  <SimpleAssetEditorRow
                     value={value}
                     owners={owners}
                     disabled={update.isPending || remove.isPending}
-                    onChange={draft =>
-                      setEditing(prev => ({
-                        ...prev,
-                        [listItem.id]: draft,
-                      }))
-                    }
+                    onChange={draft => setEditing(prev => ({ ...prev, [listItem.id]: draft, }))}
                     onSave={() => {
-                      const patch: Partial<ProcessView> = {
-                        name: value.name.trim(),
-                        description: value.description?.trim() || null,
-                        owner: value.owner || null,
-                      };
-                      update.mutate({ id: listItem.id, patch });
+                      update.mutate({ id: listItem.id, patch: value });
                       setEditing(({ [listItem.id]: _omit, ...rest }) => rest);
                     }}
                     onDelete={() => {
@@ -72,12 +62,7 @@ export default function ProcessesPage() {
                       );
                       if (ok) remove.mutate(listItem.id);
                     }}
-                    onCancel={() =>
-                      setEditing(prev => {
-                        const { [listItem.id]: _omit, ...rest } = prev;
-                        return rest;
-                      })
-                    }
+                    onCancel={() => setEditing(({ [listItem.id]: _omit, ...rest }) => rest)}
                   />
                 ) : (
                   <SimpleAssetDisplayRow
@@ -101,9 +86,12 @@ export default function ProcessesPage() {
         </ul>
       </div>
 
-      <ProcessCreateForm
+      <SimpleAssetCreateForm
+        title='New Process'
         owners={owners}
-        className="bg-white border rounded-2xl p-4" />
+        onSubmit={newProcess => create.mutateAsync({ ...newProcess })}
+        className="bg-white border rounded-2xl p-4"
+      />
     </div>
   );
 }

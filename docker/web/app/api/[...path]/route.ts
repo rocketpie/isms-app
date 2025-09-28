@@ -34,7 +34,7 @@ function forwardHeaders(h: Headers) {
 }
 
 async function proxy(req: NextRequest) {
-  const target = buildTarget(req)
+  const targetUrl = buildTarget(req)
 
   // Pull interesting headers (do NOT log bearer)
   const acceptProfile = req.headers.get('accept-profile')
@@ -42,7 +42,6 @@ async function proxy(req: NextRequest) {
   const prefer = req.headers.get('prefer')
   const hasAuth = req.headers.has('authorization')
 
-  logDebug(`[API proxy] ${req.method} → ${target} | Accept-Profile=${acceptProfile ?? '-'} Content-Profile=${contentProfile ?? '-'} Prefer=${prefer ?? '-'} Authorization=${hasAuth ? '[redacted]' : 'none'}`)
   const init: RequestInit = {
     method: req.method,
     headers: forwardHeaders(req.headers),
@@ -51,10 +50,14 @@ async function proxy(req: NextRequest) {
     cache: 'no-store',
   }
 
-  const res = await fetchWithTimeout(target, init)
-  logDebug(`[API proxy] Response ${res.status} from ${target}`)
+  const res = await fetchWithTimeout(targetUrl, init)
+  const body = await res.text()
+  logDebug(`[API proxy] ${req.method} ${targetUrl} (Profile=${acceptProfile ?? '-'}/${contentProfile ?? '-'}, ${prefer ?? '-'}, ${hasAuth ? '' : 'not '}authorized) ` +
+    `Body: ${init.body} ` +
+    `Response (${res.status}): ${body}`
+  )
 
-  return new Response(res.body, {
+  return new Response(body, {
     status: res.status,
     statusText: res.statusText,
     headers: new Headers(res.headers),

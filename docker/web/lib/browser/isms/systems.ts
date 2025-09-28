@@ -22,7 +22,7 @@ export async function createSystem(input: SystemView) {
         ...rest,
         owner_id: owner?.id ?? null
     }
-    return await postgrest<SystemView[]>('/systems', {
+    return await postgrest<SystemRow>('/systems', {
         method: 'POST',
         body: JSON.stringify([dataModel]),
         headers: { Prefer: 'return=representation' },

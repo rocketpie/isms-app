@@ -9,13 +9,13 @@ import { listOwnerships } from '@/lib/browser/isms/ownership';
 import { ApplicationView } from '@/lib/browser/isms/assetTypes';
 import { useApplications } from '@/app/_hooks/useApplications';
 
-import { ApplicationEditorRow } from './components/ApplicationEditorRow';
 import { LinkedSystemsSection } from './components/LinkedSystemsSection';
-import ApplicationCreateForm from './components/ApplicationCreateForm';
 import SimpleAssetDisplayRow from '../_components/SimpleAssetDisplayRow';
+import SimpleAssetEditorRow from '../_components/SimpleAssetEditorRow';
+import SimpleAssetCreateForm from '../_components/SimpleAssetCreateForm';
 
 export default function ApplicationsPage() {
-  const { list: appsQuery, update, remove } = useApplications();
+  const { list: appsQuery, create, update, remove } = useApplications();
   const ownersQuery = useQuery({ queryKey: queryKeys.allOwnership, queryFn: listOwnerships });
 
   const applications = useMemo(() => appsQuery.data ?? [], [appsQuery.data]);
@@ -47,20 +47,13 @@ export default function ApplicationsPage() {
             return (
               <li key={listItem.id} className="bg-white border rounded-xl p-3">
                 {isEditing ? (
-                  <ApplicationEditorRow
-                    value={value}
+                  <SimpleAssetEditorRow
+                    value={listItem}
                     owners={owners}
                     disabled={update.isPending || remove.isPending}
-                    onChange={draft =>
-                      setEditing(prev => ({ ...prev, [listItem.id]: draft }))
-                    }
+                    onChange={draft => setEditing(prev => ({ ...prev, [listItem.id]: draft }))}
                     onSave={() => {
-                      const patch: Partial<ApplicationView> = {
-                        name: value.name.trim(),
-                        description: value.description?.trim() || null,
-                        owner: value.owner || null,
-                      };
-                      update.mutate({ id: listItem.id, patch });
+                      update.mutate({ id: listItem.id, patch: value });
                       setEditing(({ [listItem.id]: _omit, ...rest }) => rest);
                     }}
                     onDelete={() => {
@@ -93,9 +86,12 @@ export default function ApplicationsPage() {
         </ul>
       </div>
 
-      <ApplicationCreateForm
+      <SimpleAssetCreateForm
+        title='New Application'
         owners={owners}
-        className="bg-white border rounded-2xl p-4" />
+        onSubmit={newApplication => create.mutateAsync({ ...newApplication })}
+        className="bg-white border rounded-2xl p-4"
+      />
     </div>
   );
 }

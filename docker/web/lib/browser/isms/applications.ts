@@ -19,7 +19,7 @@ export async function createApplication(input: ApplicationView) {
     ...rest,
     owner_id: owner?.id ?? null
   }
-  return await postgrest<ApplicationView[]>('/applications', {
+  return await postgrest<ApplicationView>('/applications', {
     method: 'POST',
     body: JSON.stringify([dataModel]),
     headers: { Prefer: 'return=representation' },

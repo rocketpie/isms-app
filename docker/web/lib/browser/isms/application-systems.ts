@@ -26,7 +26,7 @@ export async function listLinkedSystems(applicationId: string) {
 
 export async function linkSystem(applicationId: string, systemId: string) {
   return await postgrest<ApplicationSystemView[]>(
-    '/application_systems?select=application_id,system_id,system:systems(id,name,description,owner:ownership(id,name))',
+    '/application_systems',
     {
       method: 'POST',
       body: JSON.stringify([{ application_id: applicationId, system_id: systemId }]),

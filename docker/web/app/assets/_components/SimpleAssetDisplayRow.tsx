@@ -1,4 +1,4 @@
-//app/assets/components/SimpleAssetDisplayRow.tsx
+//app/assets/_components/SimpleAssetDisplayRow.tsx
 'use client';
 
 import { ChevronDown, ChevronRight, Pencil } from 'lucide-react';

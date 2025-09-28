@@ -8,13 +8,13 @@ import { ChevronRight, ChevronDown } from 'lucide-react';
 import { queryKeys } from '@/app/_hooks/queryKeys';
 import { SystemView } from '@/lib/browser/isms/assetTypes';
 import { ApplicationSystemView, listLinkedSystems, linkSystem, unlinkSystem } from '@/lib/browser/isms/application-systems';
-import { listSystems } from '@/lib/browser/isms/systems';
+import { createSystem, listSystems } from '@/lib/browser/isms/systems';
 import { listOwnerships } from '@/lib/browser/isms/ownership';
 import { useSystems } from '@/app/_hooks/useSystems';
 
-import { SystemEditorRow } from '@/app/assets/systems/components/SystemEditorRow';
-import SystemCreateForm from '@/app/assets/systems/components/SystemCreateForm';
 import SimpleAssetDisplayRow from '../../_components/SimpleAssetDisplayRow';
+import SimpleAssetEditorRow from '../../_components/SimpleAssetEditorRow';
+import SimpleAssetCreateForm from '../../_components/SimpleAssetCreateForm';
 
 export function LinkedSystemsSection({ applicationId }: { applicationId: string }) {
   const queryClient = useQueryClient();
@@ -111,23 +111,18 @@ export function LinkedSystemsSection({ applicationId }: { applicationId: string 
               <div className="flex items-center justify-between gap-3">
                 <div className="flex-1">
                   {isEditing ? (
-                    <SystemEditorRow
+                    <SimpleAssetEditorRow
                       value={value}
                       owners={ownersQuery.data || []}
                       disabled={update.isPending || remove.isPending}
                       onChange={draft => setEditing(prev => ({ ...prev, [item.id]: draft }))}
                       onSave={() => {
-                        const patch: Partial<SystemView> = {
-                          name: value.name.trim(),
-                          description: value.description?.trim() || null,
-                          owner: value.owner || null,
-                        };
-                        update.mutate({ id: item.id, patch });
+                        update.mutate({ id: item.id, patch: value });
                         setEditing(({ [item.id]: _omit, ...rest }) => rest);
                       }}
                       onDelete={() => {
                         const ok = confirm(
-                          'Delete this application?\n\nNote: related junctions may cascade delete depending on FK policy.'
+                          'Delete this system?\n\nNote: related junctions may cascade delete depending on FK policy.'
                         );
                         if (ok) remove.mutate(item.id);
                       }}
@@ -197,16 +192,19 @@ export function LinkedSystemsSection({ applicationId }: { applicationId: string 
           <ChevronDown className="h-4 w-4 hidden group-open:block" />
           <span>link a new system</span>
         </summary>
-        <SystemCreateForm
+        <SimpleAssetCreateForm
           owners={ownersQuery.data || []}
           className="mt-4"
-          onCreated={(created) => {
-            linkSystem(applicationId, created.id)
-              .finally(() => {
-                queryClient.invalidateQueries({ queryKey: queryKeys.applicationSystems(applicationId) });
-                queryClient.invalidateQueries({ queryKey: queryKeys.allSystems });
-              });
-          }}
+          onSubmit={newSystem =>
+            createSystem({ ...newSystem })
+              .then(created => {
+                linkSystem(applicationId, created.id ?? '')
+                  .finally(() => {
+                    queryClient.invalidateQueries({ queryKey: queryKeys.applicationSystems(applicationId) });
+                    queryClient.invalidateQueries({ queryKey: queryKeys.allSystems });
+                  });
+              })
+          }
         />
       </details>
 

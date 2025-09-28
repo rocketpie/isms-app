@@ -11,11 +11,11 @@ import { ProcessApplicationView, listLinkedApplications, linkApplication, unlink
 import { queryKeys } from '@/app/_hooks/queryKeys';
 import { useApplications } from '@/app/_hooks/useApplications';
 
-import { ApplicationEditorRow } from '@/app/assets/applications/components/ApplicationEditorRow';
-import ApplicationCreateForm from '@/app/assets/applications/components/ApplicationCreateForm';
-import { listApplications } from '@/lib/browser/isms/applications';
+import { createApplication, listApplications } from '@/lib/browser/isms/applications';
 import { ApplicationView } from '@/lib/browser/isms/assetTypes';
 import SimpleAssetDisplayRow from '../../_components/SimpleAssetDisplayRow';
+import SimpleAssetEditorRow from '../../_components/SimpleAssetEditorRow';
+import SimpleAssetCreateForm from '../../_components/SimpleAssetCreateForm';
 
 export function LinkedApplicationsSection({ processId }: { processId: string }) {
   const queryClient = useQueryClient();
@@ -112,18 +112,13 @@ export function LinkedApplicationsSection({ processId }: { processId: string }) 
               <div className="flex items-center justify-between gap-3">
                 <div className="flex-1">
                   {isEditing ? (
-                    <ApplicationEditorRow
+                    <SimpleAssetEditorRow
                       value={value}
                       owners={ownersQuery.data || []}
                       disabled={update.isPending || remove.isPending}
                       onChange={draft => setEditing(prev => ({ ...prev, [item.id]: draft }))}
                       onSave={() => {
-                        const patch: Partial<ApplicationView> = {
-                          name: value.name.trim(),
-                          description: value.description?.trim() || null,
-                          owner: value.owner || null,
-                        };
-                        update.mutate({ id: item.id, patch });
+                        update.mutate({ id: item.id, patch: value });
                         setEditing(({ [item.id]: _omit, ...rest }) => rest);
                       }}
                       onDelete={() => {
@@ -198,15 +193,19 @@ export function LinkedApplicationsSection({ processId }: { processId: string }) 
           <ChevronDown className="h-4 w-4 hidden group-open:block" />
           <span>link a new application</span>
         </summary>
-        <ApplicationCreateForm
+        <SimpleAssetCreateForm
           owners={ownersQuery.data || []}
           className="mt-4"
-          onCreated={(created) => {
-            linkApplication(processId, created.id).finally(() => {
-              queryClient.invalidateQueries({ queryKey: queryKeys.processApplications(processId) });
-              queryClient.invalidateQueries({ queryKey: queryKeys.allApplications });
-            });
-          }}
+          onSubmit={newApplication =>
+            createApplication({ ...newApplication })
+              .then(created => {
+                linkApplication(processId, created.id)
+                  .finally(() => {
+                    queryClient.invalidateQueries({ queryKey: queryKeys.processApplications(processId) });
+                    queryClient.invalidateQueries({ queryKey: queryKeys.allApplications });
+                  });
+              })
+          }
         />
       </details>
 

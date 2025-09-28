@@ -4,9 +4,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { listOwnerships } from '@/lib/browser/isms/ownership'
-import { createSystem, deleteSystem, listSystems,  updateSystem } from '@/lib/browser/isms/systems'
+import { createSystem, deleteSystem, listSystems, updateSystem } from '@/lib/browser/isms/systems'
 import { queryKeys } from '../../_hooks/queryKeys'
 import { SystemView } from '@/lib/browser/isms/assetTypes'
+import SimpleAssetEditorRow from '../_components/SimpleAssetEditorRow'
+import SimpleAssetDisplayRow from '../_components/SimpleAssetDisplayRow'
 
 /* ---------- Page ---------- */
 export default function SystemsPage() {
@@ -82,116 +84,33 @@ export default function SystemsPage() {
             return (
               <li key={listItem.id} className="bg-white border rounded-xl p-3">
                 {isEditing ? (
-                  <div className="grid gap-2 md:grid-cols-5">
-                    <input
-                      className="border rounded-lg px-3 py-2 md:col-span-1"
-                      value={value.name}
-                      onChange={e =>
-                        setEditing(prev => ({
-                          ...prev,
-                          [listItem.id]: { ...prev[listItem.id], name: e.target.value },
-                        }))
-                      }
-                    />
-                    <input
-                      className="border rounded-lg px-3 py-2 md:col-span-2"
-                      placeholder="Description (optional)"
-                      value={value.description ?? ''}
-                      onChange={e =>
-                        setEditing(prev => ({
-                          ...prev,
-                          [listItem.id]: { ...prev[listItem.id], description: e.target.value },
-                        }))
-                      }
-                    />
-                    <select
-                      className="border rounded-lg px-3 py-2 md:col-span-1"
-                      value={value.owner?.id}
-                      onChange={e =>
-                        setEditing(prev => ({
-                          ...prev,
-                          [listItem.id]: { ...prev[listItem.id], owner: owners.find(o => o.id === e.target.value) ?? null },
-                        }))
-                      }
-                    >
-                      <option value="">Owner (optional)</option>
-                      {owners.map(o => (
-                        <option key={o.id} value={o.id}>
-                          {o.name}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="flex gap-2 md:col-span-1">
-                      <button
-                        className="rounded-xl px-3 py-2 border bg-black text-white disabled:opacity-60"
-                        disabled={update.isPending || value.name.trim().length === 0}
-                        onClick={() => {
-                          const patch: Partial<SystemView> = {
-                            name: value.name.trim(),
-                            description: value.description?.trim() || null,
-                            owner: value.owner || null,
-                          }
-                          update.mutate({ id: listItem.id, patch })
-                          setEditing(prev => {
-                            const { [listItem.id]: _omit, ...rest } = prev
-                            return rest
-                          })
-                        }}
-                      >
-                        Save
-                      </button>
-                      <button
-                        className="rounded-xl px-3 py-2 border bg-white"
-                        onClick={() =>
-                          setEditing(prev => {
-                            const { [listItem.id]: _omit, ...rest } = prev
-                            return rest
-                          })
-                        }
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
+                  <SimpleAssetEditorRow
+                    value={listItem}
+                    owners={owners}
+                    disabled={update.isPending || remove.isPending}
+                    onChange={draft => setEditing(prev => ({ ...prev, [listItem.id]: draft }))}
+                    onSave={() => {
+                      update.mutate({ id: listItem.id, patch: value });
+                      setEditing(({ [listItem.id]: _omit, ...rest }) => rest);
+                    }}
+                    onDelete={() => {
+                      const ok = confirm(
+                        'Delete this system?\n\nNote: related junctions may cascade delete depending on FK policy.'
+                      );
+                      if (ok) remove.mutate(listItem.id);
+                    }}
+                    onCancel={() => setEditing(({ [listItem.id]: _omit, ...rest }) => rest)}
+                  />
                 ) : (
-                  <div className="grid gap-1 md:grid-cols-5 md:items-center">
-                    <div className="font-medium">{listItem.name}</div>
-                    <div className="text-sm text-neutral-700 md:col-span-2">
-                      {listItem.description ? (
-                        <span className="text-neutral-600">{listItem.description}</span>
-                      ) : (
-                        <span className="text-neutral-400">No description</span>
-                      )}
-                    </div>
-                    <div className="text-sm text-neutral-700">
-                      Owner: <span className="text-neutral-600">{listItem.owner?.name}</span>
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        className="rounded-xl px-3 py-2 border bg-white"
-                        onClick={() =>
-                          setEditing(prev => ({
-                            ...prev,
-                            [listItem.id]: listItem,
-                          }))
-                        }
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="rounded-xl px-3 py-2 border bg-white text-red-600 disabled:opacity-60"
-                        disabled={remove.isPending}
-                        onClick={() => {
-                          const ok = confirm(
-                            'Delete this system?\n\nNote: if this system is referenced by junctions (e.g., application_systems, system_data), deletion may be blocked by FKs.'
-                          )
-                          if (ok) remove.mutate(listItem.id)
-                        }}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
+                  <SimpleAssetDisplayRow
+                    name={listItem.name}
+                    description={listItem.description}
+                    ownerName={listItem.owner?.name}
+                    expanded={false}
+                    // expanded={!!expanded[listItem.id]}
+                    // onToggle={() => setExpanded(prev => ({ ...prev, [listItem.id]: !prev[listItem.id] }))}
+                    onEdit={() => setEditing(prev => ({ ...prev, [listItem.id]: listItem }))}
+                  />
                 )}
               </li>
             )

@@ -1,4 +1,4 @@
-//app/processes/components/SystemEditorRow.tsx
+//app/assets/systems/components/SystemEditorRow.tsx
 'use client'
 
 import { OwnershipView } from "@/lib/browser/isms/ownership";

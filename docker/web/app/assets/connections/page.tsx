@@ -1,4 +1,4 @@
-//app/connections/page.tsx
+//app/assets/connections/page.tsx
 'use client'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';

@@ -1,4 +1,4 @@
-//app/applications/page.tsx
+//app/assets/applications/page.tsx
 'use client';
 
 import { useMemo, useState } from 'react';
@@ -9,10 +9,10 @@ import { queryKeys } from '@/app/_hooks/queryKeys';
 import { listOwnerships } from '@/lib/browser/isms/ownership';
 import { ApplicationView } from '@/lib/browser/isms/applications';
 
-import { ApplicationDisplayRow } from './components/ApplicationDisplayRow';
 import { ApplicationEditorRow } from './components/ApplicationEditorRow';
 import { LinkedSystemsSection } from './components/LinkedSystemsSection';
 import ApplicationCreateForm from './components/ApplicationCreateForm';
+import SimpleAssetDisplayRow from '../_components/SimpleAssetDisplayRow';
 
 export default function ApplicationsPage() {
   const { list: appsQuery, update, remove } = useApplications();
@@ -72,8 +72,10 @@ export default function ApplicationsPage() {
                     onCancel={() => setEditing(({ [listItem.id]: _omit, ...rest }) => rest)}
                   />
                 ) : (
-                  <ApplicationDisplayRow
-                    listItem={listItem}
+                  <SimpleAssetDisplayRow
+                    name={listItem.name}
+                    description={listItem.description}
+                    ownerName={listItem.owner?.name}
                     expanded={!!expanded[listItem.id]}
                     onToggle={() => setExpanded(prev => ({ ...prev, [listItem.id]: !prev[listItem.id] }))}
                     onEdit={() => setEditing(prev => ({ ...prev, [listItem.id]: listItem }))}

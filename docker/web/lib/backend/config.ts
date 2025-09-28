@@ -1,4 +1,5 @@
-// web/lib/backend/config.ts
+//lib/backend/config.ts
+
 export function getPostgrestUrl(): string {
     const url = process.env.INTERNAL_POSTGREST_URL || ''
     new URL(url) // validate early for clearer errors    

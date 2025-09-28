@@ -1,6 +1,5 @@
-$appFolderPath = Join-Path $PSScriptRoot "..\docker\web\app"
-$tsFiles = Get-ChildItem -Path $appFolderPath -Recurse -File | ? { [System.IO.Path]::GetExtension($_.Name) -in @('.ts', '.tsx') }
-$webFolderPath = Resolve-Path (Join-Path $appFolderPath '..')
+$webFolderPath = Resolve-Path (Join-Path $PSScriptRoot '..\docker\web')
+$tsFiles = @('app', 'lib') | ForEach-Object { Get-ChildItem -Path (Join-Path $webFolderPath $_) -Recurse -File } | Where-Object { [System.IO.Path]::GetExtension($_.Name) -in @('.ts', '.tsx') }
 
 "found $($tsFiles.Count) ts(x) files..."
 foreach ($file in $tsFiles) {

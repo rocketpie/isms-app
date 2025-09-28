@@ -1,3 +1,5 @@
+//lib/auth.ts
+ 
 import { GoTrueClient } from '@supabase/gotrue-js'
 import { fetchWithTimeout } from './fetch-timeout'
 import { getAuthUrl } from './browser/config'

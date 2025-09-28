@@ -1,4 +1,4 @@
-//app/_components/AssetPageHeader.tsx
+//app/_components/assetPageHeader.tsx
 'use client'
 
 import Link from 'next/link';

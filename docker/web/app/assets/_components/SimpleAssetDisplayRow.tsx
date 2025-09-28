@@ -1,0 +1,52 @@
+//app/assets/components/SimpleAssetDisplayRow.tsx
+'use client';
+
+import { ChevronDown, ChevronRight, Pencil } from 'lucide-react';
+
+export default function SimpleAssetDisplayRow(props: {
+  name: string;
+  description?: string | null | undefined;
+  ownerName?: string | null | undefined;
+  expanded: boolean;
+  onEdit?: () => void;
+  onToggle?: () => void;
+}) {
+  return (
+    <div className="grid gap-1 grid-cols-1 md:grid-cols-[1fr,2fr,1fr,auto] md:items-center">
+      <button
+        type="button"
+        className={`flex items-center gap-2 text-base text-neutral-700 ${props.onToggle ? 'hover:text-black' : 'cursor-default'}`}
+        onClick={props.onToggle}
+        disabled={!props.onToggle}
+        aria-expanded={!!props.expanded}
+      >
+        {!props.onToggle ? (
+          <span className="inline-block w-4 h-4" />
+        ) : props.expanded ? (
+          <ChevronDown className="h-4 w-4" />
+        ) : (
+          <ChevronRight className="h-4 w-4" />
+        )}
+        {props.name}
+      </button>
+
+      <div className="text-sm text-neutral-700">
+        {props.description ? (
+          <span className="text-neutral-600">{props.description}</span>
+        ) : (
+          <span className="text-neutral-400">No description</span>
+        )}
+      </div>
+
+      <div className="text-sm text-neutral-700">
+        Owner: <span className="text-neutral-600">{props.ownerName}</span>
+      </div>
+
+      <div className="flex gap-2">
+        <button type="button" className="rounded-xl px-3 py-2 border bg-white" onClick={props.onEdit}>
+          <Pencil className="h-5 w-5" />
+        </button>
+      </div>
+    </div>
+  );
+}

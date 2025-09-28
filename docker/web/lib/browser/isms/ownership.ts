@@ -1,3 +1,4 @@
+//lib/browser/isms/ownership.ts
 'use client'
 
 import { postgrest } from "../api-isms"

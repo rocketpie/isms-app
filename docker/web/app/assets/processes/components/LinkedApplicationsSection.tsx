@@ -1,4 +1,4 @@
-//app/processes/components/LinkedApplicationsSection.tsx
+//app/assets/processes/components/LinkedApplicationsSection.tsx
 'use client'
 
 import { useState } from 'react';

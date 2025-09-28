@@ -1,3 +1,6 @@
+//app/assets/layout.tsx
+'use client'
+
 import type { ReactNode } from 'react';
 import AssetPageHeader from '../_components/assetPageHeader';
 

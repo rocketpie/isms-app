@@ -1,4 +1,4 @@
-//app/processes/page.tsx
+//app/assets/processes/page.tsx
 'use client';
 
 import { useMemo, useState } from 'react';
@@ -13,6 +13,7 @@ import { ProcessDisplayRow } from './components/ProcessDisplayRow';
 import { ProcessEditorRow } from './components/ProcessEditorRow';
 import ProcessCreateForm from './components/ProcessCreateForm';
 import { LinkedApplicationsSection } from './components/LinkedApplicationsSection';
+import SimpleAssetDisplayRow from '../_components/SimpleAssetDisplayRow';
 
 export default function ProcessesPage() {
   const { list: processesQuery, update, remove } = useProcesses();
@@ -80,18 +81,13 @@ export default function ProcessesPage() {
                     }
                   />
                 ) : (
-                  <ProcessDisplayRow
-                    listItem={listItem}
+                  <SimpleAssetDisplayRow
+                    name={listItem.name}
+                    description={listItem.description}
+                    ownerName={listItem.owner?.name}
                     expanded={!!expanded[listItem.id]}
-                    onToggle={() =>
-                      setExpanded(prev => ({ ...prev, [listItem.id]: !prev[listItem.id] }))
-                    }
-                    onEdit={() =>
-                      setEditing(prev => ({
-                        ...prev,
-                        [listItem.id]: listItem,
-                      }))
-                    }
+                    onToggle={() => setExpanded(prev => ({ ...prev, [listItem.id]: !prev[listItem.id] }))}
+                    onEdit={() => setEditing(prev => ({ ...prev, [listItem.id]: listItem }))}
                   />
                 )}
 

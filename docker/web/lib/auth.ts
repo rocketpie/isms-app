@@ -7,8 +7,5 @@ export const auth = new GoTrueClient({
   autoRefreshToken: true,
   persistSession: true,
   storageKey: 'isms-auth',
-  fetch: async (input: RequestInfo, init?: RequestInit) => {
-    // All auth requests capped at 15s
-    return fetchWithTimeout(input as any, init)
-  },
+  fetch: fetchWithTimeout, // All auth requests capped at 15s
 })

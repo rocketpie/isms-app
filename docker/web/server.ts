@@ -1,4 +1,6 @@
 //server.ts
+// used by nodemon for hot-reloading changes during development
+// see also: nodemon.json Windows+Docker dev HMR fix (WATCHPACK_POLLING)
 import http from "node:http";
 import { parse } from "node:url";
 import next from "next";

@@ -20,7 +20,7 @@ All services run in containers, orchestrated with a single docker-compose file
 ## GoTrue (auth) 
 - Manages sign-up, login, and password reset flows. 
 - DSN: `supabase_auth_admin@db` → `auth` schema. 
-- Ports: `${AUTH_PORT}:${API_PORT}` (default 7779). 
+- Ports: `${AUTH_PORT}:9999`. 
 - JWT: `GOTRUE_JWT_SECRET`, aud `authenticated`. 
 - Autoconfirm & email toggled via env. 
  

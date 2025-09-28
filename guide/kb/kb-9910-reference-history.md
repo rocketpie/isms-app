@@ -16,4 +16,4 @@ related: [kb-0000-index-overview, kb-1010-architecture-overview]
   - Split pages into DisplayRow / EditorRow / CreateForm. 
   - Domain hooks in app/_hooks with central queryKeys. 
   - Shared types, domain API in lib/browser/<domain>. 
- 
+[2025-09-28] use nodemon dev server using documented Windows+Docker dev HMR fix (WATCHPACK_POLLING).

@@ -1,47 +1,106 @@
-//app/systems/page.tsx
+//app/data/page.tsx
 'use client'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
-import { listOwnerships } from '@/lib/browser/isms/ownership'
-import { createSystem, deleteSystem, listSystems, SystemView, updateSystem } from '@/lib/browser/isms/systems'
-import { queryKeys } from '../_hooks/queryKeys'
+import { postgrest } from '@/lib/browser/api-isms'
+import { queryKeys } from '../../_hooks/queryKeys'
+import { listOwnerships, OwnershipView } from '@/lib/browser/isms/ownership'
+
+type DataAssetView = {
+  id: string
+  name: string
+  description: string | null
+  owner: OwnershipView | null
+}
+
+type DataAssetRow = {
+  id?: string
+  name: string
+  description: string | null
+  owner_id: string | null
+}
+
+/* ---------- API ---------- */
+async function listDataAssets() {
+  return await postgrest<DataAssetView[]>(
+    '/data?select=id,name,description,owner:ownership(id,name)&order=name.asc',
+    { method: 'GET' }
+  )
+}
+
+async function createDataAsset(input: DataAssetView) {
+  // strip the owner view object
+  const { id, owner, ...rest } = input
+  // set the owner_id, if any
+  const dataModel: DataAssetRow = {
+    ...rest,
+    owner_id: owner?.id ?? null
+  }
+  return await postgrest<DataAssetRow[]>('/data', {
+    method: 'POST',
+    body: JSON.stringify([dataModel]),
+    headers: { Prefer: 'return=representation' },
+  })
+}
+
+async function updateDataAsset(id: string, input: Partial<DataAssetView>) {
+  // strip the owner view object
+  const { owner, ...rest } = input
+  // set the owner_id, if any
+  const dataModel: Partial<DataAssetRow> = {
+    ...rest,
+    owner_id: owner?.id ?? null
+  }
+  return await postgrest<DataAssetRow[]>(
+    `/data?id=eq.${encodeURIComponent(id)}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(dataModel),
+      headers: { Prefer: 'return=representation' },
+    }
+  )
+}
+
+async function deleteDataAsset(id: string) {
+  return await postgrest<null>(`/data?id=eq.${encodeURIComponent(id)}`, { method: 'DELETE' })
+}
 
 /* ---------- Page ---------- */
-export default function SystemsPage() {
+export default function DataPage() {
   const queryClient = useQueryClient()
 
-  const systemsQuery = useQuery({ queryKey: queryKeys.allSystems, queryFn: listSystems })
+  const dataQuery = useQuery({ queryKey: queryKeys.allData, queryFn: listDataAssets })
   const ownersQuery = useQuery({ queryKey: queryKeys.allOwnership, queryFn: listOwnerships })
 
   const create = useMutation({
-    mutationFn: createSystem,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.allSystems }),
+    mutationFn: createDataAsset,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.allData }),
   })
 
   const update = useMutation({
-    mutationFn: ({ id, patch }: { id: string; patch: Partial<SystemView> }) =>
-      updateSystem(id, patch),
+    mutationFn: ({ id, patch }: { id: string; patch: Partial<DataAssetView> }) =>
+      updateDataAsset(id, patch),
     onMutate: async ({ id, patch }) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.allSystems })
-      const prev = queryClient.getQueryData<SystemView[]>(queryKeys.allSystems)
+      await queryClient.cancelQueries({ queryKey: queryKeys.allData })
+      const prev = queryClient.getQueryData<DataAssetView[]>(queryKeys.allData)
       if (prev) {
-        queryClient.setQueryData<SystemView[]>(
-          queryKeys.allSystems,
-          prev.map(s => (s.id === id ? { ...s, ...patch } : s))
+        queryClient.setQueryData<DataAssetView[]>(
+          queryKeys.allData,
+          prev.map(listItem => (listItem.id === id ? { ...listItem, ...patch } : listItem))
         )
       }
       return { prev }
     },
     onError: (_e, _vars, ctx) => {
-      if (ctx?.prev) queryClient.setQueryData(queryKeys.allSystems, ctx.prev)
+      if (ctx?.prev) queryClient.setQueryData(queryKeys.allData, ctx.prev)
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: queryKeys.allSystems }),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: queryKeys.allData }),
   })
 
   const remove = useMutation({
-    mutationFn: deleteSystem,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.allSystems }),
+    mutationFn: deleteDataAsset,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.allData }),
   })
 
   // Create form state
@@ -52,31 +111,31 @@ export default function SystemsPage() {
   // Inline edit state
   // Record -> Map<key, value>
   const [editing, setEditing] = useState<
-    Record<string, SystemView>
+    Record<string, DataAssetView>
   >({})
 
-  const systems = useMemo(() => systemsQuery.data ?? [], [systemsQuery.data])
+  const items = useMemo(() => dataQuery.data ?? [], [dataQuery.data])
   const owners = useMemo(() => ownersQuery.data ?? [], [ownersQuery.data])
 
   return (
     <div className="grid gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Systems</h1>
+        <h1 className="text-2xl font-semibold">Data</h1>
       </div>
 
       <div className="grid gap-2">
-        {(systemsQuery.isLoading || ownersQuery.isLoading) && <p>Loading…</p>}
-        {(systemsQuery.error || ownersQuery.error) && (
+        {(dataQuery.isLoading || ownersQuery.isLoading) && <p>Loading…</p>}
+        {(dataQuery.error || ownersQuery.error) && (
           <p className="text-red-600 text-sm">
-            {(systemsQuery.error as Error)?.message || (ownersQuery.error as Error)?.message}
+            {(dataQuery.error as Error)?.message || (ownersQuery.error as Error)?.message}
           </p>
         )}
-        {systems.length === 0 && !systemsQuery.isLoading && (
-          <p className="text-neutral-600">No systems yet.</p>
+        {items.length === 0 && !dataQuery.isLoading && (
+          <p className="text-neutral-600">No data assets yet.</p>
         )}
 
         <ul className="grid gap-2">
-          {systems.map(listItem => {
+          {items.map(listItem => {
             const isEditing = editing[listItem.id] !== undefined
             const value = isEditing
               ? editing[listItem.id]
@@ -129,7 +188,7 @@ export default function SystemsPage() {
                         className="rounded-xl px-3 py-2 border bg-black text-white disabled:opacity-60"
                         disabled={update.isPending || value.name.trim().length === 0}
                         onClick={() => {
-                          const patch: Partial<SystemView> = {
+                          const patch: Partial<DataAssetView> = {
                             name: value.name.trim(),
                             description: value.description?.trim() || null,
                             owner: value.owner || null,
@@ -186,7 +245,7 @@ export default function SystemsPage() {
                         disabled={remove.isPending}
                         onClick={() => {
                           const ok = confirm(
-                            'Delete this system?\n\nNote: if this system is referenced by junctions (e.g., application_systems, system_data), deletion may be blocked by FKs.'
+                            'Delete this data asset?\n\nNote: if referenced by junctions (e.g., system_data), deletion may be blocked by foreign keys.'
                           )
                           if (ok) remove.mutate(listItem.id)
                         }}
@@ -203,7 +262,7 @@ export default function SystemsPage() {
       </div>
 
       <div className="bg-white border rounded-2xl p-4">
-        <h2 className="text-lg font-medium mb-2">Create system</h2>
+        <h2 className="text-lg font-medium mb-2">Create data asset</h2>
         <form
           className="grid gap-2 md:grid-cols-4"
           onSubmit={e => {
@@ -215,7 +274,7 @@ export default function SystemsPage() {
                 id: '',
                 name: trimmed,
                 description: desc.trim() || null,
-                owner: owners.find(o => o.id === ownerId) || null,
+                owner: owners.find(o => o.id === ownerId) || null
               },
               {
                 onSuccess: () => {
@@ -245,7 +304,7 @@ export default function SystemsPage() {
             value={ownerId}
             onChange={e => setOwnerId(e.target.value)}
           >
-            <option value="">Ownership (optional)</option>
+            <option value="">Owner (optional)</option>
             {owners.map(o => (
               <option key={o.id} value={o.id}>
                 {o.name}

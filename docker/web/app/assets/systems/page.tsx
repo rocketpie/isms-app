@@ -1,139 +1,82 @@
-//app/connections/page.tsx
+//app/systems/page.tsx
 'use client'
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
-import { postgrest } from '@/lib/browser/api-isms';
-import { OwnershipView, listOwnerships } from '@/lib/browser/isms/ownership';
-import { queryKeys } from '../_hooks/queryKeys';
-
-type ConnectionView = {
-  id: string;
-  name: string;
-  description: string | null;
-  owner: OwnershipView | null;
-};
-
-type ConnectionRow = {
-  id?: string;
-  name: string;
-  owner_id: string | null;
-  description: string | null;
-};
-
-/* ---------- API ---------- */
-async function listConnections() {
-  // GET /connections?select=id,name,description,owner:ownership(id,name)&order=name.asc
-  return await postgrest<ConnectionView[]>(
-    '/connections?select=id,name,description,owner:ownership(id,name)&order=name.asc',
-    { method: 'GET' }
-  );
-}
-
-async function createConnection(input: ConnectionView) {
-  const { id, owner, ...rest } = input;
-  const dataModel: ConnectionRow = {
-    ...rest,
-    owner_id: owner?.id ?? null,
-  };
-  return await postgrest<ConnectionView[]>('/connections', {
-    method: 'POST',
-    body: JSON.stringify([dataModel]),
-    headers: { Prefer: 'return=representation' },
-  });
-}
-
-async function updateConnection(id: string, input: Partial<ConnectionView>) {
-  const { owner, ...rest } = input;
-  const dataModel: Partial<ConnectionRow> = {
-    ...rest,
-    owner_id: owner?.id ?? null,
-  };
-  return await postgrest<ConnectionRow[]>(
-    `/connections?id=eq.${encodeURIComponent(id)}`,
-    {
-      method: 'PATCH',
-      body: JSON.stringify(dataModel),
-      headers: { Prefer: 'return=representation' },
-    }
-  );
-}
-
-async function deleteConnection(id: string) {
-  return await postgrest<null>(`/connections?id=eq.${encodeURIComponent(id)}`, {
-    method: 'DELETE',
-  });
-}
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMemo, useState } from 'react'
+import { listOwnerships } from '@/lib/browser/isms/ownership'
+import { createSystem, deleteSystem, listSystems, SystemView, updateSystem } from '@/lib/browser/isms/systems'
+import { queryKeys } from '../../_hooks/queryKeys'
 
 /* ---------- Page ---------- */
-export default function ConnectionsPage() {
-  const queryClient = useQueryClient();
+export default function SystemsPage() {
+  const queryClient = useQueryClient()
 
-  const connectionsQuery = useQuery({ queryKey: queryKeys.allConnections, queryFn: listConnections });
-  const ownersQuery = useQuery({ queryKey: queryKeys.allOwnership, queryFn: listOwnerships });
+  const systemsQuery = useQuery({ queryKey: queryKeys.allSystems, queryFn: listSystems })
+  const ownersQuery = useQuery({ queryKey: queryKeys.allOwnership, queryFn: listOwnerships })
 
   const create = useMutation({
-    mutationFn: createConnection,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.allConnections }),
-  });
+    mutationFn: createSystem,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.allSystems }),
+  })
 
   const update = useMutation({
-    mutationFn: ({ id, patch }: { id: string; patch: Partial<ConnectionView> }) =>
-      updateConnection(id, patch),
+    mutationFn: ({ id, patch }: { id: string; patch: Partial<SystemView> }) =>
+      updateSystem(id, patch),
     onMutate: async ({ id, patch }) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.allConnections });
-      const previous = queryClient.getQueryData<ConnectionView[]>(queryKeys.allConnections);
-      if (previous) {
-        queryClient.setQueryData<ConnectionView[]>(
-          ['connections'],
-          previous.map(c => (c.id === id ? { ...c, ...patch } : c))
-        );
+      await queryClient.cancelQueries({ queryKey: queryKeys.allSystems })
+      const prev = queryClient.getQueryData<SystemView[]>(queryKeys.allSystems)
+      if (prev) {
+        queryClient.setQueryData<SystemView[]>(
+          queryKeys.allSystems,
+          prev.map(s => (s.id === id ? { ...s, ...patch } : s))
+        )
       }
-      return { previous };
+      return { prev }
     },
     onError: (_e, _vars, ctx) => {
-      if (ctx?.previous) queryClient.setQueryData(queryKeys.allConnections, ctx.previous);
+      if (ctx?.prev) queryClient.setQueryData(queryKeys.allSystems, ctx.prev)
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: queryKeys.allConnections }),
-  });
+    onSettled: () => queryClient.invalidateQueries({ queryKey: queryKeys.allSystems }),
+  })
 
   const remove = useMutation({
-    mutationFn: deleteConnection,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.allConnections }),
-  });
+    mutationFn: deleteSystem,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.allSystems }),
+  })
 
   // Create form state
-  const [name, setName] = useState('');
-  const [desc, setDesc] = useState('');
-  const [ownerId, setOwnerId] = useState<string>('');
+  const [name, setName] = useState('')
+  const [desc, setDesc] = useState('')
+  const [ownerId, setOwnerId] = useState<string>('')
 
   // Inline edit state
-  const [editing, setEditing] = useState<Record<string, ConnectionView>>({});
+  // Record -> Map<key, value>
+  const [editing, setEditing] = useState<
+    Record<string, SystemView>
+  >({})
 
-  const connections = useMemo(() => connectionsQuery.data ?? [], [connectionsQuery.data]);
-  const owners = useMemo(() => ownersQuery.data ?? [], [ownersQuery.data]);
+  const systems = useMemo(() => systemsQuery.data ?? [], [systemsQuery.data])
+  const owners = useMemo(() => ownersQuery.data ?? [], [ownersQuery.data])
 
   return (
     <div className="grid gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Connections</h1>
-      </div>
-
       <div className="grid gap-2">
-        {(connectionsQuery.isLoading || ownersQuery.isLoading) && <p>Loading…</p>}
-        {(connectionsQuery.error || ownersQuery.error) && (
+        {(systemsQuery.isLoading || ownersQuery.isLoading) && <p>Loading…</p>}
+        {(systemsQuery.error || ownersQuery.error) && (
           <p className="text-red-600 text-sm">
-            {(connectionsQuery.error as Error)?.message || (ownersQuery.error as Error)?.message}
+            {(systemsQuery.error as Error)?.message || (ownersQuery.error as Error)?.message}
           </p>
         )}
-        {connections.length === 0 && !connectionsQuery.isLoading && (
-          <p className="text-neutral-600">No connections yet.</p>
+        {systems.length === 0 && !systemsQuery.isLoading && (
+          <p className="text-neutral-600">No systems yet.</p>
         )}
 
         <ul className="grid gap-2">
-          {connections.map(listItem => {
-            const isEditing = editing[listItem.id] !== undefined;
-            const value = isEditing ? editing[listItem.id] : listItem;
+          {systems.map(listItem => {
+            const isEditing = editing[listItem.id] !== undefined
+            const value = isEditing
+              ? editing[listItem.id]
+              : listItem
 
             return (
               <li key={listItem.id} className="bg-white border rounded-xl p-3">
@@ -162,14 +105,11 @@ export default function ConnectionsPage() {
                     />
                     <select
                       className="border rounded-lg px-3 py-2 md:col-span-1"
-                      value={value.owner?.id ?? ''}
+                      value={value.owner?.id}
                       onChange={e =>
                         setEditing(prev => ({
                           ...prev,
-                          [listItem.id]: {
-                            ...prev[listItem.id],
-                            owner: owners.find(o => o.id === e.target.value) ?? null,
-                          },
+                          [listItem.id]: { ...prev[listItem.id], owner: owners.find(o => o.id === e.target.value) ?? null },
                         }))
                       }
                     >
@@ -185,16 +125,16 @@ export default function ConnectionsPage() {
                         className="rounded-xl px-3 py-2 border bg-black text-white disabled:opacity-60"
                         disabled={update.isPending || value.name.trim().length === 0}
                         onClick={() => {
-                          const patch: Partial<ConnectionView> = {
+                          const patch: Partial<SystemView> = {
                             name: value.name.trim(),
                             description: value.description?.trim() || null,
                             owner: value.owner || null,
-                          };
-                          update.mutate({ id: listItem.id, patch });
+                          }
+                          update.mutate({ id: listItem.id, patch })
                           setEditing(prev => {
-                            const { [listItem.id]: _omit, ...rest } = prev;
-                            return rest;
-                          });
+                            const { [listItem.id]: _omit, ...rest } = prev
+                            return rest
+                          })
                         }}
                       >
                         Save
@@ -203,8 +143,8 @@ export default function ConnectionsPage() {
                         className="rounded-xl px-3 py-2 border bg-white"
                         onClick={() =>
                           setEditing(prev => {
-                            const { [listItem.id]: _omit, ...rest } = prev;
-                            return rest;
+                            const { [listItem.id]: _omit, ...rest } = prev
+                            return rest
                           })
                         }
                       >
@@ -242,9 +182,9 @@ export default function ConnectionsPage() {
                         disabled={remove.isPending}
                         onClick={() => {
                           const ok = confirm(
-                            'Delete this connection?\n\nNote: if this record is referenced by junctions (e.g., system_locations, location_connections), deletion may be blocked by FKs.'
-                          );
-                          if (ok) remove.mutate(listItem.id);
+                            'Delete this system?\n\nNote: if this system is referenced by junctions (e.g., application_systems, system_data), deletion may be blocked by FKs.'
+                          )
+                          if (ok) remove.mutate(listItem.id)
                         }}
                       >
                         Delete
@@ -253,34 +193,34 @@ export default function ConnectionsPage() {
                   </div>
                 )}
               </li>
-            );
+            )
           })}
         </ul>
       </div>
 
       <div className="bg-white border rounded-2xl p-4">
-        <h2 className="text-lg font-medium mb-2">Create connection</h2>
+        <h2 className="text-lg font-medium mb-2">Create system</h2>
         <form
           className="grid gap-2 md:grid-cols-4"
           onSubmit={e => {
-            e.preventDefault();
-            const trimmed = name.trim();
-            if (!trimmed) return;
+            e.preventDefault()
+            const trimmed = name.trim()
+            if (!trimmed) return
             create.mutate(
               {
                 id: '',
                 name: trimmed,
                 description: desc.trim() || null,
-                owner: owners.find(o => o.id === ownerId) || null, // ← returns value correctly
+                owner: owners.find(o => o.id === ownerId) || null,
               },
               {
                 onSuccess: () => {
-                  setName('');
-                  setDesc('');
-                  setOwnerId('');
+                  setName('')
+                  setDesc('')
+                  setOwnerId('')
                 },
               }
-            );
+            )
           }}
         >
           <input
@@ -301,7 +241,7 @@ export default function ConnectionsPage() {
             value={ownerId}
             onChange={e => setOwnerId(e.target.value)}
           >
-            <option value="">Owner (optional)</option>
+            <option value="">Ownership (optional)</option>
             {owners.map(o => (
               <option key={o.id} value={o.id}>
                 {o.name}
@@ -332,5 +272,5 @@ export default function ConnectionsPage() {
         </form>
       </div>
     </div>
-  );
+  )
 }

@@ -28,10 +28,6 @@ export default function ProcessesPage() {
 
   return (
     <div className="grid gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Processes</h1>
-      </div>
-
       <div className="grid gap-2">
         {(processesQuery.isLoading || ownersQuery.isLoading) && <p>Loading…</p>}
         {(processesQuery.error || ownersQuery.error) && (

@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { postgrest } from '@/lib/browser/api-isms';
 import { OwnershipView, listOwnerships } from '@/lib/browser/isms/ownership';
-import { queryKeys } from '../_hooks/queryKeys';
+import { queryKeys } from '../../_hooks/queryKeys';
 
 type LocationView = {
     id: string;
@@ -117,10 +117,6 @@ export default function LocationsPage() {
 
     return (
         <div className="grid gap-6">
-            <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-semibold">Locations</h1>
-            </div>
-
             <div className="grid gap-2">
                 {(locationsQuery.isLoading || ownersQuery.isLoading) && <p>Loading…</p>}
                 {(locationsQuery.error || ownersQuery.error) && (

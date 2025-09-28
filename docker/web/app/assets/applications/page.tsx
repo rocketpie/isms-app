@@ -28,10 +28,6 @@ export default function ApplicationsPage() {
 
   return (
     <div className="grid gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Applications</h1>
-      </div>
-
       <div className="grid gap-2">
         {(appsQuery.isLoading || ownersQuery.isLoading) && <p>Loading…</p>}
         {(appsQuery.error || ownersQuery.error) && (

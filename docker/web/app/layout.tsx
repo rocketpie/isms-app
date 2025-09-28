@@ -1,5 +1,5 @@
 //app/layout.tsx
- 
+
 import './globals.css'
 import Providers from './providers'
 import Link from 'next/link'
@@ -26,7 +26,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div className="flex items-center gap-4">
                 <Link href="/" className="font-semibold">ISMS-App</Link>
 
-                {/* Assets dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 px-2 text-sm text-neutral-700">
+                      Owner
+                      <span className="ml-1 inline-block align-middle">▾</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-56">
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/people">People</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/ownership">Teams</Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-8 px-2 text-sm text-neutral-700">
@@ -35,31 +52,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="w-56">
-                    <DropdownMenuLabel className="text-xs text-neutral-500">Core Assets</DropdownMenuLabel>
                     <DropdownMenuSeparator />
+                    <DropdownMenuLabel className="text-xs text-neutral-500">Core Assets</DropdownMenuLabel>
                     <DropdownMenuItem asChild>
-                      <Link href="/people">People</Link>
+                      <Link href="/assets/processes">Processes</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/ownership">Owner/Teams</Link>
+                      <Link href="/assets/applications">Applications</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/processes">Processes</Link>
+                      <Link href="/assets/systems">Systems</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/applications">Applications</Link>
+                      <Link href="/assets/data">Data</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/systems">Systems</Link>
+                      <Link href="/assets/locations">Locations</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/data">Data</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/locations">Locations</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/connections">Connections</Link>
+                      <Link href="/assets/connections">Connections</Link>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -74,8 +85,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           <main className="mx-auto max-w-5xl p-4">{children}</main>
         </Providers>
-      </body>
-    </html>
+      </body >
+    </html >
   )
 }
 

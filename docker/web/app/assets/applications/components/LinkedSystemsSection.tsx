@@ -1,35 +1,35 @@
-//app/processes/components/LinkedApplicationsSection.tsx
+//app/applications/components/LinkedSystemsSection.tsx
 'use client'
 
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronRight, ChevronDown } from 'lucide-react';
 
 import { listOwnerships } from '@/lib/browser/isms/ownership';
-import { ApplicationView, listApplications } from '@/lib/browser/isms/applications';
-import { ProcessApplicationView, listLinkedApplications, linkApplication, unlinkApplication, } from '@/lib/browser/isms/process-applications';
+import { SystemView, listSystems } from '@/lib/browser/isms/systems';
+import { ApplicationSystemView, listLinkedSystems, linkSystem, unlinkSystem } from '@/lib/browser/isms/application-systems';
 
 import { queryKeys } from '@/app/_hooks/queryKeys';
-import { useApplications } from '@/app/_hooks/useApplications';
+import { useSystems } from '@/app/_hooks/useSystems';
 
-import { ApplicationDisplayRow } from '@/app/applications/components/ApplicationDisplayRow';
-import { ApplicationEditorRow } from '@/app/applications/components/ApplicationEditorRow';
-import ApplicationCreateForm from '@/app/applications/components/ApplicationCreateForm';
+import { SystemDisplayRow } from '@/app/assets/systems/components/SystemDisplayRow';
+import { SystemEditorRow } from '@/app/assets/systems/components/SystemEditorRow';
+import SystemCreateForm from '@/app/assets/systems/components/SystemCreateForm';
 
-export function LinkedApplicationsSection({ processId }: { processId: string }) {
+export function LinkedSystemsSection({ applicationId }: { applicationId: string }) {
   const queryClient = useQueryClient();
-  const { update, remove } = useApplications(); // reuse app mutations for inline edit / optional delete
+  const { update, remove } = useSystems(); // reuse app mutations for inline edit / optional delete
 
   // Linked to this process
   const linkedQuery = useQuery({
-    queryKey: queryKeys.processApplications(processId),
-    queryFn: () => listLinkedApplications(processId),
+    queryKey: queryKeys.applicationSystems(applicationId),
+    queryFn: () => listLinkedSystems(applicationId),
   });
 
   // All applications (exclude already-linked)
-  const allAppsQuery = useQuery({
-    queryKey: queryKeys.allApplications,
-    queryFn: listApplications,
+  const allSystemsQuery = useQuery({
+    queryKey: queryKeys.allSystems,
+    queryFn: listSystems,
     staleTime: 30_000,
   });
 
@@ -38,61 +38,61 @@ export function LinkedApplicationsSection({ processId }: { processId: string }) 
 
   // Optimistic link
   const linkMutation = useMutation({
-    mutationFn: ({ applicationId }: { applicationId: string }) => linkApplication(processId, applicationId),
-    onMutate: async ({ applicationId }) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.processApplications(processId) });
-      const previous = queryClient.getQueryData<ProcessApplicationView[]>(queryKeys.processApplications(processId)) || [];
-      const app = (allAppsQuery.data || []).find(a => a.id === applicationId);
-      if (app) {
-        queryClient.setQueryData<ProcessApplicationView[]>(
-          queryKeys.processApplications(processId),
-          [...previous, { process_id: processId, application_id: app.id, application: app }]
+    mutationFn: ({ systemId }: { systemId: string }) => linkSystem(applicationId, systemId),
+    onMutate: async ({ systemId }) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.applicationSystems(applicationId) });
+      const previous = queryClient.getQueryData<ApplicationSystemView[]>(queryKeys.applicationSystems(applicationId)) || [];
+      const system = (allSystemsQuery.data || []).find(a => a.id === systemId);
+      if (system) {
+        queryClient.setQueryData<ApplicationSystemView[]>(
+          queryKeys.applicationSystems(applicationId),
+          [...previous, { application_id: applicationId, system_id: system.id, system: system }]
         );
       }
       return { previous };
     },
     onError: (_e, _v, ctx) => {
-      if (ctx?.previous) queryClient.setQueryData(queryKeys.processApplications(processId), ctx.previous);
+      if (ctx?.previous) queryClient.setQueryData(queryKeys.applicationSystems(applicationId), ctx.previous);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.processApplications(processId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.applicationSystems(applicationId) });
     },
   });
 
   // Optimistic unlink
   const unlinkMutation = useMutation({
-    mutationFn: ({ applicationId }: { applicationId: string }) => unlinkApplication(processId, applicationId),
-    onMutate: async ({ applicationId }) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.processApplications(processId) });
-      const previous = queryClient.getQueryData<ProcessApplicationView[]>(queryKeys.processApplications(processId)) || [];
-      queryClient.setQueryData<ProcessApplicationView[]>(
-        queryKeys.processApplications(processId),
-        previous.filter(x => x.application_id !== applicationId)
+    mutationFn: ({ systemId }: { systemId: string }) => unlinkSystem(applicationId, systemId),
+    onMutate: async ({ systemId }) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.applicationSystems(applicationId) });
+      const previous = queryClient.getQueryData<ApplicationSystemView[]>(queryKeys.applicationSystems(applicationId)) || [];
+      queryClient.setQueryData<ApplicationSystemView[]>(
+        queryKeys.applicationSystems(applicationId),
+        previous.filter(x => x.system_id !== systemId)
       );
       return { previous };
     },
     onError: (_e, _v, ctx) => {
-      if (ctx?.previous) queryClient.setQueryData(queryKeys.processApplications(processId), ctx.previous);
+      if (ctx?.previous) queryClient.setQueryData(queryKeys.applicationSystems(applicationId), ctx.previous);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.processApplications(processId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.applicationSystems(applicationId) });
     },
   });
 
   // Local UI state
   const [searchQuery, setSearchQuery] = useState('');
   const [pickerValue, setPickerValue] = useState<string>('');
-  const [editing, setEditing] = useState<Record<string, ApplicationView>>({}); // id -> draft
+  const [editing, setEditing] = useState<Record<string, SystemView>>({}); // id -> draft
 
   // Compute available applications to link
-  const linkedIds = new Set((linkedQuery.data || []).map(x => x.application_id));
-  const availableApps = (allAppsQuery.data || [])
+  const linkedIds = new Set((linkedQuery.data || []).map(x => x.system_id));
+  const availableSystems = (allSystemsQuery.data || [])
     .filter(item => !linkedIds.has(item.id)) // exclude already-linked
     .filter(item => (searchQuery ? item.name.toLowerCase().includes(searchQuery.toLowerCase()) : true)); // apply search filter
 
   return (
     <div className="mt-3 rounded-xl border bg-white p-3">
-      <h4 className="font-medium mb-2">Applications</h4>
+      <h4 className="font-medium mb-2">Systems</h4>
 
       {/* Linked list */}
       {linkedQuery.isLoading && <p>Loading linked…</p>}
@@ -100,24 +100,24 @@ export function LinkedApplicationsSection({ processId }: { processId: string }) 
 
       <ul className="grid gap-2">
         {(linkedQuery.data || []).map(link => {
-          const item = link.application;
+          const item = link.system;
           if (!item) return null; // defensive
 
           const isEditing = editing[item.id] !== undefined;
           const value = isEditing ? editing[item.id] : item;
 
           return (
-            <li key={link.application_id} className="border rounded-lg p-3">
+            <li key={link.system_id} className="border rounded-lg p-3">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex-1">
                   {isEditing ? (
-                    <ApplicationEditorRow
+                    <SystemEditorRow
                       value={value}
                       owners={ownersQuery.data || []}
                       disabled={update.isPending || remove.isPending}
                       onChange={draft => setEditing(prev => ({ ...prev, [item.id]: draft }))}
                       onSave={() => {
-                        const patch: Partial<ApplicationView> = {
+                        const patch: Partial<SystemView> = {
                           name: value.name.trim(),
                           description: value.description?.trim() || null,
                           owner: value.owner || null,
@@ -134,7 +134,7 @@ export function LinkedApplicationsSection({ processId }: { processId: string }) 
                       onCancel={() => setEditing(({ [item.id]: _omit, ...rest }) => rest)}
                     />
                   ) : (
-                    <ApplicationDisplayRow
+                    <SystemDisplayRow
                       listItem={item}
                       expanded={false}
                       onEdit={() => setEditing(prev => ({ ...prev, [item.id]: item }))}
@@ -144,7 +144,7 @@ export function LinkedApplicationsSection({ processId }: { processId: string }) 
                 <button
                   className="rounded-lg px-3 py-1 border text-red-600 disabled:opacity-60"
                   disabled={unlinkMutation.isPending}
-                  onClick={() => unlinkMutation.mutate({ applicationId: link.application_id })}
+                  onClick={() => unlinkMutation.mutate({ systemId: link.system_id })}
                   title="Remove link"
                 >
                   Remove
@@ -170,10 +170,10 @@ export function LinkedApplicationsSection({ processId }: { processId: string }) 
           className="border rounded-lg px-3 py-2 md:col-span-2"
           value={pickerValue}
           onChange={e => setPickerValue(e.target.value)}
-          disabled={allAppsQuery.isLoading}
+          disabled={allSystemsQuery.isLoading}
         >
           <option value="">Add existing…</option>
-          {availableApps.map(item => (
+          {availableSystems.map(item => (
             <option key={item.id} value={item.id}>
               {item.name}
             </option>
@@ -182,9 +182,9 @@ export function LinkedApplicationsSection({ processId }: { processId: string }) 
         <button
           className="rounded-lg px-3 py-2 border bg-black text-white disabled:opacity-60"
           disabled={!pickerValue || linkMutation.isPending}
-          onClick={() => linkMutation.mutate({ applicationId: pickerValue })}
+          onClick={() => linkMutation.mutate({ systemId: pickerValue })}
         >
-          Link application
+          Link system
         </button>
       </div>
 
@@ -193,16 +193,17 @@ export function LinkedApplicationsSection({ processId }: { processId: string }) 
         <summary className="flex items-center gap-2 text-sm text-neutral-700">
           <ChevronRight className="h-4 w-4 group-open:hidden" />
           <ChevronDown className="h-4 w-4 hidden group-open:block" />
-          <span>link a new application</span>
+          <span>link a new system</span>
         </summary>
-        <ApplicationCreateForm
+        <SystemCreateForm
           owners={ownersQuery.data || []}
           className="mt-4"
           onCreated={(created) => {
-            linkApplication(processId, created.id).finally(() => {
-              queryClient.invalidateQueries({ queryKey: queryKeys.processApplications(processId) });
-              queryClient.invalidateQueries({ queryKey: queryKeys.allApplications });
-            });
+            linkSystem(applicationId, created.id)
+              .finally(() => {
+                queryClient.invalidateQueries({ queryKey: queryKeys.applicationSystems(applicationId) });
+                queryClient.invalidateQueries({ queryKey: queryKeys.allSystems });
+              });
           }}
         />
       </details>

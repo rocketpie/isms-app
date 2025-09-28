@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@/app/_hooks/queryKeys';
 import { listOwnerships, OwnershipView } from '@/lib/browser/isms/ownership';
 import { useSystems } from '@/app/_hooks/useSystems';
-import { SystemView } from '@/lib/browser/isms/systems';
+import { SystemView } from '@/lib/browser/isms/assetTypes';
 
 /**
  * A reusable, self-contained create form for Systems.

@@ -2,22 +2,7 @@
 'use client'
 
 import { postgrest } from "../api-isms"
-import { OwnershipView } from "./ownership"
-
-
-export type SystemView = {
-    id: string
-    name: string
-    description: string | null
-    owner: OwnershipView | null
-}
-
-type SystemRow = {
-    id?: string
-    name: string
-    owner_id: string | null
-    description: string | null
-}
+import { SystemRow, SystemView } from "./assetTypes"
 
 
 /* ---------- API ---------- */

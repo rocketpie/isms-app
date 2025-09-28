@@ -4,8 +4,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { listOwnerships } from '@/lib/browser/isms/ownership'
-import { createSystem, deleteSystem, listSystems, SystemView, updateSystem } from '@/lib/browser/isms/systems'
+import { createSystem, deleteSystem, listSystems,  updateSystem } from '@/lib/browser/isms/systems'
 import { queryKeys } from '../../_hooks/queryKeys'
+import { SystemView } from '@/lib/browser/isms/assetTypes'
 
 /* ---------- Page ---------- */
 export default function SystemsPage() {

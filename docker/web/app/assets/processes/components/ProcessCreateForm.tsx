@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useProcesses } from '@/app/_hooks/useProcesses';
 import { queryKeys } from '@/app/_hooks/queryKeys';
 import { listOwnerships, OwnershipView } from '@/lib/browser/isms/ownership';
-import { ProcessView } from '@/lib/browser/isms/processes';
+import { ProcessView } from '@/lib/browser/isms/assetTypes';
 
 /**
  * A reusable, self-contained create form for Processes.

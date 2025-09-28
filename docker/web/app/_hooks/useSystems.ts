@@ -1,8 +1,9 @@
 //app/_hooks/useSystems.ts
  
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { listSystems, createSystem, updateSystem, deleteSystem, SystemView } from '@/lib/browser/isms/systems';
 import { queryKeys } from './queryKeys';
+import { SystemView } from '@/lib/browser/isms/assetTypes';
+import { listSystems, createSystem, updateSystem, deleteSystem } from '@/lib/browser/isms/systems';
 
 export function useSystems() {
   const queryClient = useQueryClient();

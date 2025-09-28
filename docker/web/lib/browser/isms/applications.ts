@@ -2,21 +2,7 @@
 'use client'
 
 import { postgrest } from "../api-isms"
-import { OwnershipView } from "./ownership"
-
-export type ApplicationView = {
-  id: string
-  name: string
-  description: string | null
-  owner: OwnershipView | null
-}
-
-type ApplicationRow = {
-  id?: string
-  name: string
-  description: string | null
-  owner_id: string | null
-}
+import { ApplicationRow, ApplicationView } from "./assetTypes"
 
 export async function listApplications() {
   return await postgrest<ApplicationView[]>(

@@ -3,67 +3,12 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
-import { postgrest } from '@/lib/browser/api-isms';
 import { OwnershipView, listOwnerships } from '@/lib/browser/isms/ownership';
 import { queryKeys } from '../../_hooks/queryKeys';
+import { ConnectionView } from '@/lib/browser/isms/assetTypes';
+import { listConnections, createConnection, updateConnection, deleteConnection } from '@/lib/browser/isms/connections';
 
-type ConnectionView = {
-  id: string;
-  name: string;
-  description: string | null;
-  owner: OwnershipView | null;
-};
 
-type ConnectionRow = {
-  id?: string;
-  name: string;
-  owner_id: string | null;
-  description: string | null;
-};
-
-/* ---------- API ---------- */
-async function listConnections() {
-  // GET /connections?select=id,name,description,owner:ownership(id,name)&order=name.asc
-  return await postgrest<ConnectionView[]>(
-    '/connections?select=id,name,description,owner:ownership(id,name)&order=name.asc',
-    { method: 'GET' }
-  );
-}
-
-async function createConnection(input: ConnectionView) {
-  const { id, owner, ...rest } = input;
-  const dataModel: ConnectionRow = {
-    ...rest,
-    owner_id: owner?.id ?? null,
-  };
-  return await postgrest<ConnectionView[]>('/connections', {
-    method: 'POST',
-    body: JSON.stringify([dataModel]),
-    headers: { Prefer: 'return=representation' },
-  });
-}
-
-async function updateConnection(id: string, input: Partial<ConnectionView>) {
-  const { owner, ...rest } = input;
-  const dataModel: Partial<ConnectionRow> = {
-    ...rest,
-    owner_id: owner?.id ?? null,
-  };
-  return await postgrest<ConnectionRow[]>(
-    `/connections?id=eq.${encodeURIComponent(id)}`,
-    {
-      method: 'PATCH',
-      body: JSON.stringify(dataModel),
-      headers: { Prefer: 'return=representation' },
-    }
-  );
-}
-
-async function deleteConnection(id: string) {
-  return await postgrest<null>(`/connections?id=eq.${encodeURIComponent(id)}`, {
-    method: 'DELETE',
-  });
-}
 
 /* ---------- Page ---------- */
 export default function ConnectionsPage() {

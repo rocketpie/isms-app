@@ -2,8 +2,9 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ApplicationView, listApplications, createApplication, updateApplication, deleteApplication } from '@/lib/browser/isms/applications';
 import { queryKeys } from '@/app/_hooks/queryKeys';
+import { ApplicationView } from '@/lib/browser/isms/assetTypes';
+import { listApplications, createApplication, updateApplication, deleteApplication } from '@/lib/browser/isms/applications';
 
 export function useApplications() {
   const queryClient = useQueryClient();

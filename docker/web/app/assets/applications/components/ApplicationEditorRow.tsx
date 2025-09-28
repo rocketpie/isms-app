@@ -1,8 +1,8 @@
 //app/assets/applications/components/ApplicationEditorRow.tsx
 'use client'
 
+import { ApplicationView } from '@/lib/browser/isms/assetTypes';
 import { OwnershipView } from '@/lib/browser/isms/ownership';
-import { ApplicationView } from '@/lib/browser/isms/applications';
 
 export function ApplicationEditorRow(props: {
   value: ApplicationView;

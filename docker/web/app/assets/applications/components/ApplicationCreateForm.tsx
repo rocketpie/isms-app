@@ -2,11 +2,12 @@
 'use client'
 
 import { useMemo, useState } from 'react';
-import { useApplications } from '@/app/_hooks/useApplications';
-import { listOwnerships, OwnershipView } from '@/lib/browser/isms/ownership';
-import { ApplicationView } from '@/lib/browser/isms/applications';
-import { queryKeys } from '@/app/_hooks/queryKeys';
 import { useQuery } from '@tanstack/react-query';
+import { queryKeys } from '@/app/_hooks/queryKeys';
+
+import { ApplicationView } from '@/lib/browser/isms/assetTypes';
+import { listOwnerships, OwnershipView } from '@/lib/browser/isms/ownership';
+import { useApplications } from '@/app/_hooks/useApplications';
 
 /**
  * A reusable, self-contained create form for Processes.

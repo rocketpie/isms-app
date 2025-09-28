@@ -2,22 +2,7 @@
 'use client'
 
 import { postgrest } from "../api-isms";
-import { OwnershipView } from "./ownership";
-
-export type ProcessView = {
-    id: string;
-    name: string;
-    description: string | null;
-    owner: OwnershipView | null;
-};
-
-type ProcessRow = {
-    id?: string;
-    name: string;
-    owner_id: string | null;
-    description: string | null;
-};
-
+import { ProcessView, ProcessRow } from "./assetTypes";
 
 export async function listProcesses() {
     // GET /processes?select=id,name,description,owner:ownership(id,name)&order=name.asc

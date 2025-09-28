@@ -2,7 +2,7 @@
 'use client'
 
 import { postgrest } from "../api-isms";
-import { ApplicationView } from "./applications";
+import { ApplicationView } from "./assetTypes";
 
 export type ProcessApplicationView = {
     application: ApplicationView;

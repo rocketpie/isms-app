@@ -5,16 +5,16 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 
-import { listOwnerships } from '@/lib/browser/isms/ownership';
-import { SystemView, listSystems } from '@/lib/browser/isms/systems';
-import { ApplicationSystemView, listLinkedSystems, linkSystem, unlinkSystem } from '@/lib/browser/isms/application-systems';
-
 import { queryKeys } from '@/app/_hooks/queryKeys';
+import { SystemView } from '@/lib/browser/isms/assetTypes';
+import { ApplicationSystemView, listLinkedSystems, linkSystem, unlinkSystem } from '@/lib/browser/isms/application-systems';
+import { listSystems } from '@/lib/browser/isms/systems';
+import { listOwnerships } from '@/lib/browser/isms/ownership';
 import { useSystems } from '@/app/_hooks/useSystems';
 
-import { SystemDisplayRow } from '@/app/assets/systems/components/SystemDisplayRow';
 import { SystemEditorRow } from '@/app/assets/systems/components/SystemEditorRow';
 import SystemCreateForm from '@/app/assets/systems/components/SystemCreateForm';
+import SimpleAssetDisplayRow from '../../_components/SimpleAssetDisplayRow';
 
 export function LinkedSystemsSection({ applicationId }: { applicationId: string }) {
   const queryClient = useQueryClient();
@@ -134,8 +134,10 @@ export function LinkedSystemsSection({ applicationId }: { applicationId: string 
                       onCancel={() => setEditing(({ [item.id]: _omit, ...rest }) => rest)}
                     />
                   ) : (
-                    <SystemDisplayRow
-                      listItem={item}
+                    <SimpleAssetDisplayRow
+                      name={item.name}
+                      description={item.description}
+                      ownerName={item.owner?.name}
                       expanded={false}
                       onEdit={() => setEditing(prev => ({ ...prev, [item.id]: item }))}
                     />

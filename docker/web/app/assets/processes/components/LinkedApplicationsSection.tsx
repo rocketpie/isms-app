@@ -6,15 +6,16 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
 import { listOwnerships } from '@/lib/browser/isms/ownership';
-import { ApplicationView, listApplications } from '@/lib/browser/isms/applications';
 import { ProcessApplicationView, listLinkedApplications, linkApplication, unlinkApplication, } from '@/lib/browser/isms/process-applications';
 
 import { queryKeys } from '@/app/_hooks/queryKeys';
 import { useApplications } from '@/app/_hooks/useApplications';
 
-import { ApplicationDisplayRow } from '@/app/assets/applications/components/ApplicationDisplayRow';
 import { ApplicationEditorRow } from '@/app/assets/applications/components/ApplicationEditorRow';
 import ApplicationCreateForm from '@/app/assets/applications/components/ApplicationCreateForm';
+import { listApplications } from '@/lib/browser/isms/applications';
+import { ApplicationView } from '@/lib/browser/isms/assetTypes';
+import SimpleAssetDisplayRow from '../../_components/SimpleAssetDisplayRow';
 
 export function LinkedApplicationsSection({ processId }: { processId: string }) {
   const queryClient = useQueryClient();
@@ -134,8 +135,10 @@ export function LinkedApplicationsSection({ processId }: { processId: string }) 
                       onCancel={() => setEditing(({ [item.id]: _omit, ...rest }) => rest)}
                     />
                   ) : (
-                    <ApplicationDisplayRow
-                      listItem={item}
+                    <SimpleAssetDisplayRow
+                      name={item.name}
+                      description={item.description}
+                      ownerName={item.owner?.name}
                       expanded={false}
                       onEdit={() => setEditing(prev => ({ ...prev, [item.id]: item }))}
                     />

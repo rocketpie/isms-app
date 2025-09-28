@@ -3,84 +3,26 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
-import { postgrest } from '@/lib/browser/api-isms'
 import { queryKeys } from '../../_hooks/queryKeys'
-import { listOwnerships, OwnershipView } from '@/lib/browser/isms/ownership'
-
-type DataAssetView = {
-  id: string
-  name: string
-  description: string | null
-  owner: OwnershipView | null
-}
-
-type DataAssetRow = {
-  id?: string
-  name: string
-  description: string | null
-  owner_id: string | null
-}
-
-/* ---------- API ---------- */
-async function listDataAssets() {
-  return await postgrest<DataAssetView[]>(
-    '/data?select=id,name,description,owner:ownership(id,name)&order=name.asc',
-    { method: 'GET' }
-  )
-}
-
-async function createDataAsset(input: DataAssetView) {
-  // strip the owner view object
-  const { id, owner, ...rest } = input
-  // set the owner_id, if any
-  const dataModel: DataAssetRow = {
-    ...rest,
-    owner_id: owner?.id ?? null
-  }
-  return await postgrest<DataAssetRow[]>('/data', {
-    method: 'POST',
-    body: JSON.stringify([dataModel]),
-    headers: { Prefer: 'return=representation' },
-  })
-}
-
-async function updateDataAsset(id: string, input: Partial<DataAssetView>) {
-  // strip the owner view object
-  const { owner, ...rest } = input
-  // set the owner_id, if any
-  const dataModel: Partial<DataAssetRow> = {
-    ...rest,
-    owner_id: owner?.id ?? null
-  }
-  return await postgrest<DataAssetRow[]>(
-    `/data?id=eq.${encodeURIComponent(id)}`,
-    {
-      method: 'PATCH',
-      body: JSON.stringify(dataModel),
-      headers: { Prefer: 'return=representation' },
-    }
-  )
-}
-
-async function deleteDataAsset(id: string) {
-  return await postgrest<null>(`/data?id=eq.${encodeURIComponent(id)}`, { method: 'DELETE' })
-}
+import { listOwnerships } from '@/lib/browser/isms/ownership'
+import { DataAssetView } from '@/lib/browser/isms/assetTypes'
+import { createData, deleteData, listData, updateData } from '@/lib/browser/isms/dataAssets'
 
 /* ---------- Page ---------- */
 export default function DataPage() {
   const queryClient = useQueryClient()
 
-  const dataQuery = useQuery({ queryKey: queryKeys.allData, queryFn: listDataAssets })
+  const dataQuery = useQuery({ queryKey: queryKeys.allData, queryFn: listData })
   const ownersQuery = useQuery({ queryKey: queryKeys.allOwnership, queryFn: listOwnerships })
 
   const create = useMutation({
-    mutationFn: createDataAsset,
+    mutationFn: createData,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.allData }),
   })
 
   const update = useMutation({
     mutationFn: ({ id, patch }: { id: string; patch: Partial<DataAssetView> }) =>
-      updateDataAsset(id, patch),
+      updateData(id, patch),
     onMutate: async ({ id, patch }) => {
       await queryClient.cancelQueries({ queryKey: queryKeys.allData })
       const prev = queryClient.getQueryData<DataAssetView[]>(queryKeys.allData)
@@ -99,7 +41,7 @@ export default function DataPage() {
   })
 
   const remove = useMutation({
-    mutationFn: deleteDataAsset,
+    mutationFn: deleteData,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.allData }),
   })
 

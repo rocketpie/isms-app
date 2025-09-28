@@ -1,30 +1,52 @@
-//lib/browser/isms/locations.ts
+// lib/browser/isms/locations.ts
 'use client'
 
-import { postgrest } from "../api-isms"
-import { OwnershipView } from "./ownership"
+import { postgrest } from '../api-isms'
+import { LocationRow, LocationView } from './assetTypes'
 
-
-export type LocationView = {
-    id: string
-    name: string
-    description: string | null
-    owner: OwnershipView | null
-}
-
-type LocationRow = {
-    id?: string
-    name: string
-    owner_id: string | null
-    description: string | null
-}
-
-
-/* ---------- API ---------- */
 export async function listLocations() {
-    // GET /systems?select=id,name,description,owner_id&order=name.asc
-    return await postgrest<LocationView[]>(
-        '/systems?select=id,name,description,owner:ownership(id,name)&order=name.asc',
-        { method: 'GET' }
-    )
+  return await postgrest<LocationView[]>(
+    '/locations?select=id,name,description,owner:ownership(id,name)&order=name.asc',
+    { method: 'GET' }
+  )
 }
+
+export async function createLocation(input: LocationView) {
+  const { id, owner, ...rest } = input
+  const dataModel: LocationRow = {
+    ...rest,
+    owner_id: owner?.id ?? null,
+  }
+  return await postgrest<LocationView[]>(
+    '/locations?select=id,name,description,owner:ownership(id,name)',
+    {
+      method: 'POST',
+      body: JSON.stringify([dataModel]),
+      headers: { Prefer: 'return=representation' },
+    }
+  )
+}
+
+export async function updateLocation(id: string, input: Partial<LocationView>) {
+  const { owner, ...rest } = input
+  const dataModel: Partial<LocationRow> = {
+    ...rest,
+    owner_id: owner?.id ?? null,
+  }
+  return await postgrest<LocationView[]>(
+    `/locations?id=eq.${encodeURIComponent(id)}&select=id,name,description,owner:ownership(id,name)`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(dataModel),
+      headers: { Prefer: 'return=representation' },
+    }
+  )
+}
+
+export async function deleteLocation(id: string) {
+  return await postgrest<null>(`/locations?id=eq.${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+  })
+}
+
+

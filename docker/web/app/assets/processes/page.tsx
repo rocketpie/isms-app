@@ -7,13 +7,12 @@ import { useProcesses } from '@/app/_hooks/useProcesses';
 import { queryKeys } from '@/app/_hooks/queryKeys';
 
 import { listOwnerships } from '@/lib/browser/isms/ownership';
-import { ProcessView } from '@/lib/browser/isms/processes';
 
-import { ProcessDisplayRow } from './components/ProcessDisplayRow';
 import { ProcessEditorRow } from './components/ProcessEditorRow';
 import ProcessCreateForm from './components/ProcessCreateForm';
 import { LinkedApplicationsSection } from './components/LinkedApplicationsSection';
 import SimpleAssetDisplayRow from '../_components/SimpleAssetDisplayRow';
+import { ProcessView } from '@/lib/browser/isms/assetTypes';
 
 export default function ProcessesPage() {
   const { list: processesQuery, update, remove } = useProcesses();

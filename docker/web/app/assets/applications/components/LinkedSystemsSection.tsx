@@ -130,9 +130,7 @@ export function LinkedSystemsSection({ applicationId }: { applicationId: string 
                     />
                   ) : (
                     <SimpleAssetDisplayRow
-                      name={item.name}
-                      description={item.description}
-                      ownerName={item.owner?.name}
+                      value={item}
                       expanded={false}
                       onEdit={() => setEditing(prev => ({ ...prev, [item.id]: item }))}
                     />

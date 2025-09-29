@@ -103,9 +103,7 @@ export default function SystemsPage() {
                   />
                 ) : (
                   <SimpleAssetDisplayRow
-                    name={listItem.name}
-                    description={listItem.description}
-                    ownerName={listItem.owner?.name}
+                    value={listItem}
                     expanded={false}
                     // expanded={!!expanded[listItem.id]}
                     // onToggle={() => setExpanded(prev => ({ ...prev, [listItem.id]: !prev[listItem.id] }))}

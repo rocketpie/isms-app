@@ -1,12 +1,11 @@
 //app/assets/_components/SimpleAssetDisplayRow.tsx
 'use client';
 
+import { BaseAssetView } from '@/lib/browser/isms/assetTypes';
 import { ChevronDown, ChevronRight, Pencil } from 'lucide-react';
 
 export default function SimpleAssetDisplayRow(props: {
-  name: string;
-  description?: string | null | undefined;
-  ownerName?: string | null | undefined;
+  value: BaseAssetView;
   expanded: boolean;
   onEdit?: () => void;
   onToggle?: () => void;
@@ -27,19 +26,19 @@ export default function SimpleAssetDisplayRow(props: {
         ) : (
           <ChevronRight className="h-4 w-4" />
         )}
-        {props.name}
+        {props.value?.name}
       </button>
 
       <div className="text-sm text-neutral-700">
-        {props.description ? (
-          <span className="text-neutral-600">{props.description}</span>
+        {props.value?.description ? (
+          <span className="text-neutral-600">{props.value?.description}</span>
         ) : (
           <span className="text-neutral-400">No description</span>
         )}
       </div>
 
       <div className="text-sm text-neutral-700">
-        Owner: <span className="text-neutral-600">{props.ownerName}</span>
+        Owner: <span className="text-neutral-600">{props.value?.owner?.name}</span>
       </div>
 
       <div className="flex gap-2">

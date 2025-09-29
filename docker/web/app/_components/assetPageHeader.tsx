@@ -11,6 +11,7 @@ const items = [
     { label: 'Applications', href: '/assets/applications' },
     { label: 'Systems', href: '/assets/systems' },
     { label: 'Locations', href: '/assets/locations' },
+    { label: 'Connections', href: '/assets/connections' },
 ];
 
 export default function AssetPageHeader() {

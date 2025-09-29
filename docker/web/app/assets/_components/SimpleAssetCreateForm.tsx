@@ -40,7 +40,7 @@ export default function SimpleAssetCreateForm(props: {
 
   return (
     <div className={props.className}>
-      <h2 className="text-lg font-medium mb-2">{props.title}</h2>
+      <h2 className="text-lg font-medium mb-2">New {props.title}</h2>
 
       <form
         className="grid gap-2 md:grid-cols-4"

@@ -17,7 +17,7 @@ export async function createConnection(input: ConnectionView) {
     ...rest,
     owner_id: owner?.id ?? null,
   }
-  return await postgrest<ConnectionView[]>(
+  return await postgrest<ConnectionRow[]>(
     '/connections?select=id,name,description,owner:ownership(id,name)',
     {
       method: 'POST',

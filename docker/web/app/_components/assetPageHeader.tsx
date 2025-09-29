@@ -10,6 +10,7 @@ const items = [
     { label: 'Processes', href: '/assets/processes' },
     { label: 'Applications', href: '/assets/applications' },
     { label: 'Systems', href: '/assets/systems' },
+    { label: 'Data', href: '/assets/data' },
     { label: 'Locations', href: '/assets/locations' },
     { label: 'Connections', href: '/assets/connections' },
 ];

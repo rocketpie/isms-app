@@ -6,6 +6,7 @@ import SimpleAssetEditorRow from '../_components/SimpleAssetEditorRow';
 import SimpleAssetCreateForm from '../_components/SimpleAssetCreateForm';
 import type { LocationView } from '@/lib/browser/isms/assetTypes';
 import { useLocations } from '@/app/_hooks/useLocations';
+import { LinkedConnectionsSection } from './components/LinkedConnectionsSection';
 
 export default function LocationsPage() {
   const hooks = useLocations();
@@ -23,7 +24,11 @@ export default function LocationsPage() {
         EditorRow: SimpleAssetEditorRow as any,
         CreateForm: SimpleAssetCreateForm as any,
         // Add a domain-specific details panel when ready
-        ExpandedView: () => null
+        ExpandedView: (location) => (
+          <div className="col-span-full mt-3">
+            <LinkedConnectionsSection locationId={location.id} />
+          </div>
+        )
       }}
     />
   );

@@ -17,7 +17,7 @@ export async function createData(input: DataAssetView) {
     ...rest,
     owner_id: owner?.id ?? null,
   }
-  return await postgrest<DataAssetView[]>(
+  return await postgrest<DataAssetRow[]>(
     '/data?select=id,name,description,owner:ownership(id,name)',
     {
       method: 'POST',

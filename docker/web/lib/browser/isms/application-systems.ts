@@ -4,40 +4,27 @@
 import { postgrest } from '../api-isms'
 import { SystemView } from './assetTypes'
 
-export type ApplicationSystemView = {
-  application_id: string
-  system_id: string
-  system: SystemView
-}
-
-export type ApplicationSystemRow = {
-  application_id: string
-  system_id: string
-}
-
 export async function listLinkedSystems(applicationId: string) {
-  return await postgrest<ApplicationSystemView[]>(
-    `/application_systems?application_id=eq.${encodeURIComponent(applicationId)}` +
-      `&select=application_id,system_id,system:systems(id,name,description,owner:ownership(id,name))` +
-      `&order=system(name).asc`,
+  const response = await postgrest<{ system: SystemView }[]>(
+    `/application_systems?application_id=eq.${encodeURIComponent(applicationId)}` + 
+    `&select=system:systems(id,name,description,owner:ownership(id,name))` +
+    `&order=system(name).asc`,
     { method: 'GET' }
   )
+  return response.map(row => row.system)
 }
 
 export async function linkSystem(applicationId: string, systemId: string) {
-  return await postgrest<ApplicationSystemView[]>(
-    '/application_systems',
-    {
-      method: 'POST',
-      body: JSON.stringify([{ application_id: applicationId, system_id: systemId }]),
-      headers: { Prefer: 'return=representation' },
-    }
-  )
+  await postgrest('/application_systems', {
+    method: 'POST',
+    body: JSON.stringify([{ application_id: applicationId, system_id: systemId }]),
+  })
 }
 
 export async function unlinkSystem(applicationId: string, systemId: string) {
   return await postgrest<null>(
-    `/application_systems?application_id=eq.${encodeURIComponent(applicationId)}&system_id=eq.${encodeURIComponent(systemId)}`,
+    `/application_systems?application_id=eq.${encodeURIComponent(applicationId)}` +
+    `&system_id=eq.${encodeURIComponent(systemId)}`,
     { method: 'DELETE' }
   )
 }

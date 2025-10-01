@@ -11,33 +11,34 @@ export async function listConnections() {
   )
 }
 
-export async function createConnection(input: ConnectionView) {
-  const { id, owner, ...rest } = input
+export async function createConnection(item: ConnectionView) {
+  // strip the owner object
+  const { id, owner, ...rest } = item
+  // set the owner_id, if any
   const dataModel: ConnectionRow = {
     ...rest,
-    owner_id: owner?.id ?? null,
+    owner_id: owner?.id ?? null
   }
-  return await postgrest<ConnectionRow[]>(
-    '/connections?select=id,name,description,owner:ownership(id,name)',
-    {
-      method: 'POST',
-      body: JSON.stringify([dataModel]),
-      headers: { Prefer: 'return=representation' },
-    }
-  )
+  const response = await postgrest<ConnectionView[]>('/connections', {
+    method: 'POST',
+    body: JSON.stringify([dataModel]),
+    headers: { Prefer: 'return=representation' },
+  })
+
+  // TODO: remove for CQRS
+  return response[0].id
 }
 
-export async function updateConnection(
-  id: string,
-  input: Partial<ConnectionView>
-) {
-  const { owner, ...rest } = input
+export async function updateConnection(item: ConnectionView) {
+  // strip the owner object
+  const { owner, ...rest } = item
+  // set the owner_id, if any
   const dataModel: Partial<ConnectionRow> = {
     ...rest,
-    owner_id: owner?.id ?? null,
+    owner_id: owner?.id ?? null
   }
-  return await postgrest<ConnectionView[]>(
-    `/connections?id=eq.${encodeURIComponent(id)}&select=id,name,description,owner:ownership(id,name)`,
+  return await postgrest<null>(
+    `/connections?id=eq.${encodeURIComponent(item.id)}`,
     {
       method: 'PATCH',
       body: JSON.stringify(dataModel),
@@ -51,5 +52,3 @@ export async function deleteConnection(id: string) {
     method: 'DELETE',
   })
 }
-
-

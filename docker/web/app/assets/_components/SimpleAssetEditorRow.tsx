@@ -5,12 +5,12 @@ import { BaseAssetView } from '@/lib/browser/isms/assetTypes'
 import { OwnershipView } from '@/lib/browser/isms/ownership'
 
 
-export default function SimpleAssetEditorRow(props: {
-  value: BaseAssetView
+export default function SimpleAssetEditorRow<T extends BaseAssetView>(props: {
+  value: T
   owners: OwnershipView[]
   disabled?: boolean
   showDelete?: boolean
-  onChange: (draft: BaseAssetView) => void
+  onChange: (draft: T) => void
   onSave: () => void
   onDelete: () => void
   onCancel: () => void

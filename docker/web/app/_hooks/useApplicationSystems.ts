@@ -2,67 +2,64 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from './queryKeys';
-import { ApplicationSystemView, linkSystem, listLinkedSystems, unlinkSystem } from '@/lib/browser/isms/application-systems';
-import { createSystem, listSystems } from '@/lib/browser/isms/systems';
+import { linkSystem, listLinkedSystems, unlinkSystem } from '@/lib/browser/isms/application-systems';
+import { listSystems } from '@/lib/browser/isms/systems';
+import { SystemView } from '@/lib/browser/isms/assetTypes';
 
 export function useApplicationSystems(applicationId: string) {
   const queryClient = useQueryClient();
 
-  const linked = useQuery({
-    queryKey: queryKeys.applicationSystems(applicationId),
-    queryFn: () => listLinkedSystems(applicationId),
-  });
-
-  const allApps = useQuery({
+  const listAll = useQuery({
     queryKey: queryKeys.allSystems,
     queryFn: listSystems,
     staleTime: 30_000,
   });
 
+  const listLinked = useQuery({
+    queryKey: queryKeys.applicationSystems(applicationId),
+    queryFn: () => listLinkedSystems(applicationId),
+  });
+
   const link = useMutation({
-    mutationFn: ({ systemId }: { systemId: string }) => linkSystem(applicationId, systemId),
-    onMutate: async ({ systemId }) => {
+    mutationFn: (systemId: string) => linkSystem(applicationId, systemId),
+    onMutate: async (systemId) => {
       await queryClient.cancelQueries({ queryKey: queryKeys.applicationSystems(applicationId) });
-      const prev = queryClient.getQueryData<ApplicationSystemView[]>(queryKeys.applicationSystems(applicationId)) || [];
-      const system = (allApps.data || []).find(a => a.id === systemId);
+      const prev = queryClient.getQueryData<SystemView[]>(queryKeys.applicationSystems(applicationId)) || [];
+      const system = (listAll.data || []).find(item => item.id === systemId);
       if (system) {
-        queryClient.setQueryData<ApplicationSystemView[]>(
+        queryClient.setQueryData<SystemView[]>(
           queryKeys.applicationSystems(applicationId),
-          [...prev, { application_id: applicationId, system_id: system.id, system: system }]
+          [...prev, system]
         );
       }
       return { prev };
     },
-    onError: (_e, _v, ctx) => { if (ctx?.prev) queryClient.setQueryData(queryKeys.applicationSystems(applicationId), ctx.prev); },
+    onError: (_e, _v, ctx) => {
+      if (ctx?.prev) queryClient.setQueryData(queryKeys.applicationSystems(applicationId), ctx.prev);
+    },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.applicationSystems(applicationId) });
     },
   });
 
   const unlink = useMutation({
-    mutationFn: ({ systemId }: { systemId: string }) => unlinkSystem(applicationId, systemId),
-    onMutate: async ({ systemId }) => {
+    mutationFn: (systemId: string) => unlinkSystem(applicationId, systemId),
+    onMutate: async (systemId) => {
       await queryClient.cancelQueries({ queryKey: queryKeys.applicationSystems(applicationId) });
-      const prev = queryClient.getQueryData<ApplicationSystemView[]>(queryKeys.applicationSystems(applicationId)) || [];
-      queryClient.setQueryData<ApplicationSystemView[]>(
+      const prev = queryClient.getQueryData<SystemView[]>(queryKeys.applicationSystems(applicationId)) || [];
+      queryClient.setQueryData<SystemView[]>(
         queryKeys.applicationSystems(applicationId),
-        prev.filter(x => x.system_id !== systemId)
+        prev.filter(item => item.id !== systemId)
       );
       return { prev };
     },
-    onError: (_e, _v, ctx) => { if (ctx?.prev) queryClient.setQueryData(queryKeys.applicationSystems(applicationId), ctx.prev); },
+    onError: (_e, _v, ctx) => {
+      if (ctx?.prev) queryClient.setQueryData(queryKeys.applicationSystems(applicationId), ctx.prev);
+    },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.applicationSystems(applicationId) });
     },
   });
 
-  const createAndLink = useMutation({
-    mutationFn: createSystem,
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.applicationSystems(applicationId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.allSystems });
-    },
-  });
-
-  return { linked, allApps, link, unlink, createAndLink };
+  return { listAll, listLinked, link, unlink };
 }

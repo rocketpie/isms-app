@@ -13,5 +13,6 @@ export const queryKeys = {
   processApplications: (processId: string) => ['process', processId, 'applications'] as const,
   applicationSystems: (applicationId: string) => ['application', applicationId, 'systems'] as const,
   systemData: (systemId: string) => ['system', systemId, 'data'] as const,
-  locationConnections: (locationId: string) => ['location', locationId, 'connections'] as const
+  locationConnections: (locationId: string) => ['location', locationId, 'connections'] as const,
+  connectionLocations: (connectionId: string) => ['connection', connectionId, 'locations'] as const,
 };

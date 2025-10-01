@@ -50,17 +50,19 @@ async function proxy(req: NextRequest) {
     cache: 'no-store',
   }
 
-  const res = await fetchWithTimeout(targetUrl, init)
-  const body = await res.text()
+  const requestBody = (init.body instanceof ArrayBuffer) ? new TextDecoder().decode(init.body) : '';
+
+  const response = await fetchWithTimeout(targetUrl, init)
+  const responseBody = await response.text()
   logDebug(`[API proxy] ${req.method} ${targetUrl} (Profile=${acceptProfile ?? '-'}/${contentProfile ?? '-'}, ${prefer ?? '-'}, ${hasAuth ? '' : 'not '}authorized) ` +
-    `Body: ${init.body} ` +
-    `Response (${res.status}): ${body}`
+    `Body: '${requestBody}' ` +
+    `Response (${response.status}): '${responseBody}'`
   )
 
-  return new Response(body, {
-    status: res.status,
-    statusText: res.statusText,
-    headers: new Headers(res.headers),
+  return new Response(responseBody, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: new Headers(response.headers),
   })
 }
 

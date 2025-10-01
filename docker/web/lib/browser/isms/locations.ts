@@ -11,30 +11,34 @@ export async function listLocations() {
   )
 }
 
-export async function createLocation(input: LocationView) {
-  const { id, owner, ...rest } = input
+export async function createLocation(item: LocationView) {
+  // strip the owner object
+  const { id, owner, ...rest } = item
+  // set the owner_id, if any
   const dataModel: LocationRow = {
     ...rest,
-    owner_id: owner?.id ?? null,
+    owner_id: owner?.id ?? null
   }
-  return await postgrest<LocationView[]>(
-    '/locations?select=id,name,description,owner:ownership(id,name)',
-    {
-      method: 'POST',
-      body: JSON.stringify([dataModel]),
-      headers: { Prefer: 'return=representation' },
-    }
-  )
+  const response = await postgrest<LocationView[]>('/locations', {
+    method: 'POST',
+    body: JSON.stringify([dataModel]),
+    headers: { Prefer: 'return=representation' },
+  })
+
+  // TODO: remove for CQRS
+  return response[0].id
 }
 
-export async function updateLocation(id: string, input: Partial<LocationView>) {
-  const { owner, ...rest } = input
+export async function updateLocation(item: LocationView) {
+  // strip the owner object
+  const { owner, ...rest } = item
+  // set the owner_id, if any
   const dataModel: Partial<LocationRow> = {
     ...rest,
-    owner_id: owner?.id ?? null,
+    owner_id: owner?.id ?? null
   }
-  return await postgrest<LocationView[]>(
-    `/locations?id=eq.${encodeURIComponent(id)}&select=id,name,description,owner:ownership(id,name)`,
+  return await postgrest<null>(
+    `/locations?id=eq.${encodeURIComponent(item.id)}`,
     {
       method: 'PATCH',
       body: JSON.stringify(dataModel),
@@ -48,5 +52,3 @@ export async function deleteLocation(id: string) {
     method: 'DELETE',
   })
 }
-
-

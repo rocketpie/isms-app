@@ -3,7 +3,6 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/app/_hooks/queryKeys';
-import { ApplicationView } from '@/lib/browser/isms/assetTypes';
 import { listApplications, createApplication, updateApplication, deleteApplication } from '@/lib/browser/isms/applications';
 
 export function useApplications() {
@@ -23,15 +22,14 @@ export function useApplications() {
   });
 
   const update = useMutation({
-    mutationFn: ({ id, patch }: { id: string; patch: Partial<ApplicationView> }) =>
-      updateApplication(id, patch),
+    mutationFn: updateApplication,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.allApplications });
     },
   });
 
   const remove = useMutation({
-    mutationFn: (id: string) => deleteApplication(id),
+    mutationFn: deleteApplication,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.allApplications });
     },

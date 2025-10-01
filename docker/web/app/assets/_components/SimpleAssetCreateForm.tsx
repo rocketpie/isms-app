@@ -12,14 +12,14 @@ import { BaseAssetView } from '@/lib/browser/isms/assetTypes'
  * It fetches owners (unless provided), manages local state, and calls the provided mutation.
  * You control how the mutation input is built via `toInput`.
  */
-export default function SimpleAssetCreateForm(props: {
+export default function SimpleAssetCreateForm<T extends BaseAssetView>(props: {
   /* e.g., "Create Application" */
   title?: string
   className?: string
   /** Optional pre-fetched owners to skip the owners query */
   owners?: OwnershipView[]
   /** Called with the new Asset */
-  onSubmit: (newAsset: BaseAssetView) => Promise<any>,
+  onSubmit: (newAsset: T) => Promise<any>,
 }) {
 
   // Load owners only if not provided
@@ -56,7 +56,7 @@ export default function SimpleAssetCreateForm(props: {
               name: nameTrimmed,
               description: description.trim() || null,
               owner: owners.find(o => o.id === ownerId) || null,
-            }).then(() => { setPending(false) })
+            } as T).then(() => { setPending(false) })
           }
           catch (error) {
             setError(error as Error)

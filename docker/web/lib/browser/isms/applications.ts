@@ -11,31 +11,34 @@ export async function listApplications() {
   )
 }
 
-export async function createApplication(input: ApplicationView) {
+export async function createApplication(item: ApplicationView) {
   // strip the owner object
-  const { id, owner, ...rest } = input
+  const { id, owner, ...rest } = item
   // set the owner_id, if any
   const dataModel: ApplicationRow = {
     ...rest,
     owner_id: owner?.id ?? null
   }
-  return await postgrest<ApplicationView>('/applications', {
+  const response = await postgrest<ApplicationView[]>('/applications', {
     method: 'POST',
     body: JSON.stringify([dataModel]),
     headers: { Prefer: 'return=representation' },
   })
+
+  // TODO: remove for CQRS
+  return response[0].id
 }
 
-export async function updateApplication(id: string, input: Partial<ApplicationView>) {
+export async function updateApplication(item: ApplicationView) {
   // strip the owner object
-  const { owner, ...rest } = input
+  const { owner, ...rest } = item
   // set the owner_id, if any
   const dataModel: Partial<ApplicationRow> = {
     ...rest,
     owner_id: owner?.id ?? null
   }
-  return await postgrest<ApplicationRow[]>(
-    `/applications?id=eq.${encodeURIComponent(id)}`,
+  return await postgrest<null>(
+    `/applications?id=eq.${encodeURIComponent(item.id)}`,
     {
       method: 'PATCH',
       body: JSON.stringify(dataModel),

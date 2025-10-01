@@ -6,7 +6,7 @@ import { ChevronDown, ChevronRight, Pencil } from 'lucide-react';
 
 export default function SimpleAssetDisplayRow(props: {
   value: BaseAssetView;
-  expanded: boolean;
+  expanded?: boolean;
   onEdit?: () => void;
   onToggle?: () => void;
 }) {

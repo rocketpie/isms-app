@@ -11,30 +11,34 @@ export async function listData() {
   )
 }
 
-export async function createData(input: DataAssetView) {
-  const { id, owner, ...rest } = input
+export async function createData(item: DataAssetView) {
+  // strip the owner object
+  const { id, owner, ...rest } = item
+  // set the owner_id, if any
   const dataModel: DataAssetRow = {
     ...rest,
-    owner_id: owner?.id ?? null,
+    owner_id: owner?.id ?? null
   }
-  return await postgrest<DataAssetRow[]>(
-    '/data?select=id,name,description,owner:ownership(id,name)',
-    {
-      method: 'POST',
-      body: JSON.stringify([dataModel]),
-      headers: { Prefer: 'return=representation' },
-    }
-  )
+  const response = await postgrest<DataAssetView[]>('/data', {
+    method: 'POST',
+    body: JSON.stringify([dataModel]),
+    headers: { Prefer: 'return=representation' },
+  })
+
+  // TODO: remove for CQRS
+  return response[0].id
 }
 
-export async function updateData(id: string, input: Partial<DataAssetView>) {
-  const { owner, ...rest } = input
+export async function updateData(item: DataAssetView) {
+  // strip the owner object
+  const { owner, ...rest } = item
+  // set the owner_id, if any
   const dataModel: Partial<DataAssetRow> = {
     ...rest,
-    owner_id: owner?.id ?? null,
+    owner_id: owner?.id ?? null
   }
-  return await postgrest<DataAssetView[]>(
-    `/data?id=eq.${encodeURIComponent(id)}&select=id,name,description,owner:ownership(id,name)`,
+  return await postgrest<null>(
+    `/data?id=eq.${encodeURIComponent(item.id)}`,
     {
       method: 'PATCH',
       body: JSON.stringify(dataModel),

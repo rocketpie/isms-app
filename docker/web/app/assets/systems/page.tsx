@@ -4,30 +4,32 @@ import AssetPageScaffold from '../_scaffold/AssetPageScaffold';
 import SimpleAssetDisplayRow from '../_components/SimpleAssetDisplayRow';
 import SimpleAssetEditorRow from '../_components/SimpleAssetEditorRow';
 import SimpleAssetCreateForm from '../_components/SimpleAssetCreateForm';
-import type { LocationView } from '@/lib/browser/isms/assetTypes';
+import type { DataAssetView, SystemView } from '@/lib/browser/isms/assetTypes';
 import { useSystems } from '@/app/_hooks/useSystems';
-import { LinkedDataSection } from './components/LinkedDataSection';
+import { useData } from '@/app/_hooks/useData';
+import LinkedAssetSection from '../_components/LinkedAssetsSection';
+import { useSystemData } from '@/app/_hooks/useSystemData';
 
-export default function LocationsPage() {
-  const hooks = useSystems();
+export default function SystemsPage() {
+  const systems = useSystems();
+  const data = useData();
+
   return (
-    <AssetPageScaffold<LocationView>
-      hooks={{
-        list: hooks.list,
-        create: hooks.create,
-        update: hooks.update,
-        remove: hooks.remove
-      }}
+    <AssetPageScaffold<SystemView>
+      hooks={{ ...systems }}
       rows={{
-        assetTypeName: 'Location',
+        assetTypeName: 'System',
         DisplayRow: SimpleAssetDisplayRow as any,
         EditorRow: SimpleAssetEditorRow as any,
         CreateForm: SimpleAssetCreateForm as any,
-        // Add a domain-specific details panel when ready
         ExpandedView: (system) => (
-          <div className="col-span-full mt-3">
-            <LinkedDataSection systemId={system.id} />
-          </div>
+          <LinkedAssetSection<DataAssetView>
+            className="col-span-full mt-3"
+            parentId={system.id}
+            itemTypeName="Data"
+            linkHooks={{ ...useSystemData(system.id) }}
+            assetHooks={{ ...data }}
+          />
         )
       }}
     />

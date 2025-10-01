@@ -51,7 +51,7 @@ export default function AssetPageScaffold<TAsset extends BaseAssetView>({
                                         disabled={hooks.update.isPending || hooks.remove.isPending}
                                         onChange={draft => setEditing(prev => ({ ...prev, [item.id]: draft }))}
                                         onSave={() => {
-                                            hooks.update.mutate({ id: item.id, patch: value });
+                                            hooks.update.mutate(value);
                                             setEditing(({ [item.id]: _omit, ...rest }) => rest);
                                         }}
                                         onDelete={() => {

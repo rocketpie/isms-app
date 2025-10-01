@@ -4,7 +4,7 @@ import React from "react";
 export type AssetHooks<TAsset extends BaseAssetView> = {
   list: { data?: TAsset[]; isLoading: boolean; error: unknown };
   create: { mutateAsync: (newItem: TAsset) => Promise<unknown>; isPending: boolean };
-  update: { mutate: (patch: { id: string; patch: Partial<TAsset> }) => void; isPending: boolean };
+  update: { mutate: (patch: TAsset) => void; isPending: boolean };
   remove: { mutate: (id: string) => void; isPending: boolean };
 };
 

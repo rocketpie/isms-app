@@ -8,22 +8,16 @@ import type { DataAssetView } from '@/lib/browser/isms/assetTypes';
 import { useData } from '@/app/_hooks/useData';
 
 export default function DataAssetsPage() {
-  const hooks = useData();
+  const data = useData();
+  
   return (
     <AssetPageScaffold<DataAssetView>
-      hooks={{
-        list: hooks.list,
-        create: hooks.create,
-        update: hooks.update,
-        remove: hooks.remove
-      }}
+      hooks={{ ...data }}
       rows={{
-        assetTypeName: 'Data Asset',
+        assetTypeName: 'Data',
         DisplayRow: SimpleAssetDisplayRow as any,
         EditorRow: SimpleAssetEditorRow as any,
         CreateForm: SimpleAssetCreateForm as any,
-        // e.g. later: <LinkedApplicationsForData dataAssetId={d.id} />
-        ExpandedView: () => null
       }}
     />
   );

@@ -1,3 +1,4 @@
+//lib/browser/isms/assetTypes.ts
 "use client";
 
 import { OwnershipView } from "./ownership";

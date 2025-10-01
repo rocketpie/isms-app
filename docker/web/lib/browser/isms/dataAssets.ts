@@ -1,4 +1,4 @@
-// lib/browser/isms/dataAssets.ts
+//lib/browser/isms/dataAssets.ts
 "use client";
 
 import { postgrest } from "../api-isms";

@@ -1,3 +1,6 @@
+//app/assets/_scaffold/types.ts
+"use client";
+
 import { BaseAssetView } from "@/lib/browser/isms/assetTypes";
 import React from "react";
 

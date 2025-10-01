@@ -1,3 +1,4 @@
+//app/assets/_components/LinkedAssetsSection.tsx
 "use client";
 
 import { useMemo, useState } from "react";

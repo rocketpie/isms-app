@@ -1,3 +1,6 @@
+//app/_hooks/useLocationConnections.ts
+"use client";
+
 import { ConnectionView } from "@/lib/browser/isms/assetTypes";
 import { listConnections } from "@/lib/browser/isms/connections";
 import {

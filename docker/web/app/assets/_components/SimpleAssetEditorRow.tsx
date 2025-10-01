@@ -1,4 +1,4 @@
-// app/assets/_components/SimpleAssetEditorRow.tsx
+//app/assets/_components/SimpleAssetEditorRow.tsx
 "use client";
 
 import { BaseAssetView } from "@/lib/browser/isms/assetTypes";

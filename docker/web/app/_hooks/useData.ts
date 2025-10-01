@@ -1,3 +1,6 @@
+//app/_hooks/useData.ts
+"use client";
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "./queryKeys";
 import {

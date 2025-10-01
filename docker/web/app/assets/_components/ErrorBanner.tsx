@@ -1,3 +1,4 @@
+//app/assets/_components/ErrorBanner.tsx
 "use client";
 
 export default function ErrorBanner({ message }: { message: string }) {

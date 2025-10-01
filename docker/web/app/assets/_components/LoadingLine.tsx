@@ -1,3 +1,4 @@
+//app/assets/_components/LoadingLine.tsx
 "use client";
 
 export default function LoadingLine({ label }: { label?: string }) {

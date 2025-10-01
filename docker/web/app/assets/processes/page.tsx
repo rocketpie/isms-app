@@ -1,5 +1,6 @@
-// app/assets/processes/page.tsx
+//app/assets/processes/page.tsx
 "use client";
+
 import AssetPageScaffold from "../_scaffold/AssetPageScaffold";
 import { useProcesses } from "@/app/_hooks/useProcesses";
 import SimpleAssetDisplayRow from "../_components/SimpleAssetDisplayRow";

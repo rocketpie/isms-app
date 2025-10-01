@@ -1,3 +1,6 @@
+//app/_hooks/useConnectionLocations.ts
+"use client";
+
 import { LocationView } from "@/lib/browser/isms/assetTypes";
 import { listLocations } from "@/lib/browser/isms/locations";
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";

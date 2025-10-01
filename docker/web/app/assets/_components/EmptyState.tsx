@@ -1,3 +1,4 @@
+//app/assets/_components/EmptyState.tsx
 "use client";
 
 export default function EmptyState({ label }: { label?: string }) {

@@ -1,4 +1,4 @@
-// app/assets/components/SimpleAssetCreateForm.tsx
+//app/assets/_components/SimpleAssetCreateForm.tsx
 "use client";
 
 import { useMemo, useState } from "react";

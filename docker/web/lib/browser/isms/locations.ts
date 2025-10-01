@@ -1,4 +1,4 @@
-// lib/browser/isms/locations.ts
+//lib/browser/isms/locations.ts
 "use client";
 
 import { postgrest } from "../api-isms";

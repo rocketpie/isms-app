@@ -1,5 +1,6 @@
-// app/assets/_scaffold/AssetPageScaffold.tsx
+//app/assets/_scaffold/AssetPageScaffold.tsx
 "use client";
+
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/app/_hooks/queryKeys";

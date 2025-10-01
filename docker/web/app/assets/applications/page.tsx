@@ -1,3 +1,4 @@
+//app/assets/applications/page.tsx
 "use client";
 
 import AssetPageScaffold from "../_scaffold/AssetPageScaffold";

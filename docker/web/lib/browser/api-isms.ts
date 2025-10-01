@@ -1,16 +1,18 @@
 //lib/browser/api-isms.ts
 
-'use client'
+"use client";
 
-import { getApiUrl } from '@/lib/browser/config'
-import { auth } from '@/lib/auth'
-import { fetchWithTimeout } from '@/lib/fetch-timeout'
+import { getApiUrl } from "@/lib/browser/config";
+import { auth } from "@/lib/auth";
+import { fetchWithTimeout } from "@/lib/fetch-timeout";
 
-type Method = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+type Method = "GET" | "HEAD" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 function ensureBrowser() {
-  if (typeof window === 'undefined') {
-    throw new Error('lib/browser/api-isms is browser-only. Use lib/backend/postgrest-isms on the server.')
+  if (typeof window === "undefined") {
+    throw new Error(
+      "lib/browser/api-isms is browser-only. Use lib/backend/postgrest-isms on the server.",
+    );
   }
 }
 
@@ -24,42 +26,42 @@ function ensureBrowser() {
  */
 export async function postgrest<T = unknown>(
   path: string,
-  init: RequestInit = {}
+  init: RequestInit = {},
 ): Promise<T> {
-  ensureBrowser()
+  ensureBrowser();
 
-  const base = getApiUrl() // '/api'
-  const method = ((init.method || 'GET').toUpperCase() as Method)
+  const base = getApiUrl(); // '/api'
+  const method = (init.method || "GET").toUpperCase() as Method;
 
-  const headers = new Headers(init.headers || {})
-  headers.set('Accept-Profile', 'isms')
-  if (method !== 'GET' && method !== 'HEAD') {
-    headers.set('Content-Profile', 'isms')
-    if (!headers.has('Prefer')) headers.set('Prefer', 'return=representation')
+  const headers = new Headers(init.headers || {});
+  headers.set("Accept-Profile", "isms");
+  if (method !== "GET" && method !== "HEAD") {
+    headers.set("Content-Profile", "isms");
+    if (!headers.has("Prefer")) headers.set("Prefer", "return=representation");
   }
 
   // Attach user JWT (from browser session)
-  const { data } = await auth.getSession()
-  const token = data?.session?.access_token
-  if (token && !headers.has('authorization')) {
-    headers.set('Authorization', `Bearer ${token}`)
+  const { data } = await auth.getSession();
+  const token = data?.session?.access_token;
+  if (token && !headers.has("authorization")) {
+    headers.set("Authorization", `Bearer ${token}`);
   }
 
   const res = await fetchWithTimeout(`${base}${path}`, {
     ...init,
     method,
     headers,
-    cache: 'no-store',
-    redirect: 'manual',
-  })
+    cache: "no-store",
+    redirect: "manual",
+  });
 
   if (!res.ok) {
     // surface PostgREST error payloads
-    const errText = await res.text().catch(() => '')
-    throw new Error(errText || `PostgREST error ${res.status}`)
+    const errText = await res.text().catch(() => "");
+    throw new Error(errText || `PostgREST error ${res.status}`);
   }
 
   // some endpoints (e.g. DELETE) may return empty body
-  const text = await res.text()
-  return (text ? JSON.parse(text) : (undefined as unknown)) as T
+  const text = await res.text();
+  return (text ? JSON.parse(text) : (undefined as unknown)) as T;
 }

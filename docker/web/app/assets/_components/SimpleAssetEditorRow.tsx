@@ -1,30 +1,28 @@
 // app/assets/_components/SimpleAssetEditorRow.tsx
-'use client'
+"use client";
 
-import { BaseAssetView } from '@/lib/browser/isms/assetTypes'
-import { OwnershipView } from '@/lib/browser/isms/ownership'
-
+import { BaseAssetView } from "@/lib/browser/isms/assetTypes";
+import { OwnershipView } from "@/lib/browser/isms/ownership";
 
 export default function SimpleAssetEditorRow<T extends BaseAssetView>(props: {
-  value: T
-  owners: OwnershipView[]
-  disabled?: boolean
-  showDelete?: boolean
-  onChange: (draft: T) => void
-  onSave: () => void
-  onDelete: () => void
-  onCancel: () => void
+  value: T;
+  owners: OwnershipView[];
+  disabled?: boolean;
+  showDelete?: boolean;
+  onChange: (draft: T) => void;
+  onSave: () => void;
+  onDelete: () => void;
+  onCancel: () => void;
 }) {
-
   function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
-    if (props.disabled) return
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault()
-      if (props.value.name.trim().length > 0) props.onSave()
+    if (props.disabled) return;
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      if (props.value.name.trim().length > 0) props.onSave();
     }
-    if (event.key === 'Escape') {
-      event.preventDefault()
-      props.onCancel()
+    if (event.key === "Escape") {
+      event.preventDefault();
+      props.onCancel();
     }
   }
 
@@ -43,7 +41,9 @@ export default function SimpleAssetEditorRow<T extends BaseAssetView>(props: {
         className="border rounded-lg px-3 py-2"
         placeholder="Name"
         value={props.value.name}
-        onChange={(event) => props.onChange({ ...props.value, name: event.target.value })}
+        onChange={(event) =>
+          props.onChange({ ...props.value, name: event.target.value })
+        }
         disabled={props.disabled}
         required
       />
@@ -55,23 +55,29 @@ export default function SimpleAssetEditorRow<T extends BaseAssetView>(props: {
         id={`asset-desc-${props.value.id}`}
         className="border rounded-lg px-3 py-2"
         placeholder="description"
-        value={props.value.description ?? ''}
-        onChange={(event) => props.onChange({ ...props.value, description: event.target.value })}
+        value={props.value.description ?? ""}
+        onChange={(event) =>
+          props.onChange({ ...props.value, description: event.target.value })
+        }
         disabled={props.disabled}
       />
 
       <div className="flex flex-col">
-        <label className="text-sm text-neutral-700 mb-1" htmlFor={`asset-owner-${props.value.id}`}>
+        <label
+          className="text-sm text-neutral-700 mb-1"
+          htmlFor={`asset-owner-${props.value.id}`}
+        >
           Owner
         </label>
         <select
           id={`asset-owner-${props.value.id}`}
           className="border rounded-lg px-3 py-2"
-          value={props.value.owner?.id ?? ''}
+          value={props.value.owner?.id ?? ""}
           onChange={(event) =>
             props.onChange({
               ...props.value,
-              owner: props.owners.find((o) => o.id === event.target.value) ?? null,
+              owner:
+                props.owners.find((o) => o.id === event.target.value) ?? null,
             })
           }
           disabled={props.disabled}
@@ -111,5 +117,5 @@ export default function SimpleAssetEditorRow<T extends BaseAssetView>(props: {
         </button>
       </div>
     </div>
-  )
+  );
 }

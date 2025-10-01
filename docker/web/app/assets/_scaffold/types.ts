@@ -3,7 +3,10 @@ import React from "react";
 
 export type AssetHooks<TAsset extends BaseAssetView> = {
   list: { data?: TAsset[]; isLoading: boolean; error: unknown };
-  create: { mutateAsync: (newItem: TAsset) => Promise<unknown>; isPending: boolean };
+  create: {
+    mutateAsync: (newItem: TAsset) => Promise<unknown>;
+    isPending: boolean;
+  };
   update: { mutate: (patch: TAsset) => void; isPending: boolean };
   remove: { mutate: (id: string) => void; isPending: boolean };
 };
@@ -15,8 +18,8 @@ export type AssetRowRenderers<TAsset extends BaseAssetView> = {
     expanded: boolean;
     onToggle: () => void;
     onEdit: () => void;
-  }>
-  ExpandedView?: (asset: TAsset) => React.ReactNode // e.g., <LinkedApplicationsSection processId=... />
+  }>;
+  ExpandedView?: (asset: TAsset) => React.ReactNode; // e.g., <LinkedApplicationsSection processId=... />
   EditorRow: React.ComponentType<{
     value: TAsset;
     owners: { id: string; name: string }[];
@@ -25,11 +28,11 @@ export type AssetRowRenderers<TAsset extends BaseAssetView> = {
     onSave: () => void;
     onDelete: () => void;
     onCancel: () => void;
-  }>
+  }>;
   CreateForm: React.ComponentType<{
     title: string;
     owners: { id: string; name: string }[];
     onSubmit: (v: Partial<TAsset>) => Promise<unknown>;
     className?: string;
-  }>
+  }>;
 };

@@ -1,13 +1,13 @@
 //lib/backend/postgrest.ts
 
-import 'server-only'
+import "server-only";
 
-import { fetchWithTimeout } from '../fetch-timeout'
-import { getPostgrestUrl } from './config';
-import { logDebug } from '../logDebug';
+import { fetchWithTimeout } from "../fetch-timeout";
+import { getPostgrestUrl } from "./config";
+import { logDebug } from "../logDebug";
 
-type Method = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
-type Schema = 'isms' | 'app';
+type Method = "GET" | "HEAD" | "POST" | "PUT" | "PATCH" | "DELETE";
+type Schema = "isms" | "app";
 
 /**
  * Optional server auth.
@@ -16,13 +16,13 @@ type Schema = 'isms' | 'app';
  */
 type PostgrestServerOptions = {
   /** Bearer token (user JWT) to forward to PostgREST. */
-  token?: string
-}
+  token?: string;
+};
 
 /** Safe URL join (avoids double slashes) */
 function join(base: string, path: string): string {
-  if (!path.startsWith('/')) path = `/${path}`
-  return `${base}${path}`
+  if (!path.startsWith("/")) path = `/${path}`;
+  return `${base}${path}`;
 }
 
 /**
@@ -35,41 +35,41 @@ function join(base: string, path: string): string {
 export async function postgrest<T = unknown>(
   path: string,
   init: RequestInit = {},
-  schema: Schema = 'isms',
+  schema: Schema = "isms",
   options: PostgrestServerOptions = {},
 ): Promise<T> {
-  const base = getPostgrestUrl()
-  const url = join(base, path)
+  const base = getPostgrestUrl();
+  const url = join(base, path);
 
-  const method = ((init.method || 'GET').toUpperCase() as Method)
+  const method = (init.method || "GET").toUpperCase() as Method;
   const headers = new Headers(init.headers || {});
 
-  headers.set('Accept-Profile', schema);
-  if (method !== 'GET' && method !== 'HEAD') {
-    headers.set('Content-Profile', schema); // write path needs Content-Profile
-    if (!headers.has('Prefer')) headers.set('Prefer', 'return=representation')
+  headers.set("Accept-Profile", schema);
+  if (method !== "GET" && method !== "HEAD") {
+    headers.set("Content-Profile", schema); // write path needs Content-Profile
+    if (!headers.has("Prefer")) headers.set("Prefer", "return=representation");
   }
 
   // Authorization (server: only if explicitly provided)
-  if (options.token && !headers.has('authorization')) {
-    headers.set('Authorization', `Bearer ${options.token}`)
+  if (options.token && !headers.has("authorization")) {
+    headers.set("Authorization", `Bearer ${options.token}`);
   }
 
   const response = await fetchWithTimeout(url, {
     ...init,
     method,
     headers,
-    cache: 'no-store', // KB: no-store for PostgREST calls
-    redirect: 'manual',
+    cache: "no-store", // KB: no-store for PostgREST calls
+    redirect: "manual",
   });
 
-  logDebug(`[postgrest.ts] ${method} ${url}: ${response.status}`)
+  logDebug(`[postgrest.ts] ${method} ${url}: ${response.status}`);
 
   if (!response.ok) {
-    const errText = await response.text().catch(() => '')
-    throw new Error(errText || `PostgREST error ${response.status}`)
+    const errText = await response.text().catch(() => "");
+    throw new Error(errText || `PostgREST error ${response.status}`);
   }
 
-  const text = await response.text()
-  return (text ? JSON.parse(text) : (undefined as unknown)) as T
+  const text = await response.text();
+  return (text ? JSON.parse(text) : (undefined as unknown)) as T;
 }

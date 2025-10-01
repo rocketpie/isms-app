@@ -1,8 +1,13 @@
 //app/_hooks/useProcesses.ts
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from './queryKeys';
-import { listProcesses, createProcess, updateProcess, deleteProcess } from '@/lib/browser/isms/processes';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "./queryKeys";
+import {
+  listProcesses,
+  createProcess,
+  updateProcess,
+  deleteProcess,
+} from "@/lib/browser/isms/processes";
 
 export function useProcesses() {
   const queryClient = useQueryClient();
@@ -19,7 +24,7 @@ export function useProcesses() {
       queryClient.invalidateQueries({ queryKey: queryKeys.allProcesses });
     },
   });
-  
+
   const update = useMutation({
     mutationFn: updateProcess,
     onSuccess: () => {

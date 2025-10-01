@@ -1,13 +1,13 @@
 //lib/browser/isms/processes.ts
-'use client'
+"use client";
 
 import { postgrest } from "../api-isms";
 import { ProcessView, ProcessRow } from "./assetTypes";
 
 export async function listProcesses() {
   return await postgrest<ProcessView[]>(
-    '/processes?select=id,name,description,owner:ownership(id,name)&order=name.asc',
-    { method: 'GET' }
+    "/processes?select=id,name,description,owner:ownership(id,name)&order=name.asc",
+    { method: "GET" },
   );
 }
 
@@ -19,10 +19,10 @@ export async function createProcess(item: ProcessView) {
     ...rest,
     owner_id: owner?.id ?? null,
   };
-  const response = await postgrest<ProcessView[]>('/processes', {
-    method: 'POST',
+  const response = await postgrest<ProcessView[]>("/processes", {
+    method: "POST",
     body: JSON.stringify([dataModel]),
-    headers: { Prefer: 'return=representation' },
+    headers: { Prefer: "return=representation" },
   });
 
   // TODO: remove for CQRS
@@ -31,7 +31,7 @@ export async function createProcess(item: ProcessView) {
 
 export async function updateProcess(item: ProcessView) {
   // strip the owner object
-  const { owner, ...rest } = item
+  const { owner, ...rest } = item;
   // set the owner_id, if any
   const dataModel: Partial<ProcessRow> = {
     ...rest,
@@ -40,15 +40,15 @@ export async function updateProcess(item: ProcessView) {
   return await postgrest<null>(
     `/processes?id=eq.${encodeURIComponent(item.id)}`,
     {
-      method: 'PATCH',
+      method: "PATCH",
       body: JSON.stringify(dataModel),
-      headers: { Prefer: 'return=representation' },
-    }
+      headers: { Prefer: "return=representation" },
+    },
   );
 }
 
 export async function deleteProcess(id: string) {
   return await postgrest<null>(`/processes?id=eq.${encodeURIComponent(id)}`, {
-    method: 'DELETE',
+    method: "DELETE",
   });
 }

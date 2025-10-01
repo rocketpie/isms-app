@@ -1,5 +1,4 @@
-
-'use client';
+"use client";
 
 export default function ErrorBanner({ message }: { message: string }) {
   if (!message) return null;

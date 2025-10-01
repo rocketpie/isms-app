@@ -2,6 +2,11 @@
 occasionally run 
 ~/isms-app$ docker system prune
 
+# lint typescript files 
+npx prettier --check "**/*.{ts,tsx,js,jsx,json}"
+npx prettier --write "**/*.{ts,tsx,js,jsx,json}"
+
+
 # Use docker to debug app locally
 `./scripts/npm.ps1`
 `cd web/`
@@ -60,3 +65,4 @@ curl -i $INTERNAL_GOTRUE_URL/settings
 echo $INTERNAL_POSTGREST_URL
 curl -i $INTERNAL_POSTGREST_URL/
 '
+

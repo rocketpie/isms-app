@@ -1,8 +1,8 @@
 //app/providers.tsx
- 
-'use client'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactNode } from 'react'
+
+"use client";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactNode } from "react";
 
 function makeClient() {
   return new QueryClient({
@@ -15,11 +15,11 @@ function makeClient() {
         retry: 1,
       },
     },
-  })
+  });
 }
 
-const client = makeClient()
+const client = makeClient();
 
 export default function Providers({ children }: { children: ReactNode }) {
-  return <QueryClientProvider client={client}>{children}</QueryClientProvider>
+  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
 }

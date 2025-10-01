@@ -1,6 +1,11 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from './queryKeys';
-import {  listLocations,  createLocation,  updateLocation,  deleteLocation,} from '@/lib/browser/isms/locations';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "./queryKeys";
+import {
+  listLocations,
+  createLocation,
+  updateLocation,
+  deleteLocation,
+} from "@/lib/browser/isms/locations";
 
 export function useLocations() {
   const queryClient = useQueryClient();
@@ -31,6 +36,6 @@ export function useLocations() {
       queryClient.invalidateQueries({ queryKey: queryKeys.allLocations });
     },
   });
-  
+
   return { list, create, update, remove };
 }

@@ -1,8 +1,8 @@
 //app/assets/layout.tsx
-'use client'
+"use client";
 
-import type { ReactNode } from 'react';
-import AssetPageHeader from '../_components/assetPageHeader';
+import type { ReactNode } from "react";
+import AssetPageHeader from "../_components/assetPageHeader";
 
 export default function AssetsLayout({ children }: { children: ReactNode }) {
   return (

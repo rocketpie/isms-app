@@ -1,12 +1,12 @@
 //app/layout.tsx
 
-import './globals.css'
-import Providers from './providers'
-import Link from 'next/link'
-import WhoAmI from './_components/whoami'
+import "./globals.css";
+import Providers from "./providers";
+import Link from "next/link";
+import WhoAmI from "./_components/whoami";
 
 // shadcn/ui dropdown
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -14,9 +14,13 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu'
+} from "@/components/ui/dropdown-menu";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <body className="min-h-screen bg-neutral-50">
@@ -24,11 +28,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <header className="w-full border-b bg-white">
             <div className="mx-auto max-w-5xl flex items-center justify-between p-3">
               <div className="flex items-center gap-4">
-                <Link href="/" className="font-semibold">ISMS-App</Link>
+                <Link href="/" className="font-semibold">
+                  ISMS-App
+                </Link>
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 px-2 text-sm text-neutral-700">
+                    <Button
+                      variant="ghost"
+                      className="h-8 px-2 text-sm text-neutral-700"
+                    >
                       Owner
                       <span className="ml-1 inline-block align-middle">▾</span>
                     </Button>
@@ -46,14 +55,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 px-2 text-sm text-neutral-700">
+                    <Button
+                      variant="ghost"
+                      className="h-8 px-2 text-sm text-neutral-700"
+                    >
                       Assets
                       <span className="ml-1 inline-block align-middle">▾</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="w-56">
                     <DropdownMenuSeparator />
-                    <DropdownMenuLabel className="text-xs text-neutral-500">Core Assets</DropdownMenuLabel>
+                    <DropdownMenuLabel className="text-xs text-neutral-500">
+                      Core Assets
+                    </DropdownMenuLabel>
                     <DropdownMenuItem asChild>
                       <Link href="/assets/processes">Processes</Link>
                     </DropdownMenuItem>
@@ -85,9 +99,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           <main className="mx-auto max-w-5xl p-4">{children}</main>
         </Providers>
-      </body >
-    </html >
-  )
+      </body>
+    </html>
+  );
 }
 
 function AuthButtons() {
@@ -95,13 +109,13 @@ function AuthButtons() {
     <div className="flex items-center gap-2">
       <ClientAuthButtons />
     </div>
-  )
+  );
 }
 
 // Inline a tiny client wrapper
 function ClientAuthButtons() {
   // Mark as client
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const Comp = require('./login/_client-auth-buttons').default
-  return <Comp />
+  const Comp = require("./login/_client-auth-buttons").default;
+  return <Comp />;
 }

@@ -1,8 +1,8 @@
 //app/assets/_components/SimpleAssetDisplayRow.tsx
-'use client';
+"use client";
 
-import { BaseAssetView } from '@/lib/browser/isms/assetTypes';
-import { ChevronDown, ChevronRight, Pencil } from 'lucide-react';
+import { BaseAssetView } from "@/lib/browser/isms/assetTypes";
+import { ChevronDown, ChevronRight, Pencil } from "lucide-react";
 
 export default function SimpleAssetDisplayRow(props: {
   value: BaseAssetView;
@@ -14,7 +14,7 @@ export default function SimpleAssetDisplayRow(props: {
     <div className="grid gap-1 grid-cols-1 md:grid-cols-[1fr,2fr,1fr,auto] md:items-center">
       <button
         type="button"
-        className={`flex items-center gap-2 text-base text-neutral-700 ${props.onToggle ? 'hover:text-black' : 'cursor-default'}`}
+        className={`flex items-center gap-2 text-base text-neutral-700 ${props.onToggle ? "hover:text-black" : "cursor-default"}`}
         onClick={props.onToggle}
         disabled={!props.onToggle}
         aria-expanded={!!props.expanded}
@@ -38,11 +38,16 @@ export default function SimpleAssetDisplayRow(props: {
       </div>
 
       <div className="text-sm text-neutral-700">
-        Owner: <span className="text-neutral-600">{props.value?.owner?.name}</span>
+        Owner:{" "}
+        <span className="text-neutral-600">{props.value?.owner?.name}</span>
       </div>
 
       <div className="flex gap-2">
-        <button type="button" className="rounded-xl px-3 py-2 border bg-white" onClick={props.onEdit}>
+        <button
+          type="button"
+          className="rounded-xl px-3 py-2 border bg-white"
+          onClick={props.onEdit}
+        >
           <Pencil className="h-5 w-5" />
         </button>
       </div>

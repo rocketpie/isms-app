@@ -1,6 +1,11 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from './queryKeys';
-import { listConnections, createConnection, updateConnection, deleteConnection, } from '@/lib/browser/isms/connections';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "./queryKeys";
+import {
+  listConnections,
+  createConnection,
+  updateConnection,
+  deleteConnection,
+} from "@/lib/browser/isms/connections";
 
 export function useConnections() {
   const queryClient = useQueryClient();

@@ -1,14 +1,17 @@
-'use client';
+"use client";
 
-import AssetPageScaffold from '../_scaffold/AssetPageScaffold';
-import { useApplications } from '@/app/_hooks/useApplications';
-import SimpleAssetDisplayRow from '../_components/SimpleAssetDisplayRow';
-import SimpleAssetEditorRow from '../_components/SimpleAssetEditorRow';
-import SimpleAssetCreateForm from '../_components/SimpleAssetCreateForm';
-import type { ApplicationView, SystemView } from '@/lib/browser/isms/assetTypes';
-import { useApplicationSystems } from '@/app/_hooks/useApplicationSystems';
-import { useSystems } from '@/app/_hooks/useSystems';
-import LinkedAssetSection from '../_components/LinkedAssetsSection';
+import AssetPageScaffold from "../_scaffold/AssetPageScaffold";
+import { useApplications } from "@/app/_hooks/useApplications";
+import SimpleAssetDisplayRow from "../_components/SimpleAssetDisplayRow";
+import SimpleAssetEditorRow from "../_components/SimpleAssetEditorRow";
+import SimpleAssetCreateForm from "../_components/SimpleAssetCreateForm";
+import type {
+  ApplicationView,
+  SystemView,
+} from "@/lib/browser/isms/assetTypes";
+import { useApplicationSystems } from "@/app/_hooks/useApplicationSystems";
+import { useSystems } from "@/app/_hooks/useSystems";
+import LinkedAssetSection from "../_components/LinkedAssetsSection";
 
 export default function ApplicationsPage() {
   const applications = useApplications();
@@ -18,7 +21,7 @@ export default function ApplicationsPage() {
     <AssetPageScaffold<ApplicationView>
       hooks={{ ...applications }}
       rows={{
-        assetTypeName: 'Application',
+        assetTypeName: "Application",
         DisplayRow: SimpleAssetDisplayRow as any,
         EditorRow: SimpleAssetEditorRow as any,
         CreateForm: SimpleAssetCreateForm as any,
@@ -31,7 +34,7 @@ export default function ApplicationsPage() {
               assetHooks={{ ...systems }}
             />
           </div>
-        )
+        ),
       }}
     />
   );

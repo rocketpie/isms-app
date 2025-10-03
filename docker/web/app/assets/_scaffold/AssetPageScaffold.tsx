@@ -20,7 +20,7 @@ export default function AssetPageScaffold<TAsset extends BaseAssetView>({
   rows: AssetRowRenderers<TAsset>;
 }) {
   const ownersQuery = useQuery({
-    queryKey: queryKeys.allOwnership,
+    queryKey: queryKeys.assets.all("ownership"),
     queryFn: listOwnerships,
   });
 

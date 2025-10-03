@@ -2,7 +2,6 @@
 "use client";
 
 import AssetPageScaffold from "../_scaffold/AssetPageScaffold";
-import { useProcesses } from "@/app/_hooks/useProcesses";
 import SimpleAssetDisplayRow from "../_components/SimpleAssetDisplayRow";
 import SimpleAssetEditorRow from "../_components/SimpleAssetEditorRow";
 import SimpleAssetCreateForm from "../_components/SimpleAssetCreateForm";
@@ -10,13 +9,12 @@ import type {
   ApplicationView,
   ProcessView,
 } from "@/lib/browser/isms/assetTypes";
-import { useApplications } from "@/app/_hooks/useApplications";
-import { useProcessApplications } from "@/app/_hooks/useProcessApplications";
 import LinkedAssetSection from "../_components/LinkedAssetsSection";
+import { useProcesses } from "@/app/_hooks/useAssets";
+import { useProcessApplications } from "@/app/_hooks/useAssetLinks";
 
 export default function ProcessesPage() {
   const processes = useProcesses();
-  const applications = useApplications();
 
   return (
     <AssetPageScaffold<ProcessView>
@@ -32,7 +30,6 @@ export default function ProcessesPage() {
             parentId={process.id}
             itemTypeName="Application"
             linkHookFactory={useProcessApplications}
-            assetHooks={{ ...applications }}
           />
         ),
       }}

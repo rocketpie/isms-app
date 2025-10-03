@@ -40,7 +40,6 @@ export async function updateData(item: DataAssetView) {
   return await postgrest<null>(`/data?id=eq.${encodeURIComponent(item.id)}`, {
     method: "PATCH",
     body: JSON.stringify(dataModel),
-    headers: { Prefer: "return=representation" },
   });
 }
 

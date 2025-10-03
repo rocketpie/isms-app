@@ -6,14 +6,12 @@ import SimpleAssetDisplayRow from "../_components/SimpleAssetDisplayRow";
 import SimpleAssetEditorRow from "../_components/SimpleAssetEditorRow";
 import SimpleAssetCreateForm from "../_components/SimpleAssetCreateForm";
 import type { DataAssetView, SystemView } from "@/lib/browser/isms/assetTypes";
-import { useSystems } from "@/app/_hooks/useSystems";
-import { useData } from "@/app/_hooks/useData";
+import { useSystems } from "@/app/_hooks/useAssets";
 import LinkedAssetSection from "../_components/LinkedAssetsSection";
-import { useSystemData } from "@/app/_hooks/useSystemData";
+import { useSystemData } from "@/app/_hooks/useAssetLinks";
 
 export default function SystemsPage() {
   const systems = useSystems();
-  const data = useData();
 
   return (
     <AssetPageScaffold<SystemView>
@@ -29,7 +27,6 @@ export default function SystemsPage() {
             parentId={system.id}
             itemTypeName="Data"
             linkHookFactory={useSystemData}
-            assetHooks={{ ...data }}
           />
         ),
       }}

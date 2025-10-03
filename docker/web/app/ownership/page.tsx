@@ -68,18 +68,18 @@ export default function OwnershipPage() {
   const queryClient = useQueryClient();
 
   const peopleQuery = useQuery({
-    queryKey: queryKeys.allPeople,
+    queryKey: queryKeys.assets.all("people"),
     queryFn: listPeople,
   });
   const ownershipQuery = useQuery({
-    queryKey: queryKeys.allOwnership,
+    queryKey: queryKeys.assets.all("ownership"),
     queryFn: listOwnerships,
   });
 
   const create = useMutation({
     mutationFn: createOwnership,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.allOwnership });
+      queryClient.invalidateQueries({ queryKey: queryKeys.assets.all("ownership") });
     },
   });
 
@@ -87,29 +87,29 @@ export default function OwnershipPage() {
     mutationFn: ({ id, patch }: { id: string; patch: Partial<Ownership> }) =>
       updateOwnership(id, patch),
     onMutate: async ({ id, patch }) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.allOwnership });
+      await queryClient.cancelQueries({ queryKey: queryKeys.assets.all("ownership") });
       const prev = queryClient.getQueryData<Ownership[]>(
-        queryKeys.allOwnership,
+        queryKeys.assets.all("ownership"),
       );
       if (prev) {
         queryClient.setQueryData<Ownership[]>(
-          queryKeys.allOwnership,
+          queryKeys.assets.all("ownership"),
           prev.map((o) => (o.id === id ? { ...o, ...patch } : o)),
         );
       }
       return { prev };
     },
     onError: (_err, _vars, ctx) => {
-      if (ctx?.prev) queryClient.setQueryData(queryKeys.allOwnership, ctx.prev);
+      if (ctx?.prev) queryClient.setQueryData(queryKeys.assets.all("ownership"), ctx.prev);
     },
     onSettled: () =>
-      queryClient.invalidateQueries({ queryKey: queryKeys.allOwnership }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.assets.all("ownership") }),
   });
 
   const remove = useMutation({
     mutationFn: deleteOwnership,
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: queryKeys.allOwnership }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.assets.all("ownership") }),
   });
 
   // Create form state

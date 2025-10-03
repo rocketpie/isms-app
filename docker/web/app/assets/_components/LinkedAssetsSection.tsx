@@ -13,14 +13,15 @@ import SimpleAssetDisplayRow from "./SimpleAssetDisplayRow";
 import SimpleAssetCreateForm from "./SimpleAssetCreateForm";
 import { listOwnerships } from "@/lib/browser/isms/ownership";
 import { queryKeys } from "@/app/_hooks/queryKeys";
-import { AssetHooks } from "../_scaffold/types";
 
 export type LinkHooks<TAsset extends BaseAssetView> = {
   listAll: { data?: TAsset[]; isLoading: boolean; error: Error | null };
   listLinked: { data?: TAsset[]; isLoading: boolean; error: Error | null };
   link: { mutate: (itemId: string) => void; isPending: boolean };
   unlink: { mutate: (itemId: string) => void; isPending: boolean };
-  // createAndLink: { mutateAsync: (newItem: TAsset) => Promise<unknown>; isPending: boolean };
+  create: { mutateAsync: (newItem: TAsset) => Promise<unknown>; isPending: boolean; };
+  update: { mutate: (patch: TAsset) => void; isPending: boolean };
+  remove: { mutate: (id: string) => void; isPending: boolean };
 };
 
 export default function LinkedAssetSection<
@@ -30,21 +31,18 @@ export default function LinkedAssetSection<
   parentId: string;
   itemTypeName: string;
   linkHookFactory: (parentId: string) => LinkHooks<TChild>;
-  assetHooks: AssetHooks<TChild>;
 }) {
-  const queryClient = useQueryClient();
-
   // local UI state
   const [search, setSearch] = useState("");
   const [pickerValue, setPickerValue] = useState("");
   const [editing, setEditing] = useState<Record<string, TChild>>({});
 
-  const { listLinked, listAll, link, unlink } = props.linkHookFactory(
+  const { listAll, listLinked, link, unlink, create, update, remove } = props.linkHookFactory(
     props.parentId,
   );
 
   const ownersQuery = useQuery({
-    queryKey: queryKeys.allOwnership,
+    queryKey: queryKeys.assets.all("ownership"),
     queryFn: listOwnerships,
   });
   const owners = useMemo(() => ownersQuery.data ?? [], [ownersQuery.data]);
@@ -96,14 +94,14 @@ export default function LinkedAssetSection<
                       value={value}
                       owners={owners}
                       disabled={
-                        props.assetHooks.update.isPending ||
-                        props.assetHooks.remove.isPending
+                        update.isPending ||
+                        remove.isPending
                       }
                       onChange={(draft) =>
                         setEditing((prev) => ({ ...prev, [item.id]: draft }))
                       }
                       onSave={() => {
-                        props.assetHooks.update.mutate(value)
+                        update.mutate(value)
                         setEditing(({ [item.id]: _omit, ...rest }) => rest);
                       }}
                       onDelete={() => {
@@ -111,7 +109,7 @@ export default function LinkedAssetSection<
                           `Delete this ${props.itemTypeName}?\n\nNote: junctions may cascade.`,
                         );
                         if (ok) {
-                          props.assetHooks.remove.mutate(item.id)
+                          remove.mutate(item.id)
                         }
                       }}
                       onCancel={() =>
@@ -188,7 +186,7 @@ export default function LinkedAssetSection<
           owners={owners}
           className="mt-4"
           onSubmit={(newItem) =>
-            props.assetHooks.create.mutateAsync(newItem).then((newId) => {
+            create.mutateAsync(newItem).then((newId) => {
               link.mutate(newId as string);
             })
           }

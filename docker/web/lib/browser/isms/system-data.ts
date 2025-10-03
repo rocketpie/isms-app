@@ -7,7 +7,7 @@ import { DataAssetView } from "./assetTypes";
 export async function listLinkedData(systemId: string) {
   const response = await postgrest<{ data_asset: DataAssetView }[]>(
     `/system_data?system_id=eq.${encodeURIComponent(systemId)}` +
-      `&select=data_asset:data_assets(id,name,description,owner:ownership(id,name))` +
+      `&select=data_asset:data(id,name,description,owner:ownership(id,name))` +
       `&order=data_asset(name).asc`,
     { method: "GET" },
   );

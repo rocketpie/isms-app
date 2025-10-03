@@ -6,7 +6,7 @@ import SimpleAssetDisplayRow from "../_components/SimpleAssetDisplayRow";
 import SimpleAssetEditorRow from "../_components/SimpleAssetEditorRow";
 import SimpleAssetCreateForm from "../_components/SimpleAssetCreateForm";
 import type { DataAssetView } from "@/lib/browser/isms/assetTypes";
-import { useData } from "@/app/_hooks/useData";
+import { useData } from "@/app/_hooks/useAssets";
 
 export default function DataAssetsPage() {
   const data = useData();

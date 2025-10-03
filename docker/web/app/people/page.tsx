@@ -48,14 +48,14 @@ export default function PeoplePage() {
   const queryClient = useQueryClient();
 
   const peopleQuery = useQuery({
-    queryKey: queryKeys.allPeople,
+    queryKey: queryKeys.assets.all("people"),
     queryFn: listPeople,
   });
 
   const create = useMutation({
     mutationFn: createPerson,
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: queryKeys.allPeople }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.assets.all("people") }),
   });
 
   const update = useMutation({
@@ -68,27 +68,27 @@ export default function PeoplePage() {
     }) => updatePerson(id, patch),
     // Optimistic UI for quick rename feedback
     onMutate: async ({ id, patch }) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.allPeople });
-      const prev = queryClient.getQueryData<PersonView[]>(queryKeys.allPeople);
+      await queryClient.cancelQueries({ queryKey: queryKeys.assets.all("people") });
+      const prev = queryClient.getQueryData<PersonView[]>(queryKeys.assets.all("people"));
       if (prev) {
         queryClient.setQueryData<PersonView[]>(
-          queryKeys.allPeople,
+          queryKeys.assets.all("people"),
           prev.map((p) => (p.id === id ? { ...p, ...patch } : p)),
         );
       }
       return { prev };
     },
     onError: (_err, _vars, ctx) => {
-      if (ctx?.prev) queryClient.setQueryData(queryKeys.allPeople, ctx.prev);
+      if (ctx?.prev) queryClient.setQueryData(queryKeys.assets.all("people"), ctx.prev);
     },
     onSettled: () =>
-      queryClient.invalidateQueries({ queryKey: queryKeys.allPeople }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.assets.all("people") }),
   });
 
   const remove = useMutation({
     mutationFn: deletePerson,
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: queryKeys.allPeople }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.assets.all("people") }),
   });
 
   const [name, setName] = useState("");

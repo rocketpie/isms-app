@@ -9,14 +9,12 @@ import type {
   ConnectionView,
   LocationView,
 } from "@/lib/browser/isms/assetTypes";
-import { useLocations } from "@/app/_hooks/useLocations";
-import { useLocationConnections } from "@/app/_hooks/useLocationConnections";
 import LinkedAssetSection from "../_components/LinkedAssetsSection";
-import { useConnections } from "@/app/_hooks/useConnections";
+import { useLocations } from "@/app/_hooks/useAssets";
+import { useLocationConnections } from "@/app/_hooks/useAssetLinks";
 
 export default function LocationsPage() {
   const locations = useLocations();
-  const connections = useConnections();
 
   return (
     <AssetPageScaffold<LocationView>
@@ -32,7 +30,6 @@ export default function LocationsPage() {
             parentId={location.id}
             itemTypeName="Connection"
             linkHookFactory={useLocationConnections}
-            assetHooks={{ ...connections }}
           />
         ),
       }}

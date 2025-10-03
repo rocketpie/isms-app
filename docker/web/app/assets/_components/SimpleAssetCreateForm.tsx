@@ -23,7 +23,7 @@ export default function SimpleAssetCreateForm<T extends BaseAssetView>(props: {
 }) {
   // Load owners only if not provided
   const ownersQuery = useQuery({
-    queryKey: queryKeys.allOwnership,
+    queryKey: queryKeys.assets.all("ownership"),
     queryFn: listOwnerships,
     enabled: !props.owners,
   });

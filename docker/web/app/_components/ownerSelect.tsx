@@ -12,7 +12,7 @@ export function OwnerSelect(props: {
   className?: string;
 }) {
   const ownersQuery = useQuery({
-    queryKey: queryKeys.allOwnership,
+    queryKey: queryKeys.assets.all("ownership"),
     queryFn: listOwnerships,
   });
   return (

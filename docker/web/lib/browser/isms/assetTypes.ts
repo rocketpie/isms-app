@@ -4,6 +4,8 @@
 import { OwnershipView } from "./ownership";
 
 export type AssetKind =
+  | "people"
+  | "ownership"
   | "application"
   | "system"
   | "process"

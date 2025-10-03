@@ -1,3 +1,6 @@
+//app/_hooks/useAssets.ts
+"use client";
+ 
 import { listApplications, createApplication, updateApplication, deleteApplication } from "@/lib/browser/isms/applications";
 import { listSystems, createSystem, updateSystem, deleteSystem } from "@/lib/browser/isms/systems";
 import { useAssetsBase } from "./useAssetsBase";

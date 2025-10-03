@@ -1,3 +1,6 @@
+//app/_hooks/useAssetLinks.ts
+"use client";
+ 
 import { listLinkedApplications, linkApplication, unlinkApplication } from "@/lib/browser/isms/process-applications";
 import { useAssetLinksBase } from "./useAssetLinksBase";
 import { useApplications, useConnections, useData, useLocations } from "./useAssets";

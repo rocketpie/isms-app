@@ -1,4 +1,4 @@
-//app/_hooks/useAssetLinkBase.ts
+//app/_hooks/useAssetLinksBase.ts
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";

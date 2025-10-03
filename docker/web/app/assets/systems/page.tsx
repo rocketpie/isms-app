@@ -28,7 +28,7 @@ export default function SystemsPage() {
             className="col-span-full mt-3"
             parentId={system.id}
             itemTypeName="Data"
-            linkHooks={{ ...useSystemData(system.id) }}
+            linkHookFactory={useSystemData}
             assetHooks={{ ...data }}
           />
         ),

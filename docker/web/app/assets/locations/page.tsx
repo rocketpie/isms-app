@@ -31,7 +31,7 @@ export default function LocationsPage() {
             className="col-span-full mt-3"
             parentId={location.id}
             itemTypeName="Connection"
-            linkHooks={{ ...useLocationConnections(location.id) }}
+            linkHookFactory={useLocationConnections}
             assetHooks={{ ...connections }}
           />
         ),

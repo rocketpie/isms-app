@@ -23,7 +23,7 @@ export default function LoginPage() {
         const { error } = await auth.signUp({ email, password });
         if (error) throw error;
       }
-      window.location.assign("/applications");
+      window.location.assign("/assets/processes");
     } catch (err: any) {
       setError(err?.message ?? "Auth error");
     } finally {

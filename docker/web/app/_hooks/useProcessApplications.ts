@@ -14,12 +14,14 @@ export function useProcessApplications(processId: string) {
   const queryClient = useQueryClient();
 
   const listAll = useQuery({
+    enabled: !!processId,    
     queryKey: queryKeys.allApplications,
     queryFn: listApplications,
     staleTime: 30_000,
   });
 
   const listLinked = useQuery({
+    enabled: !!processId,    
     queryKey: queryKeys.processApplications(processId),
     queryFn: () => listLinkedApplications(processId),
   });

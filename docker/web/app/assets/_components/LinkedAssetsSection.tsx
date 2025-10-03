@@ -29,7 +29,7 @@ export default function LinkedAssetSection<
   className?: string;
   parentId: string;
   itemTypeName: string;
-  linkHooks: LinkHooks<TChild>;
+  linkHookFactory: (parentId: string) => LinkHooks<TChild>;
   assetHooks: AssetHooks<TChild>;
 }) {
   // local UI state
@@ -37,7 +37,9 @@ export default function LinkedAssetSection<
   const [pickerValue, setPickerValue] = useState("");
   const [editing, setEditing] = useState<Record<string, TChild>>({});
 
-  const { listLinked, listAll, link, unlink } = props.linkHooks;
+  const { listLinked, listAll, link, unlink } = props.linkHookFactory(
+    props.parentId,
+  );
 
   const ownersQuery = useQuery({
     queryKey: queryKeys.allOwnership,
@@ -45,12 +47,12 @@ export default function LinkedAssetSection<
   });
   const owners = useMemo(() => ownersQuery.data ?? [], [ownersQuery.data]);
   const linkedItems = useMemo(
-    () => props.linkHooks.listLinked.data ?? [],
-    [props.linkHooks.listLinked.data],
+    () => listLinked.data ?? [],
+    [listLinked.data],
   );
   const allItems = useMemo(
-    () => props.linkHooks.listAll.data ?? [],
-    [props.linkHooks.listAll.data],
+    () => listAll.data ?? [],
+    [listAll.data],
   );
 
   // compute selectable items

@@ -31,7 +31,7 @@ export default function ApplicationsPage() {
             <LinkedAssetSection<SystemView>
               parentId={application.id}
               itemTypeName="System"
-              linkHooks={{ ...useApplicationSystems(application.id) }}
+              linkHookFactory={useApplicationSystems}
               assetHooks={{ ...systems }}
             />
           </div>

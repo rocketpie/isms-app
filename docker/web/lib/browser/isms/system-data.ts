@@ -17,14 +17,14 @@ export async function listLinkedData(systemId: string) {
 export async function linkData(systemId: string, dataId: string) {
   await postgrest("/system_data", {
     method: "POST",
-    body: JSON.stringify([{ system_id: systemId, data_asset_id: dataId }]),
+    body: JSON.stringify([{ system_id: systemId, data_id: dataId }]),
   });
 }
 
 export async function unlinkData(systemId: string, dataId: string) {
   return await postgrest<null>(
     `/system_data?system_id=eq.${encodeURIComponent(systemId)}` +
-      `&data_asset_id=eq.${encodeURIComponent(dataId)}`,
+      `&data_id=eq.${encodeURIComponent(dataId)}`,
     { method: "DELETE" },
   );
 }

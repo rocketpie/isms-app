@@ -31,7 +31,7 @@ export default function ProcessesPage() {
             className="col-span-full mt-3"
             parentId={process.id}
             itemTypeName="Application"
-            linkHooks={{ ...useProcessApplications(process.id) }}
+            linkHookFactory={useProcessApplications}
             assetHooks={{ ...applications }}
           />
         ),

@@ -29,6 +29,7 @@ export default function AssetPageScaffold<TAsset extends BaseAssetView>({
 
   const [editing, setEditing] = useState<Record<string, TAsset>>({});
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const expandDisabled = rows.ExpandedView === undefined;
 
   const isLoading = hooks.list.isLoading || ownersQuery.isLoading;
   const error = (hooks.list.error as Error) || (ownersQuery.error as Error);
@@ -81,11 +82,13 @@ export default function AssetPageScaffold<TAsset extends BaseAssetView>({
                   <rows.DisplayRow
                     value={item}
                     expanded={!!expanded[item.id]}
-                    onToggle={() =>
-                      setExpanded((prev) => ({
-                        ...prev,
-                        [item.id]: !prev[item.id],
-                      }))
+                    onToggle={expandDisabled ? undefined : (
+                      () =>
+                        setExpanded((prev) => ({
+                          ...prev,
+                          [item.id]: !prev[item.id],
+                        }))
+                    )
                     }
                     onEdit={() =>
                       setEditing((prev) => ({ ...prev, [item.id]: item }))

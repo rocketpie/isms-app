@@ -1,5 +1,7 @@
 //app/_hooks/queryKeys.ts
 
+import { QueryKey } from "@tanstack/react-query";
+
 // on change, update kb-5012-nextjs-app-isms-pages.md!
 export const queryKeys = {
   allPeople: ["people", "all"] as const,
@@ -11,12 +13,25 @@ export const queryKeys = {
   allData: ["data", "all"] as const,
   allConnections: ["connections", "all"] as const,
   processApplications: (processId: string) =>
-    ["process", processId, "applications"] as const,
+    ["processApplications", processId] as const,
   applicationSystems: (applicationId: string) =>
-    ["application", applicationId, "systems"] as const,
-  systemData: (systemId: string) => ["system", systemId, "data"] as const,
+    ["applicationSystems", applicationId] as const,
+  systemData: (systemId: string) =>
+    ["systemData", systemId] as const,
   locationConnections: (locationId: string) =>
-    ["location", locationId, "connections"] as const,
+    ["locationConnections", locationId] as const,
   connectionLocations: (connectionId: string) =>
-    ["connection", connectionId, "locations"] as const,
+    ["connectionLocations", connectionId] as const,
+
+  // helpers to be able to hit every processApplications(processId) cache without knowing processId:
+  isProcessApplicationsKey: (key: QueryKey) =>
+    Array.isArray(key) && key[0] === "processApplications",
+  isApplicationSystemsKey: (key: QueryKey) =>
+    Array.isArray(key) && key[0] === "applicationSystems",
+  isSystemDataKey: (key: QueryKey) =>
+    Array.isArray(key) && key[0] === "systemData",
+  isLocationConnectionsKey: (key: QueryKey) =>
+    Array.isArray(key) && key[0] === "locationConnections",
+  isConnectionLocationsKey: (key: QueryKey) =>
+    Array.isArray(key) && key[0] === "connectionLocations",
 };

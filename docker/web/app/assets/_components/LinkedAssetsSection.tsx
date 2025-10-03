@@ -2,7 +2,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronDown, ChevronRight } from "lucide-react";
 
 import LoadingLine from "./LoadingLine";
@@ -32,6 +32,8 @@ export default function LinkedAssetSection<
   linkHookFactory: (parentId: string) => LinkHooks<TChild>;
   assetHooks: AssetHooks<TChild>;
 }) {
+  const queryClient = useQueryClient();
+
   // local UI state
   const [search, setSearch] = useState("");
   const [pickerValue, setPickerValue] = useState("");
@@ -101,14 +103,16 @@ export default function LinkedAssetSection<
                         setEditing((prev) => ({ ...prev, [item.id]: draft }))
                       }
                       onSave={() => {
-                        props.assetHooks.update.mutate(value);
+                        props.assetHooks.update.mutate(value)
                         setEditing(({ [item.id]: _omit, ...rest }) => rest);
                       }}
                       onDelete={() => {
                         const ok = confirm(
                           `Delete this ${props.itemTypeName}?\n\nNote: junctions may cascade.`,
                         );
-                        if (ok) props.assetHooks.remove.mutate(item.id);
+                        if (ok) {
+                          props.assetHooks.remove.mutate(item.id)
+                        }
                       }}
                       onCancel={() =>
                         setEditing(({ [item.id]: _omit, ...rest }) => rest)

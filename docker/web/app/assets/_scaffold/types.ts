@@ -19,7 +19,7 @@ export type AssetRowRenderers<TAsset extends BaseAssetView> = {
   DisplayRow: React.ComponentType<{
     value: TAsset;
     expanded: boolean;
-    onToggle: () => void;
+    onToggle?: () => void;
     onEdit: () => void;
   }>;
   ExpandedView?: (asset: TAsset) => React.ReactNode; // e.g., <LinkedApplicationsSection processId=... />

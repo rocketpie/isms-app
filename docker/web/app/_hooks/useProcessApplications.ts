@@ -2,26 +2,20 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "./queryKeys";
-import { listApplications } from "@/lib/browser/isms/applications";
 import {
   listLinkedApplications,
   linkApplication,
   unlinkApplication,
 } from "@/lib/browser/isms/process-applications";
 import { ApplicationView } from "@/lib/browser/isms/assetTypes";
+import { useApplications } from "./useApplications";
 
 export function useProcessApplications(processId: string) {
   const queryClient = useQueryClient();
-
-  const listAll = useQuery({
-    enabled: !!processId,    
-    queryKey: queryKeys.allApplications,
-    queryFn: listApplications,
-    staleTime: 30_000,
-  });
+  const applications = useApplications();
 
   const listLinked = useQuery({
-    enabled: !!processId,    
+    enabled: !!processId,
     queryKey: queryKeys.processApplications(processId),
     queryFn: () => listLinkedApplications(processId),
   });
@@ -37,7 +31,7 @@ export function useProcessApplications(processId: string) {
         queryClient.getQueryData<ApplicationView[]>(
           queryKeys.processApplications(processId),
         ) || [];
-      const app = (listAll.data || []).find((a) => a.id === applicationId);
+      const app = (applications.list.data || []).find((a) => a.id === applicationId);
       if (app) {
         queryClient.setQueryData<ApplicationView[]>(
           queryKeys.processApplications(processId),
@@ -91,5 +85,13 @@ export function useProcessApplications(processId: string) {
     },
   });
 
-  return { listAll, listLinked, link, unlink };
+  return {
+    listAll: applications.list,
+    listLinked,
+    link,
+    unlink,
+    create: applications.create,
+    update: applications.update,
+    remove: applications.remove,
+  };
 }

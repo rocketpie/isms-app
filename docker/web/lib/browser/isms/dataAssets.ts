@@ -1,4 +1,5 @@
 //lib/browser/isms/dataAssets.ts
+//Description: api-isms '/data' CRUD, owner embedding
 "use client";
 
 import { postgrest } from "../api-isms";

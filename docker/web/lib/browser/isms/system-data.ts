@@ -1,4 +1,5 @@
 //lib/browser/isms/system-data.ts
+//Description: api-isms '/system_data' GET +embedding POST/DELETE FK writes.
 "use client";
 
 import { postgrest } from "../api-isms";

@@ -1,5 +1,5 @@
 //lib/browser/api-isms.ts
-
+//Description: Browser PostgREST helper for the `isms` schema
 "use client";
 
 import { getApiUrl } from "@/lib/browser/config";

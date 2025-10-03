@@ -1,5 +1,5 @@
 //lib/fetch-timeout.ts
-// Hard 15s default for all network calls
+//Description: fetchWithTimeout(): hard 15s default for all network calls
 export const DEFAULT_TIMEOUT_MS = 15_000;
 
 export function createTimeoutSignal(ms = DEFAULT_TIMEOUT_MS): AbortSignal {

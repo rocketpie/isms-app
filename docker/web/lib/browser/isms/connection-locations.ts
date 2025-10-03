@@ -1,4 +1,5 @@
 //lib/browser/isms/connection-locations.ts
+//Description: api-isms '/location_connections' GET +embedding POST/DELETE FK writes.
 "use client";
 
 import { postgrest } from "..//api-isms";

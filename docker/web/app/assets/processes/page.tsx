@@ -1,4 +1,5 @@
 //app/assets/processes/page.tsx
+//Description: display, manage Process assets
 "use client";
 
 import AssetPageScaffold from "../_scaffold/AssetPageScaffold";

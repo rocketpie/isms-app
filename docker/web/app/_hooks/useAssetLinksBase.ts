@@ -1,4 +1,5 @@
 //app/_hooks/useAssetLinksBase.ts
+//Description: generic hooks for managing asset links with React Query
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";

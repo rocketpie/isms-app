@@ -1,4 +1,5 @@
 //app/assets/_scaffold/types.ts
+//Description: Types for AssetPageScaffold props
 "use client";
 
 import { BaseAssetView } from "@/lib/browser/isms/assetTypes";

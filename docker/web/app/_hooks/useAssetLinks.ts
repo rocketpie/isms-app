@@ -1,4 +1,5 @@
 //app/_hooks/useAssetLinks.ts
+//Description: asset-link specific implementations using useAssetLinksBase
 "use client";
  
 import { listLinkedApplications, linkApplication, unlinkApplication } from "@/lib/browser/isms/process-applications";

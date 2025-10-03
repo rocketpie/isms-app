@@ -1,4 +1,5 @@
 //lib/browser/isms/process-applications.ts
+//Description: api-isms '/process_applications' GET +embedding POST/DELETE FK writes.
 "use client";
 
 import { postgrest } from "../api-isms";

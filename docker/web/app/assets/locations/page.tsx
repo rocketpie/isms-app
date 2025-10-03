@@ -1,4 +1,5 @@
 //app/assets/locations/page.tsx
+//Description: display, manage Location assets
 "use client";
 
 import AssetPageScaffold from "../_scaffold/AssetPageScaffold";

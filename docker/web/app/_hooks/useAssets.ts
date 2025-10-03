@@ -1,4 +1,5 @@
 //app/_hooks/useAssets.ts
+//Description: asset-type-specific implementations using useAssetsBase
 "use client";
  
 import { listApplications, createApplication, updateApplication, deleteApplication } from "@/lib/browser/isms/applications";

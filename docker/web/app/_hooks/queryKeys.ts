@@ -1,11 +1,12 @@
 //app/_hooks/queryKeys.ts
+//Description: Centralized query keys for React Query
+"use client";
 
 import { AssetKind } from "@/lib/browser/isms/assetTypes";
 import { QueryKey } from "@tanstack/react-query";
 
 // on change, update kb-5012-nextjs-app-isms-pages.md!
 export const queryKeys = {
-
   // Generic assets
   assets: {
     all: (kind: AssetKind) => ["assets", kind, "all"] as const,

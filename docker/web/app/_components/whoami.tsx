@@ -1,6 +1,7 @@
 //app/_components/whoami.tsx
-
+//Description: Component to display the current user's email and role
 "use client";
+
 import { useEffect, useState } from "react";
 import { postgrest } from "@/lib/browser/api-app";
 

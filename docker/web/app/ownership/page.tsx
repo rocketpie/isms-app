@@ -1,4 +1,5 @@
 //app/ownership/page.tsx
+//Description: display, manage Ownership/Teams
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";

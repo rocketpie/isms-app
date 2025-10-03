@@ -1,4 +1,6 @@
 //app/layout.tsx
+//Description: Root layout: header, navigation, authentication buttons
+"use client";
 
 import "./globals.css";
 import Providers from "./providers";

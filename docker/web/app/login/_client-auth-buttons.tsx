@@ -1,6 +1,7 @@
 //app/login/_client-auth-buttons.tsx
-
+//Description: Client-side authentication buttons for login/logout
 "use client";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { auth } from "@/lib/auth";

@@ -1,4 +1,6 @@
 //app/api/[...path]/route.ts
+//Description: API proxy to internal PostgREST service
+
 import { NextRequest } from "next/server";
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
 import { logDebug } from "@/lib/logDebug";

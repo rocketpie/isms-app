@@ -1,4 +1,6 @@
 //app/auth/[...path]/route.ts
+//Description: Auth proxy to internal GoTrue service
+
 import { NextRequest } from "next/server";
 import { fetchWithTimeout } from "@/lib/fetch-timeout"; // 15s cap (ADR-002)
 import { logDebug } from "@/lib/logDebug";

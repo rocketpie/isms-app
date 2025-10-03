@@ -1,4 +1,5 @@
 //lib/auth.ts
+//Description: Initialize GoTrueClient for authentication
 
 import { GoTrueClient } from "@supabase/gotrue-js";
 import { fetchWithTimeout } from "./fetch-timeout";

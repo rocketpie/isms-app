@@ -1,6 +1,7 @@
 //app/_components/ownerSelect.tsx
-
+//Description: Owner selection dropdown component
 "use client";
+
 import { listOwnerships } from "@/lib/browser/isms/ownership";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../_hooks/queryKeys";

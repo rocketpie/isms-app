@@ -1,4 +1,5 @@
 //app/assets/applications/page.tsx
+//Description: display, manage Application assets
 "use client";
 
 import AssetPageScaffold from "../_scaffold/AssetPageScaffold";

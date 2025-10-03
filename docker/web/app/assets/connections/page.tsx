@@ -1,4 +1,5 @@
 //app/assets/connections/page.tsx
+//Description: display, manage Connection assets
 "use client";
 
 import AssetPageScaffold from "../_scaffold/AssetPageScaffold";

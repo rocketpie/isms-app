@@ -1,4 +1,5 @@
 //app/assets/_scaffold/AssetPageScaffold.tsx
+//Description: Generic scaffold asset pages; list, create, edit, expand functionality
 "use client";
 
 import { useMemo, useState } from "react";

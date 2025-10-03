@@ -1,4 +1,5 @@
 //app/assets/_components/SimpleAssetEditorRow.tsx
+//Description: editor for ISMS base assets; save, delete, cancel actions
 "use client";
 
 import { BaseAssetView } from "@/lib/browser/isms/assetTypes";

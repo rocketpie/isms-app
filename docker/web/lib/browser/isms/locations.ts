@@ -1,4 +1,5 @@
 //lib/browser/isms/locations.ts
+//Description: api-isms '/locations' CRUD, owner embedding
 "use client";
 
 import { postgrest } from "../api-isms";

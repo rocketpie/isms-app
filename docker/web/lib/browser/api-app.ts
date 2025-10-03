@@ -1,5 +1,5 @@
 //lib/browser/api-app.ts
-
+//Description: Browser PostgREST helper for the `app` schema
 "use client";
 
 import { getApiUrl } from "@/lib/browser/config";

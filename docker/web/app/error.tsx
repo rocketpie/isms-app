@@ -1,6 +1,7 @@
 //app/error.tsx
-
+//Description: Error boundary, runtime errors
 "use client";
+
 export default function Error({
   error,
 }: {

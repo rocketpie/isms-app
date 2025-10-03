@@ -1,4 +1,5 @@
 //app/_hooks/useAssetsBase.ts
+//Description: generic hooks for managing assets with React Query
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";

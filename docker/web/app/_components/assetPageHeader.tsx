@@ -1,4 +1,5 @@
 //app/_components/assetPageHeader.tsx
+//Description: Navigation header for asset-related pages
 "use client";
 
 import Link from "next/link";

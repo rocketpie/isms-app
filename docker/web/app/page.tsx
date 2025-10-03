@@ -1,4 +1,6 @@
 //app/page.tsx
+//Description: Main page: API and Auth info
+import React from "react";
 
 import { fetchWithTimeout } from "@/lib/fetch-timeout";
 import { postgrest } from "@/lib/backend/postgrest";

@@ -1,4 +1,5 @@
 //app/assets/layout.tsx
+//Description: adds AssetPageHeader to all asset pages
 "use client";
 
 import type { ReactNode } from "react";

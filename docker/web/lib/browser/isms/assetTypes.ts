@@ -1,4 +1,5 @@
 //lib/browser/isms/assetTypes.ts
+//Description: Shared asset type definitions for 'people', 'ownership', 'application', 'system', 'process', 'data', 'location', and 'connection' assets.
 "use client";
 
 import { OwnershipView } from "./ownership";

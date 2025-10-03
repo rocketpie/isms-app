@@ -1,4 +1,5 @@
 //app/assets/_components/SimpleAssetDisplayRow.tsx
+//Description: display ISMS base assets; optional expand, edit actions
 "use client";
 
 import { BaseAssetView } from "@/lib/browser/isms/assetTypes";

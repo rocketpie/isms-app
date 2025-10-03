@@ -1,4 +1,5 @@
 //lib/browser/isms/ownership.ts
+//Description: api-isms '/ownership' CRUD, owner embedding
 "use client";
 
 import { postgrest } from "../api-isms";

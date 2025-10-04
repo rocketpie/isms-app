@@ -4,7 +4,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "./queryKeys";
-import type { AssetKind, BaseAssetRow, BaseAssetView } from "@/lib/browser/isms/assetTypes";
+import type { AssetKind, BaseAssetView } from "@/lib/browser/isms/assetTypes";
 import type { QueryKey } from "@tanstack/react-query";
 
 type AssetApi<TView> = {

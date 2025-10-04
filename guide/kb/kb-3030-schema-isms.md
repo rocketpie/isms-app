@@ -14,11 +14,13 @@ This schema is intentionally **clean**: no triggers, no RLS, no audit hooks. Tho
   - `people` — organizational persons (not app users) 
   - `ownership` — ties assets to `primary_person` + `deputy_person` 
   - `processes`, `applications`, `systems`, `data`, `connections`, `locations` 
+  - `systems` have an additional `location_id`
+  - `data` have an additional `data_category_id`
+  - `data_category` (`id`, `name`, `description`)
 - **Junctions** (many-to-many, all **composite PK**): 
   - `process_applications` 
   - `application_systems` 
   - `system_data` 
-  - `system_locations` 
   - `location_connections` 
 - **FK policy for Junctions**: **ON DELETE CASCADE** from entities to junctions, so deletes don’t get blocked (UI should still confirm). 
 - **Indexes**: created on junction *secondary keys* (e.g., `application_id` in `process_applications`) 

@@ -48,7 +48,7 @@ export type ApplicationView = BaseAssetView;
 export type ApplicationRow = BaseAssetRow;
 
 export type SystemView = BaseAssetView<{
-  location: LocationView
+  location: LocationView | null
 }>;
 export type SystemRow = BaseAssetRow<{
   location_id: string | null

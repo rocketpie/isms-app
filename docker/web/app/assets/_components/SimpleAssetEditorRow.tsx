@@ -4,12 +4,13 @@
 
 import { BaseAssetView } from "@/lib/browser/isms/assetTypes";
 import { OwnershipView } from "@/lib/browser/isms/ownership";
+import React from "react";
 
 export default function SimpleAssetEditorRow<T extends BaseAssetView>(props: {
   value: T;
+  extraEditor?: React.ReactNode;
   owners: OwnershipView[];
   disabled?: boolean;
-  showDelete?: boolean;
   onChange: (draft: T) => void;
   onSave: () => void;
   onDelete: () => void;
@@ -29,7 +30,7 @@ export default function SimpleAssetEditorRow<T extends BaseAssetView>(props: {
 
   return (
     <div
-      className="grid gap-2 md:grid-cols-[1fr,2fr,1fr,auto]"
+      className="grid gap-2 md:grid-cols-[1fr,2fr,1fr,1fr,auto]"
       onKeyDown={handleKeyDown}
       role="group"
       aria-disabled={props.disabled}
@@ -62,6 +63,11 @@ export default function SimpleAssetEditorRow<T extends BaseAssetView>(props: {
         }
         disabled={props.disabled}
       />
+
+
+      <div className="flex flex-col">
+        {props.extraEditor ?? ""}
+      </div>
 
       <div className="flex flex-col">
         <label

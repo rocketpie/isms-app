@@ -47,8 +47,12 @@ export type BaseAssetRow<X extends object = {}> = {
 export type ApplicationView = BaseAssetView;
 export type ApplicationRow = BaseAssetRow;
 
-export type SystemView = BaseAssetView;
-export type SystemRow = BaseAssetRow;
+export type SystemView = BaseAssetView<{
+  location: LocationView
+}>;
+export type SystemRow = BaseAssetRow<{
+  location_id: string | null
+}>;
 
 export type ProcessView = BaseAssetView;
 export type ProcessRow = BaseAssetRow;

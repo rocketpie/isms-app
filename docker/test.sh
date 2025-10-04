@@ -40,6 +40,23 @@ get_token () {
     -d "{\"email\":\"${email}\",\"password\":\"${pass}\"}" | jq -r '.access_token'
 }
 
+curl_expect_200_json() {
+  local url="$1"; local tmp="$(mktemp)"
+  echo "$url..."
+  local http=$(curl -sS -o "$tmp" -w "%{http_code}" "$url")
+  if [ "$http" != "200" ]; then
+    echo "FAILED: (HTTP $http)" >&2
+    cat "$tmp" >&2; rm -f "$tmp"; return 1
+  fi
+
+  if ! jq empty "$tmp" >/dev/null 2>&1; then
+    echo "FAILED: Expected JSON:" >&2
+    cat "$tmp" >&2; rm -f "$tmp"; return 1
+  fi
+
+  echo "OK (200, JSON)"
+  rm -f "$tmp"
+}
 
 whoami_expect_role() {
   local token="$1"
@@ -74,17 +91,58 @@ whoami_expect_role() {
 }
 
 
-# ---------------------------
-# Tests
-# ---------------------------
+# Smoke tests 
+#################################################################################
 
-note "Smoke test: PostgREST OpenAPI"
-TMP=$(mktemp)
-HTTP=$(curl -sS -o "$TMP" -w "%{http_code}" "${api_url}/")
-[ "$HTTP" = "200" ] || { echo "PostgREST root returned $HTTP"; cat "$TMP"; exit 1; }
-echo "OK. (HTTP 200)"
-jq '{info}' "$TMP" | sed 's/^/   /'
-rm -f "$TMP"
+
+note "Smoke test: PostgREST online?"
+curl_expect_200_json "${api_url}/"
+
+note "Smoke test: GoTrue online?"
+curl_expect_200_json "${auth_url}/health"
+
+note "Smoke test: web container can reach PostgREST and GoTrue internally"
+docker compose exec web sh -lc '
+set -euo pipefail
+apk add --no-cache curl jq >/dev/null
+
+curl_expect_200_json() {
+  local url="$1"; local tmp="$(mktemp)"
+  echo "$url..."
+  local http=$(curl -sS -o "$tmp" -w "%{http_code}" "$url")
+  if [ "$http" != "200" ]; then
+    echo "FAILED: (HTTP $http)" >&2
+    cat "$tmp" >&2; rm -f "$tmp"; return 1
+  fi
+
+  if ! jq empty "$tmp" >/dev/null 2>&1; then
+    echo "FAILED: Expected JSON:" >&2
+    cat "$tmp" >&2; rm -f "$tmp"; return 1
+  fi
+
+  echo "OK (200, JSON)"
+  rm -f "$tmp"
+}
+
+: "${INTERNAL_GOTRUE_URL:?INTERNAL_GOTRUE_URL missing}"
+: "${INTERNAL_POSTGREST_URL:?INTERNAL_POSTGREST_URL missing}"
+echo "Internally (what the backend hits)"
+
+curl_expect_200_json "${INTERNAL_GOTRUE_URL}/health"
+curl_expect_200_json "${INTERNAL_POSTGREST_URL}/"
+
+echo "Through Next proxies (what browsers hit)"
+curl_expect_200_json "http://localhost:3000/auth/health"
+'
+# TODO: maybe /auth/health and /auth/settings shouldn't work publicly?
+# TODO: curl_expect_200_json "http://localhost:3000/api/" won't work.
+# maybe the /api route doesn't forward / ?
+
+
+# Auth tests 
+#################################################################################
+
+
 
 note "Ensure anon (no token) is blocked on /applications"
 TMP=$(mktemp)
@@ -165,6 +223,10 @@ rm -f "$TMP"
 
 EDITOR_TOKEN=$(get_token "$EDITOR_EMAIL" "$EDITOR_PASS")
 whoami_expect_role "$EDITOR_TOKEN" "editor"
+
+
+# PostgREST tests 
+#################################################################################
 
 
 note "RLS write test: POST /applications as editor (needs PGRST_JWT_ROLE_CLAIM_KEY=.app_metadata.role)"

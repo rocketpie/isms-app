@@ -1,10 +1,10 @@
 //app/_hooks/useAssetLinks.ts
 //Description: asset-link specific implementations using useAssetLinksBase
 "use client";
- 
+
 import { listLinkedApplications, linkApplication, unlinkApplication } from "@/lib/browser/isms/process-applications";
 import { useAssetLinksBase } from "./useAssetLinksBase";
-import { useApplications, useConnections, useData, useLocations } from "./useAssets";
+import { useApplications, useConnections, useData, useLocations, useSystems } from "./useAssets";
 import { linkSystem, listLinkedSystems, unlinkSystem } from "@/lib/browser/isms/application-systems";
 import { listLinkedData, linkData, unlinkData } from "@/lib/browser/isms/system-data";
 import { listLinkedLocations, linkLocation, unlinkLocation } from "@/lib/browser/isms/connection-locations";
@@ -26,7 +26,7 @@ export function useProcessApplications(processId: string) {
 }
 
 export function useApplicationSystems(applicationId: string) {
-  const systems = useApplications();
+  const systems = useSystems();
   return useAssetLinksBase(
     "application",
     applicationId,

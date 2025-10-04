@@ -19,6 +19,44 @@ CREATE TABLE
     deputy_person_id uuid REFERENCES isms.people (id) ON DELETE CASCADE
   );
 
+-- Systems have a location
+-- Locations
+CREATE TABLE
+  IF NOT EXISTS isms.locations (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
+    name varchar(255) NOT NULL,
+    owner_id uuid REFERENCES isms.ownership (id),
+    description text
+  );
+
+-- Systems
+CREATE TABLE
+  IF NOT EXISTS isms.systems (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
+    name varchar(255) NOT NULL,
+    owner_id uuid REFERENCES isms.ownership (id),
+    description text,
+    location_id uuid REFERENCES isms.locations (id)
+  );
+
+-- Data needs to be categorized
+CREATE TABLE
+  IF NOT EXISTS isms.data_category (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
+    name varchar(255) NOT NULL,
+    description text
+  );
+
+-- Data
+CREATE TABLE
+  IF NOT EXISTS isms.data (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
+    name varchar(255) NOT NULL,
+    owner_id uuid REFERENCES isms.ownership (id),
+    data_category_id uuid REFERENCES isms.data_category (id),
+    description text
+  );
+
 -- Processes
 CREATE TABLE
   IF NOT EXISTS isms.processes (
@@ -37,36 +75,10 @@ CREATE TABLE
     description text
   );
 
--- Systems
-CREATE TABLE
-  IF NOT EXISTS isms.systems (
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
-    name varchar(255) NOT NULL,
-    owner_id uuid REFERENCES isms.ownership (id),
-    description text
-  );
-
--- Data
-CREATE TABLE
-  IF NOT EXISTS isms.data (
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
-    name varchar(255) NOT NULL,
-    owner_id uuid REFERENCES isms.ownership (id),
-    description text
-  );
 
 -- Connections (e.g., network links/integrations)
 CREATE TABLE
   IF NOT EXISTS isms.connections (
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
-    name varchar(255) NOT NULL,
-    owner_id uuid REFERENCES isms.ownership (id),
-    description text
-  );
-
--- Locations
-CREATE TABLE
-  IF NOT EXISTS isms.locations (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
     name varchar(255) NOT NULL,
     owner_id uuid REFERENCES isms.ownership (id),
@@ -98,14 +110,6 @@ CREATE TABLE
     PRIMARY KEY (system_id, data_id)
   );
 
--- System ↔ Location
-CREATE TABLE
-  IF NOT EXISTS isms.system_locations (
-    system_id uuid NOT NULL REFERENCES isms.systems (id) ON DELETE CASCADE,
-    location_id uuid NOT NULL REFERENCES isms.locations (id) ON DELETE CASCADE,
-    PRIMARY KEY (system_id, location_id)
-  );
-
 -- Location ↔ Connection
 CREATE TABLE
   IF NOT EXISTS isms.location_connections (
@@ -120,7 +124,5 @@ CREATE INDEX IF NOT EXISTS jm_proc_apps_app_idx ON isms.process_applications (ap
 CREATE INDEX IF NOT EXISTS jm_app_sys_sys_idx ON isms.application_systems (system_id);
 
 CREATE INDEX IF NOT EXISTS jm_sys_data_data_idx ON isms.system_data (data_id);
-
-CREATE INDEX IF NOT EXISTS jm_sys_loc_loc_idx ON isms.system_locations (location_id);
 
 CREATE INDEX IF NOT EXISTS jm_loc_conn_conn_idx ON isms.location_connections (connection_id);

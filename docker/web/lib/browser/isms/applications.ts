@@ -32,7 +32,7 @@ export async function createApplication(item: ApplicationView) {
 
 export async function updateApplication(item: ApplicationView) {
   // strip the owner object
-  const { owner, ...rest } = item;
+  const { id, owner, ...rest } = item;
   // set the owner_id, if any
   const dataModel: Partial<ApplicationRow> = {
     ...rest,

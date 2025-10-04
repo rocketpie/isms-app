@@ -16,7 +16,7 @@ This schema is intentionally **clean**: no triggers, no RLS, no audit hooks. Tho
   - `processes`, `applications`, `systems`, `data`, `connections`, `locations` 
   - `systems` have an additional `location_id`
   - `data` have an additional `data_category_id`
-  - `data_category` (`id`, `name`, `description`)
+  - `data_categories` (`id`, `name`, `description`)
 - **Junctions** (many-to-many, all **composite PK**): 
   - `process_applications` 
   - `application_systems` 

@@ -6,14 +6,14 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/app/_hooks/queryKeys";
 import { listOwnerships, OwnershipView } from "@/lib/browser/isms/ownership";
-import { BaseAssetView } from "@/lib/browser/isms/assetTypes";
+import { BaseAssetView, OwnedAssetView } from "@/lib/browser/isms/assetTypes";
 
 /**
  * Generic create form for ISMS base assets (application, system, process, data, location, connection).
  * It fetches owners (unless provided), manages local state, and calls the provided mutation.
  * You control how the mutation input is built via `toInput`.
  */
-export default function SimpleAssetCreateForm<T extends BaseAssetView>(props: {
+export default function SimpleAssetCreateForm<T extends OwnedAssetView>(props: {
   /* e.g., "Create Application" */
   title?: string;
   className?: string;
@@ -104,9 +104,9 @@ export default function SimpleAssetCreateForm<T extends BaseAssetView>(props: {
           disabled={!!props.owners ? false : ownersQuery.isLoading}
         >
           <option value="">No Owner</option>
-          {owners.map((o) => (
-            <option key={o.id} value={o.id}>
-              {o.name}
+          {owners.map((item) => (
+            <option key={item.id} value={item.id}>
+              {item.name}
             </option>
           ))}
         </select>

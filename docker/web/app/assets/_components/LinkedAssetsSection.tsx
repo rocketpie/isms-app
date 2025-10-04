@@ -8,7 +8,7 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 
 import LoadingLine from "./LoadingLine";
 import ErrorBanner from "./ErrorBanner";
-import { BaseAssetView } from "@/lib/browser/isms/assetTypes";
+import { BaseAssetView, OwnedAssetView } from "@/lib/browser/isms/assetTypes";
 import SimpleAssetEditorRow from "./SimpleAssetEditorRow";
 import SimpleAssetDisplayRow from "./SimpleAssetDisplayRow";
 import SimpleAssetCreateForm from "./SimpleAssetCreateForm";
@@ -26,7 +26,7 @@ export type LinkHooks<TAsset extends BaseAssetView> = {
 };
 
 export default function LinkedAssetSection<
-  TChild extends BaseAssetView,
+  TChild extends OwnedAssetView,
 >(props: {
   className?: string;
   parentId: string;

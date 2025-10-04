@@ -41,7 +41,7 @@ CREATE TABLE
 
 -- Data needs to be categorized
 CREATE TABLE
-  IF NOT EXISTS isms.data_category (
+  IF NOT EXISTS isms.data_categories (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
     name varchar(255) NOT NULL,
     description text
@@ -53,7 +53,7 @@ CREATE TABLE
     id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
     name varchar(255) NOT NULL,
     owner_id uuid REFERENCES isms.ownership (id),
-    data_category_id uuid REFERENCES isms.data_category (id),
+    category_id uuid REFERENCES isms.data_categories (id),
     description text
   );
 

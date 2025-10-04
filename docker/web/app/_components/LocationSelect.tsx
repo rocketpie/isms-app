@@ -1,5 +1,5 @@
 // app/_components/locationSelect.tsx
-//Description: A dropdown select component for choosing a location from a list fetched via a custom hook.
+//Description: dropdown select location from useLocations
 "use client";
 
 import { LocationView } from "@/lib/browser/isms/assetTypes";
@@ -31,9 +31,9 @@ export function LocationSelect({
       }}
     >
       <option value="">No location</option>
-      {locations.map((l) => (
-        <option key={l.id} value={l.id}>
-          {l.name}
+      {locations.map((item) => (
+        <option key={item.id} value={item.id}>
+          {item.name}
         </option>
       ))}
     </select>

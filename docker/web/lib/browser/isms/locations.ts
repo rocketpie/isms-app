@@ -32,7 +32,7 @@ export async function createLocation(item: LocationView) {
 
 export async function updateLocation(item: LocationView) {
   // strip the owner object
-  const { owner, ...rest } = item;
+  const { id, owner, ...rest } = item;
   // set the owner_id, if any
   const dataModel: Partial<LocationRow> = {
     ...rest,

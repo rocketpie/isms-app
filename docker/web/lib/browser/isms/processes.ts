@@ -32,7 +32,7 @@ export async function createProcess(item: ProcessView) {
 
 export async function updateProcess(item: ProcessView) {
   // strip the owner object
-  const { owner, ...rest } = item;
+  const { id, owner, ...rest } = item;
   // set the owner_id, if any
   const dataModel: Partial<ProcessRow> = {
     ...rest,

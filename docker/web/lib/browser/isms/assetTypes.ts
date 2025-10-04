@@ -5,35 +5,35 @@
 import { OwnershipView } from "./ownership";
 
 export type AssetKind =
-  | "people"
+  | "person"
   | "ownership"
   | "application"
   | "system"
   | "process"
   | "data"
   | "location"
-  | "connection";
+  | "connection"
+  | "data_category";
 
 /**
  * VIEW type (what the UI renders after a read with embedding)
- * - owner is already expanded as OwnershipView|null
- * - X allows per-asset extras (rare, but future-proof)
- */
-export type BaseAssetView<
-  X extends object = {},
-  O extends OwnershipView | null = OwnershipView | null,
-> = {
+ * - X allows asset-specific extras
+*/
+export type BaseAssetView<X extends object = {}> = {
   id: string;
   name: string;
   description: string | null;
-  owner: O;
 } & X;
+
+// owner is already expanded as OwnershipView|null
+export type OwnedAssetView<X extends object = {}> = BaseAssetView<X & {
+  owner: OwnershipView | null;
+}>
 
 /**
  * ROW type (what you send on writes)
- * - owner_id is FK, description remains nullable
- * - X allows per-asset extras on the row
- */
+ * - X allows asset-specific extras
+*/
 export type BaseAssetRow<X extends object = {}> = {
   id?: string;
   name: string;
@@ -41,27 +41,44 @@ export type BaseAssetRow<X extends object = {}> = {
   owner_id: string | null;
 } & X;
 
+// owner_id is FK, description remains nullable
+export type OwnedAssetRow<X extends object = {}> = BaseAssetRow<X & {
+  owner_id: string | null;
+}>
+
 /**
  * Helpers to create precise aliases per domain with zero duplication.
  */
-export type ApplicationView = BaseAssetView;
-export type ApplicationRow = BaseAssetRow;
+export type PersonView = BaseAssetView;
+export type PersonRow = BaseAssetRow;
 
-export type SystemView = BaseAssetView<{
+export type DataCategoryView = BaseAssetView
+export type DataCategoryRow = BaseAssetRow
+
+// Owned assets
+export type ProcessView = OwnedAssetView;
+export type ProcessRow = OwnedAssetRow;
+
+export type ApplicationView = OwnedAssetView;
+export type ApplicationRow = OwnedAssetRow;
+
+export type SystemView = OwnedAssetView<{
   location: LocationView | null
 }>;
-export type SystemRow = BaseAssetRow<{
+export type SystemRow = OwnedAssetRow<{
   location_id: string | null
 }>;
 
-export type ProcessView = BaseAssetView;
-export type ProcessRow = BaseAssetRow;
+export type DataAssetView = OwnedAssetView<{
+  category: DataCategoryView | null
+}>;
+export type DataAssetRow = OwnedAssetRow<{
+  category_id: string | null
+}>;
 
-export type DataAssetView = BaseAssetView;
-export type DataAssetRow = BaseAssetRow;
+export type LocationView = OwnedAssetView;
+export type LocationRow = OwnedAssetRow;
 
-export type LocationView = BaseAssetView;
-export type LocationRow = BaseAssetRow;
+export type ConnectionView = OwnedAssetView;
+export type ConnectionRow = OwnedAssetRow;
 
-export type ConnectionView = BaseAssetView;
-export type ConnectionRow = BaseAssetRow;

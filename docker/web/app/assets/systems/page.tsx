@@ -1,5 +1,5 @@
 //app/assets/systems/page.tsx
-//Description: display, manage system assets
+//Description: display, manage systems. custom display and editor adding location
 "use client";
 
 import AssetPageScaffold from "../_scaffold/AssetPageScaffold";
@@ -35,7 +35,6 @@ function SystemDisplayRow(props: {
 function SystemEditorRow(props: {
   value: SystemView;
   owners: OwnershipView[];
-  locations: LocationView[];
   disabled?: boolean;
   onChange: (draft: SystemView) => void;
   onSave: () => void;
@@ -69,15 +68,15 @@ function SystemEditorRow(props: {
             onChange={(event) =>
               props.onChange({
                 ...props.value,
-                location: locations.find((l) => l.id === event.target.value) ?? null,
+                location: locations.find((item) => item.id === event.target.value) ?? null,
               })
             }
             disabled={props.disabled}
           >
             <option value="">No location</option>
-            {locations.map((l) => (
-              <option key={l.id} value={l.id}>
-                {l.name}
+            {locations.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.name}
               </option>
             ))}
           </select>

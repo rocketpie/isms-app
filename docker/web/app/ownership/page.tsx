@@ -69,7 +69,7 @@ export default function OwnershipPage() {
   const queryClient = useQueryClient();
 
   const peopleQuery = useQuery({
-    queryKey: queryKeys.assets.all("people"),
+    queryKey: queryKeys.assets.all("person"),
     queryFn: listPeople,
   });
   const ownershipQuery = useQuery({
@@ -165,10 +165,10 @@ export default function OwnershipPage() {
             const value = isEditing
               ? editing[o.id]
               : {
-                  name: o.name,
-                  primary_person_id: o.primary_person_id ?? "",
-                  deputy_person_id: o.deputy_person_id ?? "",
-                };
+                name: o.name,
+                primary_person_id: o.primary_person_id ?? "",
+                deputy_person_id: o.deputy_person_id ?? "",
+              };
 
             const primaryLabel = o.primary_person_id
               ? (peopleById.get(o.primary_person_id)?.name ?? "—")
@@ -205,9 +205,9 @@ export default function OwnershipPage() {
                       }
                     >
                       <option value="">Primary person (optional)</option>
-                      {people.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.name}
+                      {people.map((item) => (
+                        <option key={item.id} value={item.id}>
+                          {item.name}
                         </option>
                       ))}
                     </select>

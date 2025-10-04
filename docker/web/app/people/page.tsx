@@ -2,100 +2,16 @@
 //Description: display, manage People
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { postgrest } from "@/lib/browser/api-isms";
-import { queryKeys } from "../_hooks/queryKeys";
-
-type PersonView = {
-  id: string;
-  name: string;
-};
-
-async function listPeople() {
-  return await postgrest<PersonView[]>(
-    "/people?select=id,name&order=name.asc",
-    { method: "GET" },
-  );
-}
-
-async function createPerson(input: { name: string }) {
-  // POST /people with 'return=representation' so we get created row(s) back
-  return await postgrest<PersonView[]>("/people", {
-    method: "POST",
-    body: JSON.stringify([input]),
-    headers: { Prefer: "return=representation" },
-  });
-}
-
-async function updatePerson(id: string, patch: Partial<PersonView>) {
-  return await postgrest<PersonView[]>(
-    `/people?id=eq.${encodeURIComponent(id)}`,
-    {
-      method: "PATCH",
-      body: JSON.stringify(patch),
-      headers: { Prefer: "return=representation" },
-    },
-  );
-}
-
-async function deletePerson(id: string) {
-  return await postgrest<null>(`/people?id=eq.${encodeURIComponent(id)}`, {
-    method: "DELETE",
-  });
-}
+import { usePeople } from "../_hooks/useAssets";
 
 export default function PeoplePage() {
-  const queryClient = useQueryClient();
-
-  const peopleQuery = useQuery({
-    queryKey: queryKeys.assets.all("people"),
-    queryFn: listPeople,
-  });
-
-  const create = useMutation({
-    mutationFn: createPerson,
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: queryKeys.assets.all("people") }),
-  });
-
-  const update = useMutation({
-    mutationFn: ({
-      id,
-      patch,
-    }: {
-      id: string;
-      patch: Partial<Pick<PersonView, "name">>;
-    }) => updatePerson(id, patch),
-    // Optimistic UI for quick rename feedback
-    onMutate: async ({ id, patch }) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.assets.all("people") });
-      const prev = queryClient.getQueryData<PersonView[]>(queryKeys.assets.all("people"));
-      if (prev) {
-        queryClient.setQueryData<PersonView[]>(
-          queryKeys.assets.all("people"),
-          prev.map((p) => (p.id === id ? { ...p, ...patch } : p)),
-        );
-      }
-      return { prev };
-    },
-    onError: (_err, _vars, ctx) => {
-      if (ctx?.prev) queryClient.setQueryData(queryKeys.assets.all("people"), ctx.prev);
-    },
-    onSettled: () =>
-      queryClient.invalidateQueries({ queryKey: queryKeys.assets.all("people") }),
-  });
-
-  const remove = useMutation({
-    mutationFn: deletePerson,
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: queryKeys.assets.all("people") }),
-  });
+  const { list, create, update, remove } = usePeople();
 
   const [name, setName] = useState("");
   const [editing, setEditing] = useState<Record<string, string>>({});
 
-  const sorted = useMemo(() => peopleQuery.data ?? [], [peopleQuery.data]);
+  const people = useMemo(() => list.data ?? [], [list.data]);
 
   return (
     <div className="grid gap-6">
@@ -104,18 +20,18 @@ export default function PeoplePage() {
       </div>
 
       <div className="grid gap-2">
-        {peopleQuery.isLoading && <p>Loading…</p>}
-        {peopleQuery.error && (
+        {list.isLoading && <p>Loading…</p>}
+        {list.error && (
           <p className="text-red-600 text-sm">
-            {(peopleQuery.error as Error).message}
+            {(list.error as Error).message}
           </p>
         )}
-        {sorted.length === 0 && !peopleQuery.isLoading && (
+        {people.length === 0 && !list.isLoading && (
           <p className="text-neutral-600">No people yet.</p>
         )}
 
         <ul className="grid gap-2">
-          {sorted.map((listItem) => {
+          {people.map((listItem) => {
             const isEditing = editing[listItem.id] !== undefined;
             const value = isEditing ? editing[listItem.id] : listItem.name;
 
@@ -152,8 +68,8 @@ export default function PeoplePage() {
                         const newName = value.trim();
                         if (newName && newName !== listItem.name) {
                           update.mutate({
-                            id: listItem.id,
-                            patch: { name: newName },
+                            ...listItem,
+                            name: newName
                           });
                         }
                         setEditing((prev) => {
@@ -218,8 +134,12 @@ export default function PeoplePage() {
             e.preventDefault();
             const value = name.trim();
             if (!value) return;
-            create.mutate(
-              { name: value },
+            create.mutateAsync(
+              {
+                id: "",
+                name: value,
+                description: null,
+              },
               {
                 onSuccess: () => setName(""),
               },

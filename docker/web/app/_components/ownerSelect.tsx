@@ -23,9 +23,9 @@ export function OwnerSelect(props: {
       onChange={(e) => props.onChange(e.target.value)}
     >
       <option value="">{props.placeholder ?? "Owner (optional)"}</option>
-      {(ownersQuery.data || []).map((o) => (
-        <option key={o.id} value={o.id}>
-          {o.name}
+      {(ownersQuery.data || []).map((item) => (
+        <option key={item.id} value={item.id}>
+          {item.name}
         </option>
       ))}
     </select>

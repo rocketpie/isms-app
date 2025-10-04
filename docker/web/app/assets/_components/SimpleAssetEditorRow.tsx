@@ -2,12 +2,12 @@
 //Description: editor for ISMS base assets; save, delete, cancel actions
 "use client";
 
-import { BaseAssetView } from "@/lib/browser/isms/assetTypes";
+import { OwnedAssetView } from "@/lib/browser/isms/assetTypes";
 import { OwnershipView } from "@/lib/browser/isms/ownership";
 import { Save, Trash2, Undo2 } from "lucide-react";
 import React from "react";
 
-export default function SimpleAssetEditorRow<T extends BaseAssetView>(props: {
+export default function SimpleAssetEditorRow<T extends OwnedAssetView>(props: {
   value: T;
   extraEditor?: React.ReactNode;
   owners: OwnershipView[];
@@ -85,7 +85,7 @@ export default function SimpleAssetEditorRow<T extends BaseAssetView>(props: {
             props.onChange({
               ...props.value,
               owner:
-                props.owners.find((o) => o.id === event.target.value) ?? null,
+                props.owners.find((item) => item.id === event.target.value) ?? null,
             })
           }
           disabled={props.disabled}

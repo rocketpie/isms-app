@@ -2,11 +2,11 @@
 //Description: display ISMS base assets; optional expand, edit actions
 "use client";
 
-import { BaseAssetView } from "@/lib/browser/isms/assetTypes";
+import { OwnedAssetView } from "@/lib/browser/isms/assetTypes";
 import { ChevronDown, ChevronRight, Pencil } from "lucide-react";
 
 export default function SimpleAssetDisplayRow(props: {
-  value: BaseAssetView;
+  value: OwnedAssetView;
   extraInfo?: { name: string, value: string | null };
   expanded?: boolean;
   onEdit?: () => void;

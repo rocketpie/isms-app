@@ -32,7 +32,7 @@ export async function createConnection(item: ConnectionView) {
 
 export async function updateConnection(item: ConnectionView) {
   // strip the owner object
-  const { owner, ...rest } = item;
+  const { id, owner, ...rest } = item;
   // set the owner_id, if any
   const dataModel: Partial<ConnectionRow> = {
     ...rest,

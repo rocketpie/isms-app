@@ -4,6 +4,7 @@
 
 import { BaseAssetView } from "@/lib/browser/isms/assetTypes";
 import { OwnershipView } from "@/lib/browser/isms/ownership";
+import { Save, Trash2, Undo2 } from "lucide-react";
 import React from "react";
 
 export default function SimpleAssetEditorRow<T extends BaseAssetView>(props: {
@@ -101,26 +102,26 @@ export default function SimpleAssetEditorRow<T extends BaseAssetView>(props: {
       <div className="flex gap-2 justify-end">
         <button
           type="button"
-          className="rounded-xl px-3 py-2 border bg-black text-white disabled:opacity-60"
+          className="rounded-xl px-3 border bg-black text-white disabled:opacity-60"
           onClick={props.onSave}
           disabled={props.disabled || props.value.name.trim().length === 0}
         >
-          Save
+          <Save className="h-5 w-5" />
         </button>
         <button
           type="button"
-          className="rounded-xl px-3 py-2 border bg-white text-red-600 disabled:opacity-60"
+          className="rounded-xl px-3 border bg-white text-red-600 disabled:opacity-60"
           onClick={props.onDelete}
           disabled={props.disabled}
         >
-          Delete
+          <Trash2 className="h-5 w-5" />
         </button>
         <button
           type="button"
-          className="rounded-xl px-3 py-2 border bg-white"
+          className="rounded-xl px-3 border bg-white"
           onClick={props.onCancel}
         >
-          Cancel
+          <Undo2 className="h-5 w-5" />
         </button>
       </div>
     </div>

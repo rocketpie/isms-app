@@ -18,7 +18,7 @@ export type AssetNames = {
   connectionName: string;
 };
 
-const PRESETS: Record<string, Partial<AssetNames>> = {
+const PRESETS: Record<string, AssetNames> = {
   "Billing / CRM / Salesforce": {
     personName: "Alice Adams",
     teamName: "Billing Team",
@@ -41,7 +41,46 @@ const PRESETS: Record<string, Partial<AssetNames>> = {
     connectionName: "Web Upload",
     dataCategoryName: "Media",
   },
+   "Development / Visual Studio / Workstation": {
+    personName: "Dave Developer",
+    teamName: "Dev Team",
+    processName: "App development",
+    applicationName: "Visual Studio",
+    systemName: "Workstation",
+    locationName: "Office",
+    dataName: "source code",
+    dataCategoryName: "Company Knolwledge",
+    connectionName: "VPN",
+  },
 };
+
+type RowProps = {
+  id: keyof AssetNames;
+  label: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
+};
+
+const FieldRow = React.memo(function FieldRow({
+  id,
+  label,
+  value,
+  onChange,
+  placeholder,
+}: RowProps) {
+  return (
+    <div className="grid gap-1.5">
+      <Label htmlFor={String(id)}>{label}</Label>
+      <Input
+        id={String(id)}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+      />
+    </div>
+  );
+});
 
 export default function TestDataForm() {
   const [fields, setFields] = React.useState<AssetNames>({
@@ -66,16 +105,16 @@ export default function TestDataForm() {
 
   const onChange =
     (key: keyof AssetNames) =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setFields((f) => ({ ...f, [key]: e.target.value }));
-    };
+      (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFields((f) => ({ ...f, [key]: e.target.value }));
+      };
 
   const onAdd = async () => {
     setBusy(true);
     setError(null);
     setResult(null);
     try {
-      AddAssets(fields);
+      await AddAssets(fields);
     } catch (e: any) {
       setError(e?.message ?? String(e));
     } finally {
@@ -124,24 +163,20 @@ export default function TestDataForm() {
 
       {/* Form grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Row id="personName" label="Person Name" placeholder="e.g., Alice Adams" />
-        <Row id="teamName" label="Team Name" placeholder="e.g., Billing Team" />
+        <FieldRow id="personName" label="Person Name" value={fields.personName} onChange={onChange("personName")} placeholder="e.g., Alice Adams" />
+        <FieldRow id="teamName" label="Team Name" value={fields.teamName} onChange={onChange("teamName")} placeholder="e.g., Billing Team" />
 
-        <Row id="processName" label="Process Name" placeholder="e.g., Billing" />
-        <Row id="applicationName" label="Application Name" placeholder="e.g., CRM" />
+        <FieldRow id="processName" label="Process Name" value={fields.processName} onChange={onChange("processName")} placeholder="e.g., Billing" />
+        <FieldRow id="applicationName" label="Application Name" value={fields.applicationName} onChange={onChange("applicationName")} placeholder="e.g., CRM" />
 
-        <Row id="systemName" label="System Name" placeholder="e.g., Salesforce" />
-        <Row id="locationName" label="Location Name" placeholder="e.g., AWS Cloud" />
+        <FieldRow id="systemName" label="System Name" value={fields.systemName} onChange={onChange("systemName")} placeholder="e.g., Salesforce" />
+        <FieldRow id="locationName" label="Location Name" value={fields.locationName} onChange={onChange("locationName")} placeholder="e.g., AWS Cloud" />
 
-        <Row id="dataName" label="Data Name" placeholder="e.g., Customers" />
-        <Row id="dataCategoryName" label="Category Name" placeholder="e.g. Customer Data" />
+        <FieldRow id="dataName" label="Data Name" value={fields.dataName} onChange={onChange("dataName")} placeholder="e.g., Customers" />
+        <FieldRow id="dataCategoryName" label="Category Name" value={fields.dataCategoryName} onChange={onChange("dataCategoryName")} placeholder="(not persisted yet)" />
 
         <div className="md:col-span-2">
-          <Row
-            id="connectionName"
-            label="Connection Name"
-            placeholder="e.g., CRM->Billing Feed"
-          />
+          <FieldRow id="connectionName" label="Connection Name" value={fields.connectionName} onChange={onChange("connectionName")} placeholder="e.g., CRM->Billing Feed" />
         </div>
       </div>
 

@@ -3,9 +3,9 @@
 "use client";
 
 import AssetPageScaffold from "../_scaffold/AssetPageScaffold";
-import SimpleAssetDisplayRow from "../_components/SimpleAssetDisplayRow";
-import SimpleAssetEditorRow from "../_components/SimpleAssetEditorRow";
-import SimpleAssetCreateForm from "../_components/SimpleAssetCreateForm";
+import OwnedAssetDisplayRow from "../_components/OwnedAssetDisplayRow";
+import OwnedAssetEditorRow from "../_components/OwnedAssetEditorRow";
+import OwnedAssetCreateForm from "../_components/OwnedAssetCreateForm";
 import type {
   ApplicationView,
   ProcessView,
@@ -22,9 +22,9 @@ export default function ProcessesPage() {
       hooks={{ ...processes }}
       rows={{
         assetTypeName: "Process",
-        DisplayRow: SimpleAssetDisplayRow as any,
-        EditorRow: SimpleAssetEditorRow as any,
-        CreateForm: SimpleAssetCreateForm as any,
+        DisplayRow: OwnedAssetDisplayRow as any,
+        EditorRow: OwnedAssetEditorRow as any,
+        CreateForm: OwnedAssetCreateForm as any,
         ExpandedView: (process) => (
           <LinkedAssetSection<ApplicationView>
             className="col-span-full mt-3"

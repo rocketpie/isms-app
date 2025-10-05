@@ -1,14 +1,16 @@
 //app/assets/_components/SimpleAssetEditorRow.tsx
-//Description: editor for ISMS assets; save, delete, cancel actions
+//Description: editor for ISMS base assets; save, delete, cancel actions
 "use client";
 
-import { BaseAssetView } from "@/lib/browser/isms/assetTypes";
+import { OwnedAssetView } from "@/lib/browser/isms/assetTypes";
+import { OwnershipView } from "@/lib/browser/isms/ownership";
 import { Save, Trash2, Undo2 } from "lucide-react";
 import React from "react";
 
-export default function SimpleAssetEditorRow<T extends BaseAssetView>(props: {
+export default function OwnedAssetEditorRow<T extends OwnedAssetView>(props: {
   value: T;
   extraEditor?: React.ReactNode;
+  owners: OwnershipView[];
   disabled?: boolean;
   onChange: (draft: T) => void;
   onSave: () => void;
@@ -29,7 +31,7 @@ export default function SimpleAssetEditorRow<T extends BaseAssetView>(props: {
 
   return (
     <div
-      className="grid gap-2 md:grid-cols-[1fr,2fr,1fr,auto]"
+      className="grid gap-2 md:grid-cols-[1fr,2fr,1fr,1fr,auto]"
       onKeyDown={handleKeyDown}
       role="group"
       aria-disabled={props.disabled}
@@ -63,8 +65,38 @@ export default function SimpleAssetEditorRow<T extends BaseAssetView>(props: {
         disabled={props.disabled}
       />
 
+
       <div className="flex flex-col">
         {props.extraEditor ?? ""}
+      </div>
+
+      <div className="flex flex-col">
+        <label
+          className="text-sm text-neutral-700 mb-1"
+          htmlFor={`asset-owner-${props.value.id}`}
+        >
+          Owner
+        </label>
+        <select
+          id={`asset-owner-${props.value.id}`}
+          className="border rounded-lg px-3 py-2"
+          value={props.value.owner?.id ?? ""}
+          onChange={(event) =>
+            props.onChange({
+              ...props.value,
+              owner:
+                props.owners.find((item) => item.id === event.target.value) ?? null,
+            })
+          }
+          disabled={props.disabled}
+        >
+          <option value="">No owner</option>
+          {props.owners.map((o) => (
+            <option key={o.id} value={o.id}>
+              {o.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="flex gap-2 justify-end">

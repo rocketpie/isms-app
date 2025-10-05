@@ -1,19 +1,19 @@
 //app/assets/_components/SimpleAssetDisplayRow.tsx
-//Description: display ISMS assets; optional expand, edit actions
+//Description: display ISMS base assets; optional expand, edit actions
 "use client";
 
-import { BaseAssetView } from "@/lib/browser/isms/assetTypes";
+import { OwnedAssetView } from "@/lib/browser/isms/assetTypes";
 import { ChevronDown, ChevronRight, Pencil } from "lucide-react";
 
-export default function SimpleAssetDisplayRow(props: {
-  value: BaseAssetView;
+export default function OwnedAssetDisplayRow(props: {
+  value: OwnedAssetView;
   extraInfo?: { name: string, value: string | null };
   expanded?: boolean;
   onEdit?: () => void;
   onToggle?: () => void;
 }) {
   return (
-    <div className="grid gap-1 grid-cols-1 md:grid-cols-[1fr,2fr,1fr,auto] md:items-center">
+    <div className="grid gap-1 grid-cols-1 md:grid-cols-[1fr,2fr,1fr,1fr,auto] md:items-center">
       <button
         type="button"
         className={`flex items-center gap-2 text-base text-neutral-700 ${props.onToggle ? "hover:text-black" : "cursor-default"}`}
@@ -48,6 +48,11 @@ export default function SimpleAssetDisplayRow(props: {
           )
         ) : (<span />)
         }
+      </div>
+
+      <div className="text-sm text-neutral-700">
+        Owner:{" "}
+        <span className="text-neutral-600">{props.value?.owner?.name}</span>
       </div>
 
       <div className="flex gap-2">

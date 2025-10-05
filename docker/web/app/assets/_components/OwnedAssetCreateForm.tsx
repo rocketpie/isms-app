@@ -1,24 +1,44 @@
 //app/assets/_components/SimpleAssetCreateForm.tsx
-//Description: Generic create form for ISMS assets (application, system, process, data, location, connection).
+//Description: Generic create form for ISMS base assets (application, system, process, data, location, connection).
 "use client";
 
-import { BaseAssetView } from "@/lib/browser/isms/assetTypes";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "@/app/_hooks/queryKeys";
+import { listOwnerships, OwnershipView } from "@/lib/browser/isms/ownership";
+import { OwnedAssetView } from "@/lib/browser/isms/assetTypes";
 
 /**
- * Generic create form for ISMS base assets (person, dataCategory).
+ * Generic create form for ISMS base assets (application, system, process, data, location, connection).
+ * It fetches owners (unless provided), manages local state, and calls the provided mutation.
+ * You control how the mutation input is built via `toInput`.
  */
-export default function SimpleAssetCreateForm<T extends BaseAssetView>(props: {
-  /* e.g., "Person" */
+export default function OwnedAssetCreateForm<T extends OwnedAssetView>(props: {
+  /* e.g., "Application" */
   assetTypeName?: string;
   className?: string;
+  /** Optional pre-fetched owners to skip the owners query */
+  owners?: OwnershipView[];
   /** Called with the new Asset */
   onSubmit: (newAsset: T) => Promise<any>;
 }) {
+  // Load owners only if not provided
+  const ownersQuery = useQuery({
+    queryKey: queryKeys.assets.all("ownership"),
+    queryFn: listOwnerships,
+    enabled: !props.owners,
+  });
+
+  const owners = useMemo(
+    () => props.owners ?? ownersQuery.data ?? [],
+    [props.owners, ownersQuery.data],
+  );
+
   // Local form state
   const [pending, setPending] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [ownerId, setOwnerId] = useState<string>("");
   const [error, setError] = useState<Error>();
 
   return (
@@ -39,6 +59,7 @@ export default function SimpleAssetCreateForm<T extends BaseAssetView>(props: {
                 id: "",
                 name: nameTrimmed,
                 description: description.trim() || null,
+                owner: owners.find((o) => o.id === ownerId) || null,
               } as T)
               .then(() => {
                 setPending(false);
@@ -71,6 +92,24 @@ export default function SimpleAssetCreateForm<T extends BaseAssetView>(props: {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
+
+        <label className="sr-only" htmlFor="create-owner">
+          Owner
+        </label>
+        <select
+          id="create-owner"
+          className="border rounded-lg px-3 py-2"
+          value={ownerId}
+          onChange={(e) => setOwnerId(e.target.value)}
+          disabled={!!props.owners ? false : ownersQuery.isLoading}
+        >
+          <option value="">No Owner</option>
+          {owners.map((item) => (
+            <option key={item.id} value={item.id}>
+              {item.name}
+            </option>
+          ))}
+        </select>
 
         {error && (
           <div className="md:col-span-4">

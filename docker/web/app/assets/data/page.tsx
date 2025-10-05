@@ -4,8 +4,8 @@
 
 import AssetPageScaffold from "../_scaffold/AssetPageScaffold";
 import SimpleAssetDisplayRow from "../_components/SimpleAssetDisplayRow";
-import SimpleAssetEditorRow from "../_components/SimpleAssetEditorRow";
-import SimpleAssetCreateForm from "../_components/SimpleAssetCreateForm";
+import OwnedAssetEditorRow from "../_components/OwnedAssetEditorRow";
+import OwnedAssetCreateForm from "../_components/OwnedAssetCreateForm";
 import type { DataAssetView } from "@/lib/browser/isms/assetTypes";
 import { useData, useDataCategories } from "@/app/_hooks/useAssets";
 import { OwnershipView } from "@/lib/browser/isms/ownership";
@@ -42,7 +42,7 @@ function DataEditorRow(props: {
   const categories = useMemo(() => list.data ?? [], [list.data]);
 
   return (
-    <SimpleAssetEditorRow<DataAssetView>
+    <OwnedAssetEditorRow<DataAssetView>
       value={props.value}
       owners={props.owners}
       disabled={props.disabled}
@@ -93,7 +93,7 @@ export default function DataAssetsPage() {
         assetTypeName: "Data",
         DisplayRow: DataDisplayRow as any,
         EditorRow: DataEditorRow as any,
-        CreateForm: SimpleAssetCreateForm as any,
+        CreateForm: OwnedAssetCreateForm as any,
       }}
     />
   );

@@ -3,10 +3,10 @@
 "use client";
 
 import AssetPageScaffold from "../_scaffold/AssetPageScaffold";
-import SimpleAssetDisplayRow from "../_components/SimpleAssetDisplayRow";
-import SimpleAssetEditorRow from "../_components/SimpleAssetEditorRow";
-import SimpleAssetCreateForm from "../_components/SimpleAssetCreateForm";
-import type { DataAssetView, LocationView, SystemView } from "@/lib/browser/isms/assetTypes";
+import OwnedAssetDisplayRow from "../_components/OwnedAssetDisplayRow";
+import OwnedAssetEditorRow from "../_components/OwnedAssetEditorRow";
+import OwnedAssetCreateForm from "../_components/OwnedAssetCreateForm";
+import { SystemView, DataAssetView } from "@/lib/browser/isms/assetTypes";
 import { useLocations, useSystems } from "@/app/_hooks/useAssets";
 import LinkedAssetSection from "../_components/LinkedAssetsSection";
 import { useSystemData } from "@/app/_hooks/useAssetLinks";
@@ -22,7 +22,7 @@ function SystemDisplayRow(props: {
 }) {
   const { value, expanded, onEdit, onToggle } = props;
   return (
-    <SimpleAssetDisplayRow
+    <OwnedAssetDisplayRow
       value={value}
       expanded={expanded}
       onEdit={onEdit}
@@ -45,7 +45,7 @@ function SystemEditorRow(props: {
   const locations = useMemo(() => list.data ?? [], [list.data]);
 
   return (
-    <SimpleAssetEditorRow<SystemView>
+    <OwnedAssetEditorRow<SystemView>
       value={props.value}
       owners={props.owners}
       disabled={props.disabled}
@@ -97,7 +97,7 @@ export default function SystemsPage() {
         assetTypeName: "System",
         DisplayRow: SystemDisplayRow as any,
         EditorRow: SystemEditorRow as any,
-        CreateForm: SimpleAssetCreateForm as any,
+        CreateForm: OwnedAssetCreateForm as any,
         ExpandedView: (system) => (
           <LinkedAssetSection<DataAssetView>
             className="col-span-full mt-3"

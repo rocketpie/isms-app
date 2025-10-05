@@ -17,6 +17,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
 
 export default function RootLayout({
   children,
@@ -38,19 +39,24 @@ export default function RootLayout({
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="h-8 px-2 text-sm text-neutral-700"
+                      className="h-8 px-2 gap-1 text-neutral-700"
                     >
-                      Owner
-                      <span className="ml-1 inline-block align-middle">▾</span>
+                      Owner, Category<ChevronDown />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="w-56">
+                    <DropdownMenuLabel className="text-xs text-neutral-500">
+                      Simple Assets
+                    </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
                       <Link href="/people">People</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link href="/ownership">Teams</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/data_categories">Categories</Link>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -59,17 +65,16 @@ export default function RootLayout({
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="h-8 px-2 text-sm text-neutral-700"
+                      className="h-8 px-2 gap-1 text-neutral-700"
                     >
-                      Assets
-                      <span className="ml-1 inline-block align-middle">▾</span>
+                      Assets<ChevronDown />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="w-56">
-                    <DropdownMenuSeparator />
                     <DropdownMenuLabel className="text-xs text-neutral-500">
-                      Core Assets
+                      Owned Assets
                     </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
                       <Link href="/assets/processes">Processes</Link>
                     </DropdownMenuItem>

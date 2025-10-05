@@ -34,7 +34,7 @@ export type AssetRowRenderers<TAsset extends BaseAssetView> = {
     onCancel: () => void;
   }>;
   CreateForm: React.ComponentType<{
-    title: string;
+    assetTypeName: string;
     owners: { id: string; name: string }[];
     onSubmit: (v: Partial<TAsset>) => Promise<unknown>;
     className?: string;

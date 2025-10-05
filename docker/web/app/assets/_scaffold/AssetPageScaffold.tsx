@@ -105,7 +105,7 @@ export default function AssetPageScaffold<TAsset extends BaseAssetView>({
       </div>
 
       <rows.CreateForm
-        title={rows.assetTypeName}
+        assetTypeName={rows.assetTypeName}
         owners={owners}
         onSubmit={(v: any) => hooks.create.mutateAsync(v)}
         className="bg-white border rounded-2xl p-4"

@@ -2,8 +2,6 @@
 //Description: Shared asset type definitions for 'people', 'ownership', 'application', 'system', 'process', 'data', 'location', and 'connection' assets.
 "use client";
 
-import { OwnershipView } from "./ownership";
-
 export type AssetKind =
   | "person"
   | "ownership"
@@ -51,6 +49,20 @@ export type OwnedAssetRow<X extends object = {}> = BaseAssetRow<X & {
  */
 export type PersonView = BaseAssetView;
 export type PersonRow = BaseAssetRow;
+
+export type OwnershipView = {
+  id: string;
+  name: string;
+  primary: PersonView | null;
+  deputy: PersonView | null;
+};
+
+export type OwnershipRow = {
+  id?: string;
+  name: string;
+  primary_person_id: string | null;
+  deputy_person_id: string | null;
+};
 
 export type DataCategoryView = BaseAssetView
 export type DataCategoryRow = BaseAssetRow

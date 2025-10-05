@@ -1,4 +1,5 @@
 //components/ui/button.tsx
+//Description: generated via shadcn/ui, Button component
 "use client";
 
 import * as React from "react";

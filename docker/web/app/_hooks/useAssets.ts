@@ -11,6 +11,28 @@ import { createLocation, deleteLocation, listLocations, updateLocation } from "@
 import { createConnection, deleteConnection, listConnections, updateConnection } from "@/lib/browser/isms/connections";
 import { createDataCategory, deleteDataCategory, listDataCategories, updateDataCategory } from "@/lib/browser/isms/dataCategories";
 import { listPeople, createPerson, updatePerson, deletePerson } from "@/lib/browser/isms/people";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "./queryKeys";
+import { createOwnership, listOwnerships } from "@/lib/browser/isms/ownership";
+
+export function useOwnership() {
+  const queryClient = useQueryClient();
+
+  const list = useQuery({
+    queryKey: queryKeys.assets.all("ownership"),
+    queryFn: listOwnerships,
+    staleTime: 30_000,
+  });
+
+  const create = useMutation({
+    mutationFn: createOwnership,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.assets.all("ownership") });
+    },
+  });
+
+  return { list, create };
+}
 
 export function usePeople() {
   return useAssetsBase("person", {

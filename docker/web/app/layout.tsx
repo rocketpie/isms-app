@@ -102,6 +102,32 @@ export default function RootLayout({
                       variant="ghost"
                       className="h-8 px-2 gap-1 text-neutral-700"
                     >
+                      Maps<ChevronDown />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-56">
+                    <DropdownMenuLabel className="text-xs text-neutral-500">
+                      Maps
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/maps/organization">Organization</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/maps/processmap">Processes</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/maps/infrastructure">Infrastructure</Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="h-8 px-2 gap-1 text-neutral-700"
+                    >
                       Test Data<ChevronDown />
                     </Button>
                   </DropdownMenuTrigger>
@@ -112,7 +138,7 @@ export default function RootLayout({
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
                       <Link href="/test_data">Test Data</Link>
-                    </DropdownMenuItem>                    
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>

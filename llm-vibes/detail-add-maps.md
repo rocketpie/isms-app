@@ -1192,3 +1192,224 @@ export function useDeleteMapNode(mapId: string) {
     },
   });
 }
+
+
+
+
+########################################################################
+########################################################################
+
+
+
+
+Nice progress! I see a few “last-mile” issues worth tightening, plus tiny quality-of-life fixes.
+
+# Affected parts & KB
+
+* **Page:** `app/maps/infrastructure/page.tsx`
+* **Hooks:** `useMapNodesOrEmpty` (thin wrapper), underlying `useMapNodes`
+* **Helpers:** `lib/browser/isms/maps.ts` (create signature assumptions)
+* **KB refs:** page→hook→helper split & query key discipline, embedding pattern, restart PostgREST after schema changes
+
+---
+
+## 1) Edges currently disabled
+
+You pass `false` here:
+
+```ts
+const edgesAll = useInfrastructureEdges(false);
+```
+
+Change to `true` (or tie it to `!!activeMapId`) so edges render:
+
+```ts
+const edgesAll = useInfrastructureEdges(!!activeMapId);
+```
+
+---
+
+## 2) Drag → wrong coordinates when zoomed/panned
+
+With `react-zoom-pan-pinch`, your `info.point` is in **screen** coords. You must convert to **content** coords using the current `scale`. Easiest: measure the transformed content rect and divide by `scale`.
+
+**Patch** (minimal changes):
+
+```tsx
+// at top of component:
+import { useRef } from "react";
+
+// inside InfrastructureMapPage:
+const contentRef = useRef<HTMLDivElement | null>(null);
+
+<TransformWrapper initialScale={1} minScale={0.2} maxScale={3} wheel={{ step: 0.06 }}>
+  {({ zoomIn, zoomOut, resetTransform, state }) => (
+    <>
+      {/* ... */}
+      <TransformComponent>
+        <div
+          ref={contentRef}
+          className="relative h-[2000px] w-[3000px] bg-[linear-gradient(0deg,transparent_24px,rgba(0,0,0,0.06)_25px),linear-gradient(90deg,transparent_24px,rgba(0,0,0,0.06)_25px)] bg-[size:25px_25px]"
+        >
+          {/* Edges ... */}
+
+          {nodesFiltered.map((n) => (
+            <DraggableNode
+              key={n.id}
+              node={n}
+              label={nameFor(n.asset_kind, n.asset_id)}
+              scale={state.scale}
+              contentRef={contentRef}
+              onDragEnd={(x, y) => moveNode.mutate({ id: n.id, x, y })}
+            />
+          ))}
+        </div>
+      </TransformComponent>
+    </>
+  )}
+</TransformWrapper>
+```
+
+And update `DraggableNode`:
+
+```tsx
+function DraggableNode({
+  node, label, onDragEnd, scale, contentRef,
+}: {
+  node: MapNodeView;
+  label: string;
+  onDragEnd: (x: number, y: number) => void;
+  scale: number;
+  contentRef: React.RefObject<HTMLDivElement>;
+}) {
+  const [pos, setPos] = useState({ x: node.map_x, y: node.map_y });
+  useEffect(() => setPos({ x: node.map_x, y: node.map_y }), [node.map_x, node.map_y]);
+
+  return (
+    <motion.div
+      className={`absolute z-10 border ${kindColor(node.asset_kind)} shadow-sm rounded-xl`}
+      style={{ left: pos.x, top: pos.y, width: 192 }}
+      drag
+      dragMomentum={false}
+      dragElastic={0}
+      onDragEnd={(_e, info) => {
+        const rect = contentRef.current?.getBoundingClientRect();
+        if (!rect || !scale) return;
+        // convert screen → content coords, then center the 192x48-ish node
+        const worldX = (info.point.x - rect.left) / scale - 96;
+        const worldY = (info.point.y - rect.top) / scale - 24;
+        const next = { x: Math.max(0, worldX), y: Math.max(0, worldY) };
+        setPos(next);
+        onDragEnd(next.x, next.y);
+      }}
+    >
+      {/* ... */}
+    </motion.div>
+  );
+}
+```
+
+> This keeps drag behavior correct at any zoom.
+
+---
+
+## 3) Create payload shape (avoid unknown columns)
+
+In `AddAssetsPanel.add()` you currently build rows like:
+
+```ts
+const rows = selected.map((s, i) => ({
+  id: "",                // ❌ let DB default generate id
+  asset_kind: s.kind,
+  asset_id: s.id,
+  map_x: ...,
+  map_y: ...,
+  data_version: 1,       // ❌ not in schema
+  data: { label: null },
+} as MapNodeView));
+
+rows.forEach(row => createMapNode.mutate(row));
+```
+
+This can fail under PostgREST because `id` and `data_version` aren’t valid on insert. Also your `create` mutation expects an insert shape that your schema actually accepts.
+
+**Two good options:**
+
+### Option A (loop, minimal change)
+
+Change your rows and call signature to only send **valid insert columns**:
+
+```ts
+const rows = selected.map((s, i) => ({
+  asset_kind: s.kind,
+  asset_id: s.id,
+  map_x: baseX + (i % 6) * gapX,
+  map_y: baseY + Math.floor(i / 6) * gapY,
+  data: {},
+}));
+
+rows.forEach(row => createMapNode.mutate(row as any)); // if your create expects MapNodeView, update it (below)
+```
+
+Then update your `useMapNodes`’s `create` mutation to accept that shape:
+
+```ts
+// inside useMapNodes(mapId)
+const create = useMutation({
+  mutationFn: (input: { asset_kind: AssetKind; asset_id: string; map_x: number; map_y: number; icon_id?: string | null; data?: unknown }) =>
+    createMapNode({ map_id: mapId, ...input }),
+  onSuccess: () => { /* invalidate map nodes for mapId */ },
+});
+```
+
+### Option B (preferred) — bulk insert
+
+Add a `createMany` mutation in your hook and use a **single** POST (less chatty):
+
+```ts
+// hook
+const createMany = useMutation({
+  mutationFn: ({ mapId, rows }: { mapId: string; rows: Array<{ asset_kind: AssetKind; asset_id: string; map_x: number; map_y: number; icon_id?: string | null; data?: unknown }>}) =>
+    createMapNodes(rows.map(r => ({ map_id: mapId, ...r }))),
+  onSuccess: (_res, { mapId }) => qc.invalidateQueries({ queryKey: mapQueryKeys.nodes.byMap(mapId) }),
+});
+
+// panel
+if (!mapId || selected.length === 0) return;
+const rows = selected.map(/* same minimal objects as above */);
+createMany.mutate({ mapId, rows });
+```
+
+---
+
+## 4) Unused values
+
+You compute `mapIcons` but don’t use it. Either wire an icon picker later or remove the import/state for now.
+
+---
+
+## 5) Minor types/consistency
+
+* You mix `AssetKind` and the map union; that’s fine if they’re identical. If not, align to a single source of truth (your `assetTypes.ts`) to avoid drift.
+* If your `useMaps()` / `useMapIcons()` return `{ list }`, stay consistent across hooks (same shape everywhere).
+
+---
+
+## 6) (Optional) UX polish
+
+* Disable panning while dragging a node to avoid gesture conflicts:
+
+  * `TransformWrapper panning={{ excluded: ['.draggable-node'] }}` and add `className="draggable-node"` on node, **or**
+  * stop propagation on node pointer down.
+* Show edge arrows/labels later via SVG markers.
+
+---
+
+### Net: after 1–3 patches above, you’re production-safe
+
+* Edges visible,
+* Drag works at any zoom,
+* Inserts won’t fail on unexpected columns,
+* Fewer network calls with bulk insert (Option B).
+
+If you want, I can push a patched `page.tsx` with the zoom-aware drag & bulk create wired in, and trim the `mapIcons` usage.

@@ -17,6 +17,7 @@ import {
   createMapNode,
   updateMapNode,
   deleteMapNode,
+  moveMapNode,
 } from "@/lib/browser/isms/maps";
 import { queryKeys } from "./queryKeys";
 
@@ -271,6 +272,26 @@ export function useMapNodes(mapId: string) {
     },
   });
 
+  const move = useMutation({
+    mutationFn: async ({ id, x, y }: { id: string, x: number, y: number }) => { return await moveMapNode(id, x, y) },
+    onMutate: async ({ id, x, y }: { id: string, x: number, y: number }) => {
+      const prevMapNodes = queryClient.getQueryData<MapNodeView[]>(queryKeys.maps.mapNodes(mapId));
+
+      if (Array.isArray(prevMapNodes)) {
+        queryClient.setQueryData<MapNodeView[]>(
+          queryKeys.maps.mapNodes(mapId),
+          prevMapNodes.map((row) => (row.id === id ? ({ ...row, map_x: x, map_y: y } as MapNodeView) : row)),
+        );
+      }
+
+      return { prevMapNodes };
+    },
+    onError: (_e, _draft, ctx) => {
+      if (!ctx) return;
+      if (ctx.prevMapNodes) queryClient.setQueryData(queryKeys.maps.mapNodes(mapId), ctx.prevMapNodes);
+    },
+  });
+
   const remove = useMutation({
     mutationFn: deleteMapNode,
     onMutate: async (id: string) => {
@@ -309,5 +330,5 @@ export function useMapNodes(mapId: string) {
     },
   });
 
-  return { list, create, update, remove }
+  return { list, create, update, move, remove }
 }

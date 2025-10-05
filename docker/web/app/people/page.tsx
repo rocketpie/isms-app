@@ -1,5 +1,5 @@
-//app/assets/data/page.tsx
-//Description: display, manage Data. custom display and editor adding category
+//app/people/page.tsx
+//Description: display, manage People
 "use client";
 
 import { DataCategoryView } from "@/lib/browser/isms/assetTypes";

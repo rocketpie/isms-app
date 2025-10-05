@@ -1,4 +1,7 @@
+//app/test_data/page.tsx
 // Description: Test Data page (server wrapper)
+"use client";
+
 import React from "react";
 import TestDataForm from "./_components/TestDataForm";
 

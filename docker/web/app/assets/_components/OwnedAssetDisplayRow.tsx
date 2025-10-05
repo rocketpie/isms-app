@@ -1,5 +1,5 @@
-//app/assets/_components/SimpleAssetDisplayRow.tsx
-//Description: display ISMS base assets; optional expand, edit actions
+//app/assets/_components/OwnedAssetDisplayRow.tsx
+//Description: display ISMS assets with owner; optional expand, edit actions
 "use client";
 
 import { OwnedAssetView } from "@/lib/browser/isms/assetTypes";

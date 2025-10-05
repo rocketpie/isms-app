@@ -1,5 +1,5 @@
 //app/assets/_components/SimpleAssetCreateForm.tsx
-//Description: Generic create form for ISMS assets (application, system, process, data, location, connection).
+//Description: Generic create form for ISMS base assets (people, dataCategory).
 "use client";
 
 import { BaseAssetView } from "@/lib/browser/isms/assetTypes";

@@ -1,3 +1,5 @@
+//lib/browser/isms/people.ts
+ 
 import { postgrest } from "../api-isms";
 import { PersonView, PersonRow } from "./assetTypes";
 

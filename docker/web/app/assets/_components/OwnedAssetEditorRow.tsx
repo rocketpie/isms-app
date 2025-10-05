@@ -1,9 +1,8 @@
-//app/assets/_components/SimpleAssetEditorRow.tsx
-//Description: editor for ISMS base assets; save, delete, cancel actions
+//app/assets/_components/OwnedAssetEditorRow.tsx
+//Description: editor for ISMS assets with owners; save, delete, cancel actions
 "use client";
 
-import { OwnedAssetView } from "@/lib/browser/isms/assetTypes";
-import { OwnershipView } from "@/lib/browser/isms/ownership";
+import { OwnedAssetView, OwnershipView } from "@/lib/browser/isms/assetTypes";
 import { Save, Trash2, Undo2 } from "lucide-react";
 import React from "react";
 

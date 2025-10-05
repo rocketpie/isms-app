@@ -1,6 +1,6 @@
+//app/test_data/AddAssets.ts
+//Description: React function to add a set of related assets
 "use client";
-
-import * as React from "react";
 
 import { createPerson } from "@/lib/browser/isms/people";
 import { createOwnership } from "@/lib/browser/isms/ownership";

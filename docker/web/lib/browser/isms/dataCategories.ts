@@ -1,3 +1,5 @@
+//lib/browser/isms/dataCategories.ts
+ 
 import { postgrest } from "../api-isms";
 import { DataCategoryRow, DataCategoryView } from "./assetTypes";
 

@@ -1,5 +1,5 @@
-//app/assets/_components/SimpleAssetCreateForm.tsx
-//Description: Generic create form for ISMS base assets (application, system, process, data, location, connection).
+//app/assets/_components/OwnedAssetCreateForm.tsx
+//Description: Generic create form for ISMS assets with owners (application, system, process, data, location, connection).
 "use client";
 
 import { useMemo, useState } from "react";

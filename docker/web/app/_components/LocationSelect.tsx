@@ -1,5 +1,5 @@
-// app/_components/locationSelect.tsx
-//Description: dropdown select location from useLocations
+//app/_components/LocationSelect.tsx
+//Description: dropdown select from useLocations
 "use client";
 
 import { LocationView } from "@/lib/browser/isms/assetTypes";

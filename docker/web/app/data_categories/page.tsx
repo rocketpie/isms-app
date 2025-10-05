@@ -1,5 +1,5 @@
-//app/assets/data/page.tsx
-//Description: display, manage Data. custom display and editor adding category
+//app/data_categories/page.tsx
+//Description: view, edit data categories
 "use client";
 
 import { useDataCategories } from "@/app/_hooks/useAssets";

@@ -1,6 +1,7 @@
 -- 010_isms.sql
 CREATE SCHEMA IF NOT EXISTS isms;
 
+-- Basic Assets =================================================================
 -- Ownership 
 -- People (assets / owners in app context; not auth users)
 CREATE TABLE
@@ -75,7 +76,6 @@ CREATE TABLE
     description text
   );
 
-
 -- Connections (e.g., network links/integrations)
 CREATE TABLE
   IF NOT EXISTS isms.connections (
@@ -85,7 +85,7 @@ CREATE TABLE
     description text
   );
 
--- ========== Junctions ==========
+-- Junctions =================================================================
 -- Process ↔ Application
 CREATE TABLE
   IF NOT EXISTS isms.process_applications (
@@ -126,3 +126,51 @@ CREATE INDEX IF NOT EXISTS jm_app_sys_sys_idx ON isms.application_systems (syste
 CREATE INDEX IF NOT EXISTS jm_sys_data_data_idx ON isms.system_data (data_id);
 
 CREATE INDEX IF NOT EXISTS jm_loc_conn_conn_idx ON isms.location_connections (connection_id);
+
+-- Maps =================================================================
+-- Maps
+CREATE TABLE
+  IF NOT EXISTS isms.maps (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
+    name varchar(255) NOT NULL,
+    owner_id uuid REFERENCES isms.ownership (id),
+    description text
+  );
+
+-- Icons
+CREATE TABLE
+  IF NOT EXISTS isms.map_icons (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
+    name varchar(255) NOT NULL,
+    data_version integer NOT NULL,
+    data jsonb NOT NULL -- svg / url / stroke, arrowheads, labels, etc.
+  );
+
+-- Map nodes (asset locations on a map)
+-- Attention: keep in sync with kb-4015-api-asset-kinds.md
+CREATE TABLE
+  IF NOT EXISTS isms.map_nodes (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
+    map_id uuid REFERENCES isms.maps (id) ON DELETE CASCADE,
+    asset_kind varchar(255) NOT NULL CHECK (
+      asset_kind IN (
+        'person',
+        'ownership',
+        'process',
+        'application',
+        'system',
+        'location',
+        'data',
+        'connection',
+        'data_category'
+      )
+    ),
+    asset_id uuid NOT NULL,
+    map_x double precision NOT NULL,
+    map_y double precision NOT NULL,
+    icon_id uuid REFERENCES isms.icons (id),
+    data_version integer NOT NULL,
+    data jsonb NOT NULL -- annotation / color / border / labels etc.
+  );
+
+CREATE INDEX IF NOT EXISTS idx_map_nodes_map ON isms.map_nodes (map_id);

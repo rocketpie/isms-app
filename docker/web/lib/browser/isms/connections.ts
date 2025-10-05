@@ -43,7 +43,6 @@ export async function updateConnection(item: ConnectionView) {
     {
       method: "PATCH",
       body: JSON.stringify(dataModel),
-      headers: { Prefer: "return=representation" },
     },
   );
 }

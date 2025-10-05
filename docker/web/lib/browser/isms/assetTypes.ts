@@ -2,14 +2,15 @@
 //Description: Shared asset type definitions for 'people', 'ownership', 'application', 'system', 'process', 'data', 'location', and 'connection' assets.
 "use client";
 
+// Attention: keep in sync with kb-4015-api-asset-kinds.md
 export type AssetKind =
   | "person"
   | "ownership"
+  | "process"
   | "application"
   | "system"
-  | "process"
-  | "data"
   | "location"
+  | "data"
   | "connection"
   | "data_category";
 

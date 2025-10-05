@@ -22,4 +22,13 @@ export const queryKeys = {
     isForChild: (key: QueryKey, childKind: AssetKind) =>
       Array.isArray(key) && key[0] === "links" && key[3] === childKind,
   },
+
+  maps: {
+    all: ["maps", "all"],
+    allMapIcons: ["mapIcons", "all"],
+    allMapNodes: ["mapNodes", "all"],
+    mapNodes: (mapId: string) => ["mapNodes", mapId, "all"],
+    isMapNodeKey: (key: QueryKey) =>
+      Array.isArray(key) && key[0] === "mapNodes",
+  }
 };

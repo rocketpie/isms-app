@@ -5,8 +5,8 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/app/_hooks/queryKeys";
-import { listOwnerships, OwnershipView } from "@/lib/browser/isms/ownership";
-import { OwnedAssetView } from "@/lib/browser/isms/assetTypes";
+import { OwnedAssetView, OwnershipView } from "@/lib/browser/isms/assetTypes";
+import { listOwnerships } from "@/lib/browser/isms/ownership";
 
 /**
  * Generic create form for ISMS base assets (application, system, process, data, location, connection).

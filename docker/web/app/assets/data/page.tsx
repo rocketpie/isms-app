@@ -6,9 +6,8 @@ import AssetPageScaffold from "../_scaffold/AssetPageScaffold";
 import SimpleAssetDisplayRow from "../_components/SimpleAssetDisplayRow";
 import OwnedAssetEditorRow from "../_components/OwnedAssetEditorRow";
 import OwnedAssetCreateForm from "../_components/OwnedAssetCreateForm";
-import type { DataAssetView } from "@/lib/browser/isms/assetTypes";
+import type { DataAssetView, OwnershipView } from "@/lib/browser/isms/assetTypes";
 import { useData, useDataCategories } from "@/app/_hooks/useAssets";
-import { OwnershipView } from "@/lib/browser/isms/ownership";
 import { useMemo } from "react";
 
 function DataDisplayRow(props: {

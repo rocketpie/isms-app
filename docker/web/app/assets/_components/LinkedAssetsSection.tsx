@@ -9,9 +9,9 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import LoadingLine from "./LoadingLine";
 import ErrorBanner from "./ErrorBanner";
 import { BaseAssetView, OwnedAssetView } from "@/lib/browser/isms/assetTypes";
-import SimpleAssetEditorRow from "./SimpleAssetEditorRow";
-import SimpleAssetDisplayRow from "./SimpleAssetDisplayRow";
-import SimpleAssetCreateForm from "./SimpleAssetCreateForm";
+import OwnedAssetEditorRow from "./OwnedAssetEditorRow";
+import OwnedAssetDisplayRow from "./OwnedAssetDisplayRow";
+import OwnedAssetCreateForm from "./OwnedAssetCreateForm";
 import { listOwnerships } from "@/lib/browser/isms/ownership";
 import { queryKeys } from "@/app/_hooks/queryKeys";
 
@@ -91,7 +91,7 @@ export default function LinkedAssetSection<
               <div className="flex items-center justify-between gap-3">
                 <div className="flex-1">
                   {isEditing ? (
-                    <SimpleAssetEditorRow<TChild>
+                    <OwnedAssetEditorRow<TChild>
                       value={value}
                       owners={owners}
                       disabled={
@@ -118,7 +118,7 @@ export default function LinkedAssetSection<
                       }
                     />
                   ) : (
-                    <SimpleAssetDisplayRow
+                    <OwnedAssetDisplayRow
                       value={item}
                       onEdit={() =>
                         setEditing((prev) => ({ ...prev, [item.id]: item }))
@@ -183,7 +183,7 @@ export default function LinkedAssetSection<
           <ChevronDown className="h-4 w-4 hidden group-open:block" />
           <span>link a new item</span>
         </summary>
-        <SimpleAssetCreateForm<TChild>
+        <OwnedAssetCreateForm<TChild>
           owners={owners}
           className="mt-4"
           onSubmit={(newItem) =>

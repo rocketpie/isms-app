@@ -45,5 +45,5 @@ foreach ($directory in $allDirectories) {
 }
 
 "(excluded $($excludeCount) directories)"
-
+"DONT FORGET TO SYNC: kb-5012-nextjs-app-isms-pages"
 

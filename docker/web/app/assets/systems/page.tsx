@@ -6,11 +6,10 @@ import AssetPageScaffold from "../_scaffold/AssetPageScaffold";
 import OwnedAssetDisplayRow from "../_components/OwnedAssetDisplayRow";
 import OwnedAssetEditorRow from "../_components/OwnedAssetEditorRow";
 import OwnedAssetCreateForm from "../_components/OwnedAssetCreateForm";
-import { SystemView, DataAssetView } from "@/lib/browser/isms/assetTypes";
+import { SystemView, DataAssetView, OwnershipView } from "@/lib/browser/isms/assetTypes";
 import { useLocations, useSystems } from "@/app/_hooks/useAssets";
 import LinkedAssetSection from "../_components/LinkedAssetsSection";
 import { useSystemData } from "@/app/_hooks/useAssetLinks";
-import { OwnershipView } from "@/lib/browser/isms/ownership";
 import { useMemo } from "react";
 
 

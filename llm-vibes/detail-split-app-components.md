@@ -3,6 +3,15 @@ I have this
 [...]
 
 it's become a little unwieldly. what parts can we split into other files 
+ 
+
+
+
+########################################################################
+########################################################################
+
+
+
 
 
 Here’s how I’d slice this up so the page becomes small/compose-y while keeping the PostgREST shape/writes exactly as we designed (embed for reads, FK for writes).

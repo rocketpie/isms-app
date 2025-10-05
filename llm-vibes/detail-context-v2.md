@@ -6,6 +6,16 @@ whats the best file sturcture to use?
 
 the gist of the project is a supabase like docker stack with postgres, postgrest, gotrue, and a custom next.js app. There's also startup scritps that init the database and run some smoke tests
 
+ 
+
+
+
+########################################################################
+########################################################################
+
+
+
+
 
 Totally—split it. Think “small, single-purpose, linkable notes” that your GPT can retrieve precisely. Here’s a battle-tested structure that works well for stacks like Postgres + PostgREST + GoTrue + Next.js + Docker, with init scripts and smoke tests.
 

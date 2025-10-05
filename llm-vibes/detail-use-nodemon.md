@@ -59,10 +59,15 @@ sh: ts-node: not found
     at ChildProcess.<anonymous> (/web/node_modules/nodemon/lib/monitor/run.js:199:11)
     at ChildProcess.emit (node:events:519:28)
     at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+ 
+
 
 
 ########################################################################
 ########################################################################
+
+
+
 
 
 Here’s a quick fix plan.
@@ -170,9 +175,15 @@ npm i -D tsx nodemon
 
 If this still errors, paste your `package.json` and how you start the dev shell (host vs docker), and I’ll align it with the KB scripts.   
 
+ 
+
+
 
 ########################################################################
 ########################################################################
+
+
+
 
 
 Ok, dev works now.
@@ -237,9 +248,16 @@ An error occurred in the Server Components render. The specific message is omitt
 and error message during login:
 JSON.parse: unexpected character at line 1 column 1 of the JSON data
 
+ 
+
+
 
 ########################################################################
 ########################################################################
+
+
+
+
 
 Got it—dev is fine, prod is breaking in Docker. Here’s how to fix it fast.
 
@@ -450,8 +468,3 @@ If you share:
 * your `docker-compose.yml`
 
 …I’ll tailor the exact compose + Dockerfile and verify the URLs you should use.
-
-
-
-########################################################################
-########################################################################

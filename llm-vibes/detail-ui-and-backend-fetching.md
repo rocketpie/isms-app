@@ -126,9 +126,15 @@ Right now, your JWT lives in `localStorage` only. If, in the future, you want **
 * **Two helpers per schema**: `.client` → `/api` with browser JWT; `.server` → `INTERNAL_POSTGREST_URL` for SSR.
 * Import the one that matches where your code runs.
 * This keeps concerns clean, avoids URL parsing issues on Node, and matches our KB/ADR direction (thin proxies, PostgREST first).
+ 
+
+
 
 ########################################################################
 ########################################################################
+
+
+
 
 
 great! with some adjustments:
@@ -138,9 +144,14 @@ first:
 
 second:
 * since the /api calls from the browser are authenticated, can't we simply forward that authentication to the postrgest endpoint?
+ 
+
+
 
 ########################################################################
 ########################################################################
+
+
 
 
 Love the naming—clear and self-documenting.
@@ -185,9 +196,15 @@ If/when we move sessions to an **HTTP-only cookie**, the proxy could read the co
 * Server helper **does not** try to read `localStorage`; it uses `INTERNAL_POSTGREST_URL` and is `server-only`.
 
 If you’re happy with this shape, I’ll map the existing code to those four paths and keep the proxy forwarding exactly as-is.
+ 
+
+
 
 ########################################################################
 ########################################################################
+
+
+
 
 perfect — here are the two **browser-only** helpers. they:
 

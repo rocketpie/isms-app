@@ -1,5 +1,15 @@
 there's a lot of static stuff in bootstrap.sh now, i thought that was only for passing the authenticator secret. i can also spot an app schema now. I like the idea of splitting the app data from the actual isms content data. isn't that better suited in an app.sql?
 
+ 
+
+
+########################################################################
+########################################################################
+
+
+
+
+
 Yes—great catch. Let’s keep bootstrap.sh minimal (only things that truly need secrets / env) and move all app-layer objects (the app schema, auth mirror, JWT helpers) into a dedicated app.sql.
 
 Below is a clean split with exact files.

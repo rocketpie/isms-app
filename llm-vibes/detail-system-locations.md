@@ -62,10 +62,16 @@ since they don't have n locations, we might need to drop the system_locations, a
 we also need a dropdown in the systems editor.
 
 what else do we need? additional hooks? api helpers?
+ 
+
+
 
 
 ########################################################################
 ########################################################################
+
+
+
 
 
 Here’s a tight plan to make **Systems have exactly one `location`** (inline `location_id`) and remove the `system_locations` M:N.
@@ -342,8 +348,9 @@ Medical References:
 
 ^^^ Uuuh, what's this? it pasted from ChatGPT, but it's not shown in the UI.
 see attached Screenshot
-
-
-
 ########################################################################
 ########################################################################
+
+
+
+

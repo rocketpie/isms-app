@@ -2,6 +2,14 @@ Would you also like me to add triggers to auto-update updated_at timestamps for 
 
 lets expand on that thought: created and updated are a pretty dated way of tracking change, i believe. i want to be able to trace changes including change date, author and type (create, update, delete) what do you think?
 
+
+
+########################################################################
+########################################################################
+
+
+
+
 You're thinking in the right direction—classic `created_at/updated_at` fields don’t tell you **who** changed **what**, **when**, and **how**. For real traceability you want an **audit log** that captures:
 
 * change kind (`create | update | delete`)

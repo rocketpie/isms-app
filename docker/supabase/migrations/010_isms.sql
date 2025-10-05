@@ -168,7 +168,7 @@ CREATE TABLE
     asset_id uuid NOT NULL,
     map_x double precision NOT NULL,
     map_y double precision NOT NULL,
-    icon_id uuid REFERENCES isms.icons (id),
+    icon_id uuid REFERENCES isms.map_icons (id),
     data_version integer NOT NULL,
     data jsonb NOT NULL -- annotation / color / border / labels etc.
   );

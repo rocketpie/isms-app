@@ -181,7 +181,7 @@ export async function deleteMapIcon(id: string) {
 
 export async function listMapNodes(mapId: string) {
   return await postgrest<MapNodeView[]>(
-    `/map_nodes?select=id,map_id,asset_kind,asset_id,map_x,map_y,icon:icons(id,name,data_version,data),data_version,data&map_id=eq.${encodeURIComponent(
+    `/map_nodes?select=id,map_id,asset_kind,asset_id,map_x,map_y,icon:map_icons(id,name,data_version,data),data_version,data&map_id=eq.${encodeURIComponent(
       mapId
     )}`,
     { method: "GET" }

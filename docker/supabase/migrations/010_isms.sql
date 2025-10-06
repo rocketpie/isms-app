@@ -1,6 +1,10 @@
 -- 010_isms.sql
 CREATE SCHEMA IF NOT EXISTS isms;
 
+--
+--
+--
+--
 -- Basic Assets =================================================================
 -- Ownership 
 -- People (assets / owners in app context; not auth users)
@@ -85,6 +89,10 @@ CREATE TABLE
     description text
   );
 
+--
+--
+--
+--
 -- Junctions =================================================================
 -- Process ↔ Application
 CREATE TABLE
@@ -127,6 +135,10 @@ CREATE INDEX IF NOT EXISTS jm_sys_data_data_idx ON isms.system_data (data_id);
 
 CREATE INDEX IF NOT EXISTS jm_loc_conn_conn_idx ON isms.location_connections (connection_id);
 
+--
+--
+--
+--
 -- Maps =================================================================
 -- Maps
 CREATE TABLE
@@ -134,7 +146,10 @@ CREATE TABLE
     id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
     name varchar(255) NOT NULL,
     owner_id uuid REFERENCES isms.ownership (id),
-    description text
+    description text,
+    map_kind varchar(255) NOT NULL CHECK (
+      map_kind IN ('organization', 'process', 'infrastructure',)
+    ),
   );
 
 -- Icons
@@ -162,7 +177,8 @@ CREATE TABLE
         'location',
         'data',
         'connection',
-        'data_category'
+        'data_category',
+        'map'
       )
     ),
     asset_id uuid NOT NULL,

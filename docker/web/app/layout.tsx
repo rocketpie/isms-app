@@ -106,18 +106,12 @@ export default function RootLayout({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="w-56">
-                    <DropdownMenuLabel className="text-xs text-neutral-500">
-                      Maps
-                    </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link href="/maps/organization">Organization</Link>
+                      <Link href="/maps">Maps</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/maps/processmap">Processes</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/maps/infrastructure">Infrastructure</Link>
+                      <Link href="/maps/editor">Map Editor</Link>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

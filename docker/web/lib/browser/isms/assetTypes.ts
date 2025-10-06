@@ -12,7 +12,8 @@ export type AssetKind =
   | "location"
   | "data"
   | "connection"
-  | "data_category";
+  | "data_category"
+  | "map";
 
 /**
  * VIEW type (what the UI renders after a read with embedding)
@@ -95,3 +96,14 @@ export type LocationRow = OwnedAssetRow;
 export type ConnectionView = OwnedAssetView;
 export type ConnectionRow = OwnedAssetRow;
 
+export type MapKind =
+  | "organization" // map of all people, teams (think org chart, Roles)
+  | "process" // map of processes, applications (suppliers? customers? SIPOCs?)
+  | "infrastructure" // map of all systems, locations, connections
+
+export type MapView = OwnedAssetView<{
+  map_kind: MapKind
+}>;
+export type MapRow = OwnedAssetRow<{
+  map_kind: MapKind
+}>;

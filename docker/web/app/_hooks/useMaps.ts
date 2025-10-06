@@ -3,7 +3,8 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { MapIconView, MapNodeView, MapView } from "@/lib/browser/isms/maps";
+import { MapView } from "@/lib/browser/isms/assetTypes";
+import type { MapIconView, MapNodeView } from "@/lib/browser/isms/maps";
 import {
   listMaps,
   createMap,
@@ -201,7 +202,6 @@ export function useMapNodes(mapId: string) {
   const queryClient = useQueryClient();
 
   const list = useQuery({
-    enabled: !!mapId,
     queryKey: queryKeys.maps.mapNodes(mapId),
     queryFn: () => listMapNodes(mapId),
     staleTime: 30_000,

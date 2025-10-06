@@ -1,21 +1,9 @@
+//lib/browser/isms/maps.ts
+ 
 "use client";
 
 import { postgrest } from "../api-isms";
-import { AssetKind, OwnershipView } from "./assetTypes";
-
-export type MapView = {
-  id: string;
-  name: string;
-  description?: string | null;
-  owner: OwnershipView | null;
-};
-
-export type MapRow = {
-  id?: string;
-  name: string;
-  description?: string | null;
-  owner_id: string | null
-};
+import { AssetKind, MapRow, MapView } from "./assetTypes";
 
 export type MapIconView = {
   id: string;
@@ -60,7 +48,6 @@ export type MapNodeRow = {
   data_version: number;
   data: unknown; // jsonb (annotation/style/labels)
 };
-
 
 
 // Maps CRUD

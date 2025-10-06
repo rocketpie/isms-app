@@ -148,8 +148,8 @@ CREATE TABLE
     owner_id uuid REFERENCES isms.ownership (id),
     description text,
     map_kind varchar(255) NOT NULL CHECK (
-      map_kind IN ('organization', 'process', 'infrastructure',)
-    ),
+      map_kind IN ('organization', 'process', 'infrastructure')
+    )
   );
 
 -- Icons

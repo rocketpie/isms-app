@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/app/_hooks/queryKeys";
 import { OwnedAssetView, OwnershipView } from "@/lib/browser/isms/assetTypes";
 import { listOwnerships } from "@/lib/browser/isms/ownership";
+import { Plus } from "lucide-react";
 
 /**
  * Generic create form for ISMS base assets (application, system, process, data, location, connection).
@@ -73,66 +74,72 @@ export default function OwnedAssetCreateForm<T extends OwnedAssetView>(props: {
           }
         }}
       >
-        <label className="sr-only" htmlFor="create-name">
-          Name
-        </label>
-        <input
-          id="create-name"
-          className="border rounded-lg px-3 py-2"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
+        <div>
+          <label className="sr-only" htmlFor="create-name">
+            Name
+          </label>
+          <input
+            id="create-name"
+            className="border rounded-lg px-3 py-2"
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </div>
 
-        <label className="sr-only" htmlFor="create-description">
-          Description (optional)
-        </label>
-        <input
-          id="create-description"
-          className="border rounded-lg px-3 py-2 md:col-span-2"
-          placeholder="Description (optional)"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+        <div>
+          <label className="sr-only" htmlFor="create-description">
+            Description (optional)
+          </label>
+          <input
+            id="create-description"
+            className="border rounded-lg px-3 py-2 md:col-span-2"
+            placeholder="Description (optional)"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
 
         <div className="flex flex-col">
           {props.extraEditor ?? ""}
         </div>
 
-        <label className="sr-only" htmlFor="create-owner">
-          Owner
-        </label>
-        <select
-          id="create-owner"
-          className="border rounded-lg px-3 py-2"
-          value={ownerId}
-          onChange={(e) => setOwnerId(e.target.value)}
-          disabled={!!props.owners ? false : ownersQuery.isLoading}
+        <div className="flex flex-col">
+          <label
+            className="text-sm text-neutral-700 mb-1"
+            htmlFor="create-owner">
+            Owner
+          </label>
+          <select
+            id="create-owner"
+            className="border rounded-lg px-3 py-2"
+            value={ownerId}
+            onChange={(e) => setOwnerId(e.target.value)}
+            disabled={!!props.owners ? false : ownersQuery.isLoading}
+          >
+            <option value="">No Owner</option>
+            {owners.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          disabled={pending}
+          className="rounded-xl px-3 py-2 border bg-black text-white disabled:opacity-60"
         >
-          <option value="">No Owner</option>
-          {owners.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.name}
-            </option>
-          ))}
-        </select>
+          <Plus className="h-5 w-5" />
+        </button>
 
         {error && (
           <div className="md:col-span-4">
             <p className="text-sm text-red-600">{error?.message}</p>
           </div>
         )}
-
-        <div className="md:col-span-4">
-          <button
-            type="submit"
-            disabled={pending}
-            className="rounded-xl px-3 py-2 border bg-black text-white disabled:opacity-60"
-          >
-            {pending ? "Creating…" : "Create"}
-          </button>
-        </div>
       </form>
     </div >
   );

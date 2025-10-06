@@ -1,4 +1,4 @@
-//app/maps/page.tsx
+//app/assets/maps/page.tsx
 "use client";
 
 import AssetPageScaffold from "../_scaffold/AssetPageScaffold";

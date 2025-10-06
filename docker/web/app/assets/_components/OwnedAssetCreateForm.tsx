@@ -14,13 +14,14 @@ import { listOwnerships } from "@/lib/browser/isms/ownership";
  * You control how the mutation input is built via `toInput`.
  */
 export default function OwnedAssetCreateForm<T extends OwnedAssetView>(props: {
+  className?: string;
   /* e.g., "Application" */
   assetTypeName?: string;
-  className?: string;
   /** Optional pre-fetched owners to skip the owners query */
   owners?: OwnershipView[];
   /** Called with the new Asset */
   onSubmit: (newAsset: T) => Promise<any>;
+  extraEditor?: React.ReactNode;
 }) {
   // Load owners only if not provided
   const ownersQuery = useQuery({
@@ -46,15 +47,15 @@ export default function OwnedAssetCreateForm<T extends OwnedAssetView>(props: {
       <h2 className="text-lg font-medium mb-2">New {props.assetTypeName}</h2>
 
       <form
-        className="grid gap-2 md:grid-cols-4"
-        onSubmit={(e) => {
+        className="grid gap-2 md:grid-cols-[1fr,2fr,1fr,1fr,auto]"
+        onSubmit={async (e) => {
           setPending(true);
           e.preventDefault();
           const nameTrimmed = name.trim();
           if (!nameTrimmed) return;
 
           try {
-            props
+            await props
               .onSubmit({
                 id: "",
                 name: nameTrimmed,
@@ -66,7 +67,9 @@ export default function OwnedAssetCreateForm<T extends OwnedAssetView>(props: {
               });
           } catch (error) {
             setError(error as Error);
-            setPending(false);
+          }
+          finally {
+            setPending(false)
           }
         }}
       >
@@ -93,6 +96,10 @@ export default function OwnedAssetCreateForm<T extends OwnedAssetView>(props: {
           onChange={(e) => setDescription(e.target.value)}
         />
 
+        <div className="flex flex-col">
+          {props.extraEditor ?? ""}
+        </div>
+
         <label className="sr-only" htmlFor="create-owner">
           Owner
         </label>
@@ -114,10 +121,6 @@ export default function OwnedAssetCreateForm<T extends OwnedAssetView>(props: {
         {error && (
           <div className="md:col-span-4">
             <p className="text-sm text-red-600">{error?.message}</p>
-            <p className="text-xs text-neutral-500">
-              Writes require <code>editor</code>; reads are allowed for{" "}
-              <code>authenticated</code>.
-            </p>
           </div>
         )}
 
@@ -131,6 +134,6 @@ export default function OwnedAssetCreateForm<T extends OwnedAssetView>(props: {
           </button>
         </div>
       </form>
-    </div>
+    </div >
   );
 }

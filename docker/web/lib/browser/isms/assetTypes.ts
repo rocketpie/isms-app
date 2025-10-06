@@ -3,17 +3,20 @@
 "use client";
 
 // Attention: keep in sync with kb-4015-api-asset-kinds.md
-export type AssetKind =
-  | "person"
-  | "ownership"
-  | "process"
-  | "application"
-  | "system"
-  | "location"
-  | "data"
-  | "connection"
-  | "data_category"
-  | "map";
+export const assetKinds = [
+  "person",
+  "ownership",
+  "process",
+  "application",
+  "system",
+  "location",
+  "data",
+  "connection",
+  "data_category",
+  "map",
+] as const;
+
+export type AssetKind = typeof assetKinds[number];
 
 /**
  * VIEW type (what the UI renders after a read with embedding)
@@ -96,10 +99,13 @@ export type LocationRow = OwnedAssetRow;
 export type ConnectionView = OwnedAssetView;
 export type ConnectionRow = OwnedAssetRow;
 
-export type MapKind =
-  | "organization" // map of all people, teams (think org chart, Roles)
-  | "process" // map of processes, applications (suppliers? customers? SIPOCs?)
-  | "infrastructure" // map of all systems, locations, connections
+
+export const mapKinds = [
+  "organization", // map of all people, teams (think org chart, Roles)
+  "process", // map of processes, applications (suppliers? customers? SIPOCs?)
+  "infrastructure", // map of all systems, locations, connections
+]
+export type MapKind = typeof mapKinds[number]
 
 export type MapView = OwnedAssetView<{
   map_kind: MapKind

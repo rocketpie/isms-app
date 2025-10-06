@@ -108,7 +108,7 @@ export default function RootLayout({
                   <DropdownMenuContent align="start" className="w-56">
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link href="/maps">Maps</Link>
+                      <Link href="/assets/maps">Maps</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link href="/maps/editor">Map Editor</Link>

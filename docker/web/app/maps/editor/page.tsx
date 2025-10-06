@@ -55,7 +55,7 @@ export default function MapEditorPage() {
               <option key={m.id} value={m.id}>{m.name}</option>
             ))}
           </select>
-          <Link href="/maps">
+          <Link href="/assets/maps">
             <Button size="sm" variant="secondary">Manage maps</Button>
           </Link>
         </div>

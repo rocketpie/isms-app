@@ -48,7 +48,7 @@ export default function OwnedAssetCreateForm<T extends OwnedAssetView>(props: {
       <h2 className="text-lg font-medium mb-2">New {props.assetTypeName}</h2>
 
       <form
-        className="grid gap-2 md:grid-cols-[1fr,2fr,1fr,1fr,auto]"
+        className="grid gap-2 md:grid-cols-[1fr_2fr_1fr_1fr_auto]"
         onSubmit={async (e) => {
           setPending(true);
           e.preventDefault();

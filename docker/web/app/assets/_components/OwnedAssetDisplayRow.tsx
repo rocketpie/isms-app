@@ -13,7 +13,7 @@ export default function OwnedAssetDisplayRow(props: {
   onToggle?: () => void;
 }) {
   return (
-    <div className="grid gap-1 grid-cols-1 md:grid-cols-[1fr,2fr,1fr,1fr,auto] md:items-center">
+    <div className="grid gap-1 grid-cols-1 md:grid-cols-[1fr_2fr_1fr_1fr_auto] md:items-center">
       <button
         type="button"
         className={`flex items-center gap-2 text-base text-neutral-700 ${props.onToggle ? "hover:text-black" : "cursor-default"}`}

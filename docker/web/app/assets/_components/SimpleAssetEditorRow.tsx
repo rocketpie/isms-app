@@ -29,7 +29,7 @@ export default function SimpleAssetEditorRow<T extends BaseAssetView>(props: {
 
   return (
     <div
-      className="grid gap-2 md:grid-cols-[1fr,2fr,1fr,auto]"
+      className="grid gap-2 md:grid-cols-[1fr_2fr_1fr_auto]"
       onKeyDown={handleKeyDown}
       role="group"
       aria-disabled={props.disabled}

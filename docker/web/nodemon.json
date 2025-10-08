@@ -1,5 +1,11 @@
 {
-  "watch": ["server.ts"],
-  "exec": "WATCHPACK_POLLING=true WATCHPACK_POLLING_INTERVAL=1000 npx tsx server.ts",
-  "ext": "js ts"
+  "watch": [
+    "server.ts"
+  ],
+  "ignore": [
+    "node_modules",
+    "public"
+  ],
+  "ext": "js ts",
+  "exec": "WATCHPACK_POLLING=true WATCHPACK_POLLING_INTERVAL=1000 npx tsx server.ts"
 }

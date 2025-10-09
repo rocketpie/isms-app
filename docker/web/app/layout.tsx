@@ -44,7 +44,7 @@ export default function RootLayout({
                       Owner, Category<ChevronDown />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-56">
+                  <DropdownMenuContent align="start" className="w-56 bg-neutral-50">
                     <DropdownMenuLabel className="text-xs text-neutral-500">
                       Simple Assets
                     </DropdownMenuLabel>
@@ -70,7 +70,7 @@ export default function RootLayout({
                       Assets<ChevronDown />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-56">
+                  <DropdownMenuContent align="start" className="w-56 bg-neutral-50">
                     <DropdownMenuLabel className="text-xs text-neutral-500">
                       Owned Assets
                     </DropdownMenuLabel>
@@ -105,13 +105,16 @@ export default function RootLayout({
                       Maps<ChevronDown />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-56">
+                  <DropdownMenuContent align="start" className="w-56 bg-neutral-50">
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
                       <Link href="/assets/maps">Maps</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link href="/maps/editor">Map Editor</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/maps2">new Map Editor</Link>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -125,7 +128,7 @@ export default function RootLayout({
                       Test Data<ChevronDown />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-56">
+                  <DropdownMenuContent align="start" className="w-56 bg-neutral-50">
                     <DropdownMenuLabel className="text-xs text-neutral-500">
                       Test Data
                     </DropdownMenuLabel>

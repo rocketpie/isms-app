@@ -20,16 +20,16 @@ export default function AssetPageHeader() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex items-center gap-3 py-2">
+    <nav>
       {items.map((item, idx) => {
         const isActive = pathname?.startsWith(item.href);
         return (
-          <div key={item.href} className="flex items-center">
+          <span>
             <Link
               href={item.href}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "text-xl",
+                "inline text-l",
                 isActive
                   ? "text-black font-semibold"
                   : "text-neutral-400 hover:text-neutral-600",
@@ -38,11 +38,9 @@ export default function AssetPageHeader() {
               {item.label}
             </Link>
             {idx < items.length - 1 && (
-              <span className="mx-3 text-neutral-300 select-none">
-                <ChevronRight />
-              </span>
+              <ChevronRight className="inline mx-3 text-neutral-300 select-none" />
             )}
-          </div>
+          </span>
         );
       })}
     </nav>

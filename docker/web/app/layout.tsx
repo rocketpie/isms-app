@@ -26,9 +26,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-neutral-50">
+      <body>
         <Providers>
-          <header className="w-full border-b bg-white">
+          <header className="w-full border-b bg-neutral-50">
             <div className="mx-auto max-w-5xl flex items-center justify-between p-3">
               <div className="flex items-center gap-4">
                 <Link href="/" className="font-semibold">
@@ -144,7 +144,7 @@ export default function RootLayout({
             </div>
           </header>
 
-          <main className="mx-auto max-w-5xl p-4">{children}</main>
+          <main>{children}</main>
         </Providers>
       </body>
     </html>

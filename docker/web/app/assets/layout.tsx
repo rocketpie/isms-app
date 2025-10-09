@@ -7,7 +7,11 @@ import AssetPageHeader from "../_components/assetPageHeader";
 
 export default function AssetsLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="grid gap-6">
+    // mx-auto: center via margin-inline:auto 
+    // max-w-5xl: max width
+    // p-4: some padding
+    // grid gap-6: make some room between components
+    <div className="mx-auto max-w-5xl p-4 grid gap-4">
       <div className="flex items-center justify-between">
         <AssetPageHeader />
       </div>
